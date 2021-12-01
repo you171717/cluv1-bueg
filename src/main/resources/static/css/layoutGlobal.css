@@ -1,0 +1,491 @@
+*, *:before, *:after {
+	margin: 0;
+	padding: 0;
+	min-width: 0;
+	min-height: 0;
+	box-sizing:  border-box;
+}
+html, body {
+	width: 100%;
+	height: 100%;
+	font-faimly: 'Noto Sans KR', sans-serif;
+	font-weight: 400;
+	font-size: 16px;
+	line-height: 1;
+	letter-spacing: -0.02em;
+	overflow-x: hidden;
+}
+ul, li {
+	margin: 0;
+	list-style: none;
+}
+a, a:hover {
+	color: inherit;
+	text-decoration: none;
+}
+
+#wrap {
+	width: 100%;
+	min-height: 100%;
+	display: flex;
+	flex-direction: column;
+	align-items: stretch;
+}
+
+.nav, .header, .footer {
+	flex-shrink: 0;
+}
+.nav-inner, .header-inner, .header-submenu-inner, .footer-inner {
+	margin: 0 auto;
+	width: 100%;
+	max-width: 1250px;
+}
+
+.nav {
+	padding: 10px 0;
+	background: #00233D;
+	color: #fff;
+}
+.nav-inner {
+	text-align: right;
+}
+.nav-inner a {
+	display: inline-block;
+	margin: 0 0 0 20px;
+	text-decoration: underline;
+}
+
+.header {
+	position: relative;
+	background: #003156;
+	color: #fff;
+}
+.header-inner {
+	display: flex;
+	align-items: center;
+	height: 82px;
+}
+.header-logo {
+	display: flex;
+	align-items: center;
+	font-size: 24px;
+	font-weight: 700;
+}
+.header-logo img {
+	position: relative;
+	top: 1px;
+	margin: 0 3px 0 0;
+}
+.header-menu {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	margin: 0 0 0 30px;
+	height: 100%;
+	font-size: 18px;
+}
+.header-menu li {
+	height: 100%;
+}
+.header-menu a {
+	display: flex;
+	align-items: center;
+	padding: 0 15px;
+	height: 100%;
+	background:  transparent;
+}
+.header-menu a:not(.active):hover {
+	background: rgba(0, 129, 227, .3);
+}
+.header-menu a.active {
+	background: #0081E3;
+	font-weight: 600;
+}
+.header-submenu {
+	position: absolute;
+	width: 100%;
+	top: 100%;
+	left: 0;
+	background: #0081E3;
+	display: none;
+	z-index: 10;
+}
+.header-submenu.active {
+	display: block;
+}
+.header-submenu-inner {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 20px 0;
+}
+.header-submenu-inner a {
+	margin: 0 20px;
+	font-weight: 600;
+}
+.header-search {
+	margin-left: auto;
+	display: flex;
+}
+.header-search input {
+	border: 0;
+	border-radius: 3px;
+	padding: 10px;
+	background: rgba(255, 255, 255, .3);
+	color: #fff;
+}
+.header-search input::placeholder {
+	color: #fff;
+}
+.header-search button {
+	border: 0;
+	border-radius: 3px;
+	margin: 0 0 0 5px;
+	padding:  10px;
+	background: #0081E3;
+	color: #fff;
+	font-weight: 600;
+}
+
+.footer {
+	margin: 40px 0 0;
+	padding: 40px 0;
+	font-size: 14px;
+	background: #060d12;
+	color: #999;
+	line-height: 1.8;
+}
+.footer-inner {
+	position: relative;
+}
+.footer-link, .footer-rule {
+	display: flex;
+	color: #fff;
+	font-weight: 600;
+}
+.footer-link {
+	margin: 0 0 10px;
+}
+.footer-link li {
+	margin-right: 20px;
+}
+.footer-rule li:not(:first-child) {
+	color: #999;
+}
+.footer-rule li:not(:last-child):after {
+	display: inline-block;
+	margin: 0 5px;
+	content: '|';
+	color: #999;
+}
+.footer-social {
+	position: absolute;
+	top: 0;
+	right: 0;
+}
+
+.content-outer {
+	flex: 1 0 auto;
+	padding: 40px 0 0;
+}
+.content, .content-mg {
+	margin: 0 auto !important;
+	width: 100%;
+	max-width: 1250px;
+}
+
+
+.rauction-form {
+	display: flex;
+}
+.rauction-form-items,
+.rauction-form-fields {
+	flex: 1 0 50%;
+}
+.rauction-form-items-scroll {
+	border: 3px solid #000;
+	margin: 0 0 20px;
+	padding: 0;
+	height: 400px;
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+.rauction-item {
+	border-bottom: 1px solid #999;
+	padding-right: 20px;
+	margin: 0;
+	display: flex;
+	align-items: center;
+	cursor: pointer;
+}
+.rauction-item-img {
+	display: inline-block;
+	margin: 0 20px 0 0;
+	width: 75px;
+	height: 75px;
+	background-size: cover;
+	background-position: center;
+}
+.rauction-item-text {
+	flex: 1 0 auto;
+	font-size: 18px;
+	font-weight: 600;
+}
+.rauction-item-price {
+	display: inline-block;
+	margin: 0 0 0 20px;
+	font-size: 16px;
+}
+.rauction-field-inner {
+	display: flex;
+	align-items: center;
+	margin: 0 0 20px;
+}
+.rauction-field-inner input {
+	flex: 1 0 0%;
+	margin: 0 10px 0 0;
+}
+.rauction-form-fields {
+	padding:  20px;
+}
+.rauction-form-fields label {
+	display: block;
+	font-size: 18px;
+	font-weight: 600;
+}
+.rauction-form-fields input {
+	padding: 10px;
+	width: 100%;
+}
+.rauction-form-fields .btn {
+	display: block;
+	margin: 0 0 10px;
+	width: 100%;
+}
+.rauction-table td {
+	vertical-align: middle;
+}
+.rauction-table-add {
+	float: right;
+}
+.rauction-table-img {
+	display: inline-block;
+	margin: 0 20px 0 0;
+	width: 50px;
+	height: 50px;
+	background-size: cover;
+	background-position: center;
+	vertical-align: middle;
+}
+.rauction-table-name {
+	font-size: 18px;
+	font-weight: 600;
+}
+.rauction-cards {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: flex-start;
+	margin: 0 -20px;
+}
+.rauction-card {
+	padding:  20px;
+	flex: 0 0 33.33333333%;
+}
+.rauction-card-inner {
+	border: 3px solid #000;
+}
+.rauction-card-img {
+	border-bottom: 3px solid #000;
+	height: 150px;
+	background-size: cover;
+	background-position: center;
+}
+.rauction-card-text {
+	padding: 20px;
+	line-height: 1.4;
+}
+.rauction-card-counter {
+	display: inline-block;
+	margin: 0 10px 0 0;
+	color: #f00;
+	font-weight: 600;
+}
+.rauction-card h4 {
+	font-weight: 600;
+	margin: 0 0 20px;
+}
+.rauction-card-props span {
+	float: right;
+}
+.rauction-card-discount {
+	margin: 10px 0;
+	text-align: right;
+}
+.rauction-card-discount b {
+	font-size: 22px;
+}
+.rauction-card-discount small {
+	font-size: 16px;
+}
+.rauction-card-price {
+	display: flex;
+	align-items: center;
+	font-weight: 600;
+}
+.rauction-card-price span {
+	margin-right: auto;
+}
+.rauction-card-price b {
+	font-size: 24px;
+}
+.rauction-card-finish {
+    margin: 20px 0;
+}
+.rauction-card-finish b {
+    display: inline-block;
+    margin: 0 10px 0 0;
+}
+.rauction-previous-toggle {
+	display: block;
+	margin: 40px auto 0;
+}
+.rauction-previous-toggle::after {
+	content: '보기 ▼';
+	display: inline-block;
+}
+.rauction-previous-toggle.active::after {
+	content: '숨기기 ▲';
+}
+.rauction-previous {
+	display: none;
+}
+.rauction-previous-toggle.active + .rauction-previous {
+	display: block;
+}
+.rauction-detail-title {
+	font-weight: 600;
+}
+.rauction-detail-box {
+	font-size: 18px;
+	background: #e9ecef;
+}
+.rauction-detail-prop {
+	display: flex;
+	padding: 20px;
+	font-size: 18px;
+}
+.rauction-detail-prop b,
+.rauction-detail-prop span {
+	flex: 1 0 50%;
+}
+.rauction-detail-box > .rauction-detail-prop:last-child {
+	margin-bottom: 0;
+}
+.rauction-detail-sprice {
+	font-size: 20px;
+}
+.rauction-detail-discount {
+	display: block;
+	margin: 10px 0 0;
+	color: #f00;
+	font-size: 24px;
+	font-weight: 600;
+}
+.rauction-detail-cprice {
+    margin: 0 0 10px;
+	display: block;
+	font-size: 30px;
+	font-weight: 600;
+}
+
+.bid-table {
+    border-bottom: 2px solid #777;
+    font-size: 18px;
+}
+.bid-table th {
+    border-top: 2px solid #777;
+    border-bottom: 1px solid #777 !important;
+}
+.bid-table td {
+    vertical-align: middle;
+}
+.bid-table td:nth-child(2) {
+    font-size: 22px;
+    font-weight: 600;
+}
+.bid-table-img {
+	display: inline-block;
+	margin: 0 20px 0 0;
+	width: 75px;
+	height: 75px;
+	background-size: cover;
+	background-position: center;
+	vertical-align: middle;
+}
+.bid-payment {
+    margin: 50px 0 0;
+    text-align: center;
+}
+.bid-payment h4 {
+    font-weight: 600;
+}
+.bid-payment label {
+    margin: 20px;
+}
+.bid-payment button {
+    margin: 40px 0 0;
+}
+.bid-complete {
+    padding: 40px 0;
+    text-align: center;
+    line-height: 1.4;
+}
+.bid-complete h2 {
+    margin: 0 0 10px;
+    font-weight: 600;
+}
+.bid-complete p {
+    margin: 0 0 40px;
+}
+.bid-complete ul {
+    margin: 0 auto 40px;
+    width: 320px;
+    text-align: left;
+}
+.bid-complete ul b {
+    display: inline-block;
+    width: 100px;
+}
+
+
+.pagination {
+	margin: 20px 0 10px;
+}
+
+.table-empty {
+    font-size: 24px;
+    text-align: center;
+    padding: 150px 0;
+}
+.table-empty .fa {
+    display: block;
+    margin: 0 0 20px;
+    font-size: 40px;
+}
+
+.imgSelect {
+	display: flex;
+	justify-content: center;
+}
+.imgSelect > div {
+	margin: 0 5px;
+}
+.imgSelect img {
+	cursor: pointer;
+}
+
+.bid-account {
+	margin: 0 0 10px;
+	float: right;
+	font-size: 16px;
+}

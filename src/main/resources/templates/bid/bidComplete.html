@@ -1,0 +1,30 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layoutGlobal}">
+
+    <div layout:fragment="content">
+        <div class="bid-complete" th:if="${bid.getDepositType().toString() == 'TRANSFER'}">
+            <h2>역경매 구매가 완료되었습니다</h2>
+            <p>표시된 계좌로 입금 해주십시오, 입금 확인 이후 낙찰이 완료됩니다</p>
+            <ul>
+                <li><b>예금주 : </b><span>샵지에스아이티엠</span></li>
+                <li><b>계좌번호 : </b><span>(GS뱅크) 111-222-333333</span></li>
+                <li><b>입금액 : </b><span th:text="${#numbers.formatCurrency(bid.getDepositAmount())}"></span></li>
+                <li><b>입금자명 : </b><span th:text="${bid.getDepositName()}"></span></li>
+            </ul>
+            <a th:href="@{/bids}" class="btn btn-lg btn-primary">역경매 참여 내역 보기</a>
+        </div>
+        <div class="bid-complete" th:if="${bid.getDepositType().toString() == 'KAKAO_PAY'}">
+            <h2>역경매 구매가 완료되었습니다</h2>
+            <p></p>
+            <ul>
+                <li><b>상품명 : </b><span th:text="${bid.getReverseAuction().getItem().getItemNm()}"></span></li>
+                <li><b>낙찰가 : </b><span th:text="${#numbers.formatCurrency(bid.getDepositAmount())}"></span></li>
+            </ul>
+            <a th:href="@{/bids}" class="btn btn-lg btn-primary">역경매 참여 내역 보기</a>
+        </div>
+    </div>
+
+</html>

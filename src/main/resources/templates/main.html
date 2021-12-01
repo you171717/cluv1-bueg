@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layoutGlobal}">
+
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+            $(document).ready(function() {
+                $("#searchBtn").on("click",function(e) {
+                    e.preventDefault();
+
+                    page(0);
+                });
+            });
+
+            function page(page) {
+                var searchQuery = $("#searchQuery").val();
+                var searchApprovedYn = $("#searchApprovedYn").val();
+                var sortColumn = $("#sortColumn").val();
+                var sortDirection = $("#sortDirection").val();
+
+                location.href = "/admin/rauctions/" + page + "?searchQuery=" + searchQuery
+                    + "&searchApprovedYn=" + searchApprovedYn
+                    + "&sortColumn=" + sortColumn
+                    + "&sortDirection=" + sortDirection;
+            }
+        </script>
+    </th:block>
+
+    <!-- 사용자 CSS 추가 -->
+    <th:block layout:fragment="css">
+        <style>
+            .carousel-wrap {
+                position: relative;
+                margin-top: -40px;
+            }
+            .carousel-wrap,
+            .carousel-inner > .item {
+                height: 400px;
+            }
+            .margin{
+                margin-bottom: 30px;
+            }
+            #carouselControls {
+                position: absolute;
+                top: 0;
+                right: 50%;
+                width: 100vw;
+                transform: translateX(50%);
+            }
+            .carousel-control-prev,
+            .carousel-control-next {
+                background: transparent;
+                border: 0;
+            }
+            .banner{
+                position: absolute;
+                top: 50%;
+                left: 0;
+                transform: translateY(-50%);
+            }
+            .card-text{
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+            }
+            a:hover{
+                text-decoration: none;
+            }
+            .center{
+                text-align: center;
+            }
+            .card {
+                border:  1px solid #000 !important;
+            }
+        </style>
+    </th:block>
+
+    <div layout:fragment="content">
+        <div class="carousel-wrap margin">
+            <div id="carouselControls" class="carousel slide" data-ride="carousel">
+                <ol class="carousel-indicators">
+                    <li data-target="#carouselControls" data-slide-to="0" class="active"></li>
+                    <li data-target="#carouselControls" data-slide-to="1"></li>
+                    <li data-target="#carouselControls" data-slide-to="2"></li>
+                    <li data-target="#carouselControls" data-slide-to="3"></li>
+                </ol>
+                <div class="carousel-inner">
+                    <div class="carousel-item active item">
+                        <img class="d-block w-100 banner" th:src="@{/img/slide-1.jpg}" alt="Keyboard">
+                    </div>
+                    <div class="carousel-item item">
+                        <img class="d-block w-100 banner" th:src="@{/img/slide-2.jpg}" alt="Keyboard">
+                    </div>
+                    <div class="carousel-item item">
+                        <img class="d-block w-100 banner" th:src="@{/img/slide-3.jpg}" alt="Keyboard">
+                    </div>
+                    <div class="carousel-item item">
+                        <img class="d-block w-100 banner" th:src="@{/img/slide-4.jpg}" alt="Keyboard">
+                    </div>
+                </div>
+                <button class="carousel-control-prev" type="button" data-target="#carouselControls" data-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-target="#carouselControls" data-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="sr-only">Next</span>
+                </button>
+            </div>
+        </div>
+        <!-- 검색을 했다면 검색어를 화면에 출력 -->
+        <input type="hidden" name="searchQuery" th:value="${itemSearchDto.searchQuery}">
+        <div th:if="${not #strings.isEmpty(itemSearchDto.searchQuery)}" class="center">
+            <p class="h3 font-weight-bold" th:text="${itemSearchDto.searchQuery} + ' 검색 결과'"></p>
+        </div>
+        <!-- 상품 관리와 동일한 상품 조회 결과 출력 -->
+        <div class="row">
+            <th:block th:each="item, status: ${items.getContent()}">
+                <div class="col-md-4 margin">
+                    <div class="card">
+                        <a th:href="'/item/' +${item.id}" class="text-dark">
+                            <img th:src="${item.imgUrl}" class="card-img-top" th:alt="${item.itemNm}" height="400">
+                            <div class="card-body">
+                                <h4 class="card-title">[[${item.itemNm}]]</h4>
+                                <p class="card-text">[[${item.itemDetail}]]</p>
+                                <h3 class="card-title text-danger">[[${#numbers.formatCurrency(item.price)}]]<small style="font-size: 16px;"> (배송비 : <th:block th:text="${#numbers.formatCurrency(item.shippingFee)}"></th:block>)</small></h3>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </th:block>
+        </div>
+        <!-- 상품 관리와 동일한 페이징 처리 -->
+        <div th:with="start=${(items.number / maxPage) * maxPage + 1}, end=(${(items.totalPages == 0) ? 1 : (start + (maxPage - 1) < items.totalPages ? start + (maxPage - 1) : items.totalPages)})" >
+            <ul class="pagination justify-content-center">
+                <li class="page-item" th:classappend="${items.number eq 0}?'disabled':''">
+                    <a th:href="@{'/' + '?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${items.number - 1}}" aria-label='Previous' class="page-link">
+                        <span aria-hidden='true'>이전</span>
+                    </a>
+                </li>
+                <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${items.number eq page - 1}?'active':''">
+                    <a th:href="@{'/' +'?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${page - 1}}" th:inline="text" class="page-link">[[${page}]]</a>
+                </li>
+                <li class="page-item" th:classappend="${items.number+1 ge items.totalPages}?'disabled':''">
+                    <a th:href="@{'/' +'?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${items.number + 1}}" aria-label='Next' class="page-link">
+                        <span aria-hidden='true'>다음</span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+</html>

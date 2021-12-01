@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layoutGlobal}">
+
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+            $(function() {
+                var $repImg = $('.repImgDiv img');
+
+                $('.imgSelect img').on('click', function() {
+                    $repImg.attr('src', $(this).attr('src'));
+                });
+            });
+        </script>
+    </th:block>
+
+    <th:block layout:fragment="css">
+        <style>
+            .mgb-15{
+                margin-bottom: 15px;
+            }
+            .mgt-30{
+                margin-top: 30px;
+            }
+            .mgt-50{
+                margin-top: 50px;
+            }
+            .repImgDiv{
+                margin-right: 15px;
+                height: auto;
+                text-align: center;
+            }
+            .repImg{
+                max-width: 100%;
+                max-height: 400px;
+            }
+            .wd50{
+                height: auto;
+                width: 50%;
+            }
+            .imgSelect {
+                margin-top: 20px;
+                text-align: center;
+            }
+            .imgSelect img {
+                width: 100px;
+            }
+        </style>
+    </th:block>
+
+    <div layout:fragment="content">
+        <input type="hidden" id="itemId" th:value="${itemFormDto.id}">
+        <div class="d-flex">
+            <div class="wd50">
+                <div class="repImgDiv">
+                    <img th:src="${itemFormDto.itemImgDtoList[0].imgUrl}" class = "rounded repImg" th:alt="${itemFormDto.itemNm}">
+                </div>
+                <div class="imgSelect">
+                    <div th:each="itemImgDto, status: ${itemFormDto.itemImgDtoList}">
+                        <img th:src="${itemImgDto.imgUrl}" th:alt="${itemFormDto.itemNm}" th:if="${not #strings.isEmpty(itemImgDto.imgUrl)}">
+                    </div>
+                </div>
+            </div>
+            <div class="wd50">
+                <div class="h4 rauction-detail-title" th:text="${itemFormDto.itemNm}"></div>
+                <div class="rauction-detail-box">
+                    <div class="rauction-detail-prop"><b>시작일 : </b><span th:text="${#temporals.format(reverseAuctionDto.startTime, 'yyyy-MM-dd HH:mm')}"></span></div>
+                    <div class="rauction-detail-prop"><b>자동 할인 시간 : </b><span th:text="${reverseAuctionDto.timeUnit} + ' 시간'"></span></div>
+                    <div class="rauction-detail-prop"><b>경매 단위 : </b><span th:text="${#numbers.formatCurrency(reverseAuctionDto.priceUnit)}"></span></div>
+                    <div class="rauction-detail-prop"><b>최대 할인율 : </b><span th:text="${reverseAuctionDto.maxRate} + '%'"></span></div>
+                </div>
+                <div class="rauction-detail-prop">
+                    <b>시작 가격</b>
+                    <span>
+                        <span class="rauction-detail-sprice" th:text="${#numbers.formatCurrency(reverseAuctionDto.startPrice)}"></span><br>
+                        <span class="rauction-detail-discount" th:text="${reverseAuctionDto.discountDto.currentDiscountRate} + '%↓'"></span>
+                    </span>
+                </div>
+                <div class="rauction-detail-prop">
+                    <b>현재 가격</b>
+                    <span>
+                        <span class="rauction-detail-cprice">
+                            <th:block th:text="${#numbers.formatCurrency(reverseAuctionDto.discountDto.currentPrice)}"></th:block>
+                            <small class="text-danger" style="font-size: 16px;">(배송비 : <th:block th:text="${#numbers.formatCurrency(reverseAuctionDto.itemShippingFee)}"></th:block>)</small>
+                        </span>
+                        <small class="rauction-detail-dprice">(현재 <span th:text="${#numbers.formatCurrency(reverseAuctionDto.discountDto.currentDiscountPrice)}"></span> 할인)</small>
+                    </span>
+                </div>
+                <a th:href="@{/bid/__${reverseAuctionDto.id}__}" class="btn btn-lg btn-primary" style="width: 100%">입찰하기</a>
+            </div>
+        </div>
+        <div class="jumbotron jumbotron-fluid mgt-30">
+            <div class="container">
+                <h4 class="display-5">상품 상세 설명</h4>
+                <hr class="my-4">
+                <p class="lead" th:text="${itemFormDto.itemDetail}"></p>
+            </div>
+        </div>
+    </div>
+
+</html>

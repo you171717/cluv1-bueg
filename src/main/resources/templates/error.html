@@ -1,0 +1,14 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layoutGlobal}">
+
+    <div layout:fragment="content" style="text-align: center">
+        <h1 th:if="${statusCode != 401}">에러 발생!</h1>
+        <script th:if="${statusCode == 401}">
+            alert('로그인 후 이용해 주십시오');
+            location.href = '/members/login';
+        </script>
+    </div>
+
+</html>

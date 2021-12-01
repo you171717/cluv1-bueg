@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.shop.mapper.ItemMapper">
+    <insert id="insertItem" parameterType="com.shop.dto.ItemDto">
+        INSERT INTO item
+               (item_id,
+                item_nm,
+                price,
+                stock_number,
+                item_detail,
+                item_sell_status,
+                reg_time,
+                update_time)
+        VALUES (#{id},
+                #{itemNm},
+                #{price},
+                #{stockNumber},
+                #{itemDetail},
+                #{itemSellStatus},
+                #{regTime},
+                #{updateTime});
+    </insert>
+    <select id="findByItemNm" resultType="com.shop.dto.ItemDto">
+        SELECT *,
+               item_id AS id
+          FROM item
+         WHERE item_nm = #{itemNm};
+    </select>
+    <select id="findByItemNmOrItemDetail" resultType="com.shop.dto.ItemDto">
+        SELECT *,
+               item_id AS id
+          FROM item
+         WHERE item_nm = #{itemNm}
+            OR item_detail = #{itemDetail};
+    </select>
+    <select id="findByPriceLessThan" resultType="com.shop.dto.ItemDto">
+        SELECT *,
+               item_id AS id
+          FROM item
+         WHERE price &lt; #{price};
+    </select>
+    <select id="findByPriceLessThanOrderByPriceDesc" resultType="com.shop.dto.ItemDto">
+        SELECT *,
+               item_id AS id
+          FROM item
+         WHERE price &lt; #{price}
+         ORDER BY price DESC;
+    </select>
+    <select id="findByItemDetail" resultType="com.shop.dto.ItemDto">
+        SELECT *,
+               item_id AS id
+          FROM item
+         WHERE item_detail LIKE '%' || #{itemDetail} || '%'
+         ORDER BY price DESC
+    </select>
+    <select id="findByItemDetailByNative" resultType="com.shop.dto.ItemDto">
+        SELECT *,
+               item_id AS id
+          FROM item
+         WHERE item_detail LIKE '%' || #{itemDetail} || '%'
+         ORDER BY price DESC
+    </select>
+</mapper>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layoutGlobal}">
+
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+            $(document).ready(function() {
+                $("#searchBtn").on("click",function(e) {
+                    e.preventDefault();
+
+                    page(0);
+                });
+            });
+
+            function page(page) {
+                var searchQuery = $("#searchQuery").val();
+                var searchApprovedYn = $("#searchApprovedYn").val();
+                var sortColumn = $("#sortColumn").val();
+                var sortDirection = $("#sortDirection").val();
+
+                location.href = "/admin/rauctions/" + page + "?searchQuery=" + searchQuery
+                    + "&searchApprovedYn=" + searchApprovedYn
+                    + "&sortColumn=" + sortColumn
+                    + "&sortDirection=" + sortDirection;
+            }
+        </script>
+    </th:block>
+
+    <th:block layout:fragment="css">
+
+    </th:block>
+
+    <div layout:fragment="content">
+        <h2>역경매 관리<a th:href="@{/admin/rauction/new}" class="btn btn-primary rauction-table-add">역경매 상품 등록</a></h2>
+        <form th:action="@{'/admin/rauctions/' + ${reverseAuctionDtoList.number}}" method="GET" th:object="${reverseAuctionDtoList}">
+            <table class="rauction-table table">
+                <thead>
+                    <tr>
+                        <th>상품 정보</th>
+                        <th>시작 가격</th>
+                        <th>현재 가격(낙찰가)</th>
+                        <th>상태</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="reverseAuction, status: ${reverseAuctionDtoList.getContent()}">
+                        <td>
+                            <span class="rauction-table-img" th:style="'background-image: url(' + ${reverseAuction.imgUrl} + ')'"></span>
+                            <span class="rauction-table-name" th:text="${reverseAuction.itemNm}"></span>
+                        </td>
+                        <td th:text="${#numbers.formatCurrency(reverseAuction.startPrice)}"></td>
+                        <td th:if="${reverseAuction.approvedYn == 'Y'}" th:text="${#numbers.formatCurrency(reverseAuction.depositAmount)}"></td>
+                        <td th:if="${reverseAuction.approvedYn == 'F'}"></td>
+                        <td th:if="${reverseAuction.approvedYn == 'N'}" th:text="${#numbers.formatCurrency(reverseAuction.discountDto.currentPrice)}"></td>
+                        <td th:if="${reverseAuction.approvedYn == 'Y'}" class="font-weight-bold text-success">낙찰</td>
+                        <td th:if="${reverseAuction.approvedYn == 'F'}" class="font-weight-bold text-danger">실패</td>
+                        <td th:if="${reverseAuction.approvedYn == 'N'}" class="font-weight-bold text-secondary">진행중</td>
+                        <td style="width: 150px">
+                            <span th:if="${reverseAuction.approvedYn == 'N'}">
+                                <a th:href="@{/admin/rauction/__${reverseAuction.id}__}" class="btn btn-primary">수정</a>
+                                <a th:href="@{/admin/rauction/__${reverseAuction.id}__/delete}" class="btn btn-danger btn-delete">삭제</a>
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+            <div th:if="${reverseAuctionDtoList.getTotalElements() == 0}" class="table-empty">
+                <i class="fa fa-times-circle"></i>
+                검색 결과가 없습니다
+            </div>
+            <div th:with="start=${(reverseAuctionDtoList.number/maxPage) * maxPage + 1}, end=(${(reverseAuctionDtoList.totalPages == 0) ? 1 : (start + (maxPage - 1) < reverseAuctionDtoList.totalPages ? start + (maxPage - 1) : reverseAuctionDtoList.totalPages)})" >
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${reverseAuctionDtoList.first}?'disabled'">
+                        <a th:onclick="'javascript:page(' + ${reverseAuctionDtoList.number - 1} + ')'" aria-label='Previous' class="page-link">
+                            <span aria-hidden='true'>이전</span>
+                        </a>
+                    </li>
+                    <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${reverseAuctionDtoList.number eq page-1}?'active':''">
+                        <a th:onclick="'javascript:page(' + ${page - 1} + ')'" th:inline="text" class="page-link">[[${page}]]</a>
+                    </li>
+                    <li class="page-item" th:classappend="${reverseAuctionDtoList.last}?'disabled'">
+                        <a th:onclick="'javascript:page(' + ${reverseAuctionDtoList.number + 1} + ')'" aria-label='Next' class="page-link">
+                            <span aria-hidden='true'>다음</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </form>
+        <form th:action="@{'/admin/rauctions/' + ${reverseAuctionDtoList.number}}" role="form" method="get" th:object="${reverseAuctionDtoList}">
+            <div class="form-inline justify-content-center" th:object="${reverseAuctionSearchDto}">
+                <b style="margin: 0 5px 0 0;">정렬 : </b>
+                <select th:field="*{sortColumn}" class="form-control" style="width: auto; margin: 0 5px 0 0;">
+                    <option value="REG_TIME">등록일</option>
+                    <option value="NAME">상품명</option>
+                    <option value="PRICE">시작 가격</option>
+                </select>
+                <select th:field="*{sortDirection}" class="form-control" style="width: auto;">
+                    <option value="ASC">오름차순</option>
+                    <option value="DESC">내림차순</option>
+                </select>
+                <b style="margin: 0 5px 0 20px;">상태 필터 : </b>
+                <select th:field="*{searchApprovedYn}" class="form-control" style="width: auto; margin: 0 20px 0 0;">
+                    <option value="">모두</option>
+                    <option value="N">진행중</option>
+                    <option value="Y">낙찰</option>
+                    <option value="F">실패</option>
+                </select>
+                <input th:field="*{searchQuery}" type="text" class="form-control" placeholder="상품명을 입력해주세요" style="margin: 0 5px 0 0;">
+                <button id="searchBtn" type="submit" class="btn btn-primary">검색</button>
+            </div>
+        </form>
+    </div>
+
+</html>

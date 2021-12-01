@@ -1,0 +1,84 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layoutGlobal}">
+
+    <th:block layout:fragment="script">
+        <script type="text/javascript" src="https://cdn.iamport.kr/js/iamport.payment-1.2.0.js"></script>
+        <script th:inline="javascript">
+            IMP.init("imp20261684");
+
+            function requestKakaoPay() {
+                IMP.request_pay({
+                    pg: "html5_inicis",
+                    pay_method: "card",
+                    merchant_uid: "ORD" + [[${reverseAuctionDto.id}]] + "-" + [[${member.id}]] + Math.random(),
+                    name: [[${reverseAuctionDto.itemNm}]],
+                    amount: [[${reverseAuctionDto.discountDto.currentPrice}]] + [[${reverseAuctionDto.itemShippingFee}]],
+                    buyer_email: [[${member.email}]],
+                    buyer_name: [[${member.name}]]
+                }, function(response) {
+                    if(response.success) {
+                        var $form = $('.bid-payment');
+
+                        $('<input type="hidden" name="tid">').val(response.pg_tid).appendTo($form);
+
+                        $form.submit();
+                    }
+                });
+            }
+
+            $(function() {
+                $('.bid-payment .btn-submit').on('click', function(e) {
+                    e.preventDefault();
+
+                    var $form = $('.bid-payment');
+
+                    var depositType = $form.find('input[type="radio"]:checked').val();
+
+                    if(depositType === "kakao_pay") {
+                        requestKakaoPay();
+                    } else {
+                        $form.submit();
+                    }
+                });
+            });
+        </script>
+    </th:block>
+
+    <div layout:fragment="content">
+        <table class="bid-table table">
+            <thead>
+                <tr>
+                    <th>상품 정보</th>
+                    <th>결제 금액</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <span class="bid-table-img" th:style="'background-image: url(' + ${reverseAuctionDto.imgUrl} + ')'"></span>
+                        <span class="bid-table-name" th:text="${reverseAuctionDto.itemNm}"></span>
+                    </td>
+                    <td th:text="${#numbers.formatCurrency(reverseAuctionDto.discountDto.currentPrice + reverseAuctionDto.itemShippingFee)}"></td>
+                </tr>
+            </tbody>
+        </table>
+        <form th:action="@{/bid/__${reverseAuctionDto.id}__}" method="POST" class="bid-payment">
+            <h4>결제 방법</h4>
+            <label>
+                <input type="radio" name="bidDepositType" value="transfer" checked>
+                무통장 입금
+            </label>
+            <label>
+                <input type="radio" name="bidDepositType" value="kakao_pay">
+                카카오 페이
+            </label>
+            <div>
+                <button type="button" class="btn btn-lg btn-primary btn-submit">결제하기</button>
+            </div>
+        </form>
+    </div>
+
+</html>

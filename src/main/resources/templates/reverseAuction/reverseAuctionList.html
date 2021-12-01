@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layoutGlobal}">
+
+    <th:block layout:fragment="script">
+        <script th:inline="javascript">
+            $(document).ready(function() {
+                $("#searchBtn").on("click",function(e) {
+                    e.preventDefault();
+
+                    page(0);
+                });
+
+                $('.rauction-previous-toggle').on("click", function(e) {
+                    e.preventDefault();
+
+                    $(this).toggleClass("active");
+                });
+
+                $('.rauction-card').each(function() {
+                    var $this = $(this);
+                    var $time = $this.find('.rauction-card-stime');
+                    var $counter = $this.find('.rauction-card-counter');
+                    var $timeUnit = $this.find('.rauction-card-time-unit');
+                    
+                    var timeUnit = parseInt($timeUnit.text().slice(0, -3)) * 1000 * 60 * 60;
+                    var startTime = new Date($time.text());
+
+                    (function t() {
+                        var currentTime = new Date();
+                        var restTime = (timeUnit / 1000) - parseInt((currentTime - startTime) % timeUnit / 1000);
+
+                        var hours = parseInt(restTime / 3600);
+                        var mintues = parseInt((restTime % 3600) / 60);
+                        var seconds = restTime % 60;
+
+                        $counter.text('(' + pad(hours, 2) + ':' + pad(mintues, 2) + ':' + pad(seconds, 2) + ')');
+
+                        if(hours == 0 && mintues == 0 && seconds <= 2) {
+                            setTimeout(function() {
+                                location.reload();
+                            }, 2500);
+                        }
+
+                        setTimeout(t, 500);
+                    })();
+
+                    function pad(n, width, z) {
+                        z = z || '0';
+                        n = n + '';
+                        return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+                    }
+                });
+            });
+
+            function page(page) {
+                var searchQuery = $("#searchQuery").val();
+                var sortColumn = $("#sortColumn").val();
+                var sortDirection = $("#sortDirection").val();
+
+                location.href = "/rauctions/" + page + "?searchQuery=" + searchQuery
+                    + "&sortColumn=" + sortColumn
+                    + "&sortDirection=" + sortDirection;
+            }
+        </script>
+    </th:block>
+
+    <th:block layout:fragment="css">
+
+    </th:block>
+
+    <div layout:fragment="content" style="position: relative;">
+        <h2>역경매 목록</h2>
+        <form th:action="@{'/rauctions/' + ${reverseAuctionDtoList.number}}" role="form" method="get" th:object="${reverseAuctionDtoList}" style="position: absolute; top: 0; right: 0;">
+            <div class="form-inline justify-content-center" th:object="${reverseAuctionSearchDto}">
+                <b style="margin: 0 5px 0 0;">정렬 : </b>
+                <select th:field="*{sortColumn}" class="form-control" style="width: auto; margin: 0 5px 0 0;">
+                    <option value="REG_TIME">등록일</option>
+                    <option value="NAME">상품명</option>
+                    <option value="PRICE">시작 가격</option>
+                </select>
+                <select th:field="*{sortDirection}" class="form-control" style="width: auto; margin: 0 20px 0 0;">
+                    <option value="ASC">오름차순</option>
+                    <option value="DESC">내림차순</option>
+                </select>
+                <input th:field="*{searchQuery}" type="text" class="form-control" placeholder="상품명을 입력해주세요">
+                <button id="searchBtn" type="submit" class="btn btn-primary">검색</button>
+            </div>
+        </form>
+        <form th:action="@{'/rauctions/' + ${reverseAuctionDtoList.number}}" method="GET" th:object="${reverseAuctionDtoList}">
+            <div class="rauction-cards">
+                <div class="rauction-card" th:each="reverseAuction, status: ${reverseAuctionDtoList.getContent()}">
+                    <div class="rauction-card-inner">
+                        <div class="rauction-card-img" th:style="'background-image: url(' + ${reverseAuction.imgUrl} + ')'"></div>
+                        <div class="rauction-card-text">
+                            <h4 class="rauction-card-title"><a th:href="@{/rauction/__${reverseAuction.id}__}" th:text="${reverseAuction.itemNm}"></a></h4>
+                            <ul class="rauction-card-props">
+                                <li><b>시작일 : </b><span th:text="${#temporals.format(reverseAuction.startTime, 'yyyy-MM-dd HH:mm')}" class="rauction-card-stime"></span></li>
+                                <li><b>자동 할인 시간 : </b><span th:text="${reverseAuction.timeUnit} + ' 시간'" class="rauction-card-time-unit"></span><span class="rauction-card-counter">(00:00:00)</span></li>
+                                <li><b>경매 단위 : </b><span th:text="${#numbers.formatCurrency(reverseAuction.priceUnit)}"></span></li>
+                                <li><b>시작 가격 : </b><span th:text="${#numbers.formatCurrency(reverseAuction.startPrice)}"></span></li>
+                                <li><b>최대 할인율 : </b><span th:text="${reverseAuction.maxRate} + '%'"></span></li>
+                            </ul>
+                            <div class="rauction-card-discount">
+                                <b th:text="${reverseAuction.discountDto.currentDiscountRate} + '%↓'" style="color: #F00;"></b>
+                                <small>(현재 <span th:text="${#numbers.formatCurrency(reverseAuction.discountDto.currentDiscountPrice)}"></span> 할인)</small>
+                            </div>
+                            <div class="rauction-card-price">
+                                <span>현재 가격</span>
+                                <b>
+                                    <small class="text-danger" style="font-size: 14px;">(배송비 : <th:block th:text="${#numbers.formatCurrency(reverseAuction.itemShippingFee)}"></th:block>)</small>
+                                    <th:block th:text="${#numbers.formatCurrency(reverseAuction.discountDto.currentPrice)}"></th:block>
+                                </b>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div th:if="${reverseAuctionDtoList.getTotalElements() == 0}" class="table-empty">
+                <i class="fa fa-times-circle"></i>
+                검색 결과가 없습니다
+            </div>
+            <div th:with="start=${(reverseAuctionDtoList.number/maxPage) * maxPage + 1}, end=(${(reverseAuctionDtoList.totalPages == 0) ? 1 : (start + (maxPage - 1) < reverseAuctionDtoList.totalPages ? start + (maxPage - 1) : reverseAuctionDtoList.totalPages)})" >
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${reverseAuctionDtoList.first}?'disabled'">
+                        <a th:onclick="'javascript:page(' + ${reverseAuctionDtoList.number - 1} + ')'" aria-label='Previous' class="page-link">
+                            <span aria-hidden='true'>이전</span>
+                        </a>
+                    </li>
+                    <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${reverseAuctionDtoList.number eq page-1}?'active':''">
+                        <a th:onclick="'javascript:page(' + ${page - 1} + ')'" th:inline="text" class="page-link">[[${page}]]</a>
+                    </li>
+                    <li class="page-item" th:classappend="${reverseAuctionDtoList.last}?'disabled'">
+                        <a th:onclick="'javascript:page(' + ${reverseAuctionDtoList.number + 1} + ')'" aria-label='Next' class="page-link">
+                            <span aria-hidden='true'>다음</span>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </form>
+        <button class="btn btn-secondary rauction-previous-toggle">지난 경매 </button>
+        <div class="rauction-previous">
+            <div th:if="${previousReverseAuctionDtoList.size() == 0}" class="table-empty">
+                <i class="fa fa-times-circle"></i>
+                검색 결과가 없습니다
+            </div>
+            <div class="rauction-cards">
+                <div class="rauction-card" th:each="reverseAuction, status: ${previousReverseAuctionDtoList}">
+                    <div class="rauction-card-inner">
+                        <div class="rauction-card-img" th:style="'background-image: url(' + ${reverseAuction.imgUrl} + ')'"></div>
+                        <div class="rauction-card-text">
+                            <h4 class="rauction-card-title" th:text="${reverseAuction.itemNm}"></h4>
+                            <ul class="rauction-card-props">
+                                <li><b>시작일 : </b><span th:text="${#temporals.format(reverseAuction.startTime, 'yyyy-MM-dd HH:mm')}"></span></li>
+                                <li><b>자동 할인 시간 : </b><span th:text="${reverseAuction.timeUnit} + ' 시간'"></span></li>
+                                <li><b>경매 단위 : </b><span th:text="${#numbers.formatCurrency(reverseAuction.priceUnit)}"></span></li>
+                                <li><b>시작 가격 : </b><span th:text="${#numbers.formatCurrency(reverseAuction.startPrice)}"></span></li>
+                                <li><b>최대 할인율 : </b><span th:text="${reverseAuction.maxRate} + '%'"></span></li>
+                            </ul>
+                            <div class="rauction-card-finish">
+                                <b>낙찰자 : </b><span th:text="${#strings.substring(reverseAuction.memberEmail, 0, 3) + '***'}"></span><br>
+                                <b>낙찰 시간 : </b><span th:text="${#temporals.format(reverseAuction.approvedTime, 'yyyy-MM-dd HH:mm')}"></span>
+                            </div>
+                            <div class="rauction-card-price">
+                                <span>낙찰 가격</span>
+                                <b th:if="${reverseAuction.depositAmount < 0}">₩****</b>
+                                <b th:if="${reverseAuction.depositAmount >= 0}" th:text="${#numbers.formatCurrency(reverseAuction.depositAmount)}"></b>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</html>
