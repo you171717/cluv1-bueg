@@ -105,6 +105,7 @@
                     <li sec:authorize="isAuthenticated()"><a th:href="@{/bids}">역경매 참여 내역</a></li>
                     <li sec:authorize="isAuthenticated()"><a th:href="@{/cart}">장바구니</a></li>
                     <li sec:authorize="isAuthenticated()"><a th:href="@{/orders}">구매 이력</a></li>
+                    <li sec:authorize="hasAnyAuthority('ROLE_USER')"><a th:href="@{/cscenter}">고객센터</a></li>
                     <li sec:authorize="hasAnyAuthority('ROLE_ADMIN')"><a href="#admin">관리자</a></li>
                 </ul>
                 <form th:action="@{/}" class="header-search">
@@ -118,6 +119,7 @@
                     <a th:href="@{/admin/items}">상품 관리</a>
                     <a th:href="@{/admin/rauctions}">역경매 관리</a>
                     <a th:href="@{/admin/bids}">역경매 결제 관리</a>
+                    <a th:href="@{/admin/cscenter}">고객센터</a>
                     <a href="https://desk.channel.io/" target="_blank">채널톡 관리</a>
                 </div>
             </div>
