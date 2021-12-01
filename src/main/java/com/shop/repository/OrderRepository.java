@@ -16,4 +16,16 @@ public interface OrderRepository extends JpaRepository<Order, Long> {
     @Query("select count(o) from Order o where o.member.email = :email")
     Long countOrder(@Param("email") String email);
 
+    @Query("select count(o) from Order o " +
+            "where 1=1 " +
+            "AND o.orderStatus = 'RETURN'"
+    )
+    Long countOrderForReturnList(@Param("email") String email);
+
+    @Query("select o from Order o " +
+            "where 1=1 " +
+            "AND o.orderStatus = 'RETURN'" +
+            "order by o.orderDate desc"
+    )
+    List<Order> findOrdersForReturnList(@Param("email") String email, Pageable pageable);
 }

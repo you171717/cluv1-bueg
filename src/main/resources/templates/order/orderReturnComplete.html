@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layoutGlobal}">
+
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+
+<!-- 사용자 스크립트 추가 -->
+<th:block layout:fragment="script">
+
+    <script th:inline="javascript">
+        function cancelOrder(orderId) {
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+
+            var url = "/order/" + orderId + "/cancel";
+            var paramData = {
+                orderId: orderId,
+            };
+
+            var param = JSON.stringify(paramData);
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: "application/json",
+                data: param,
+                beforeSend: function (xhr) {
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
+                dataType: "json",
+                cache: false,
+                success: function (result, status) {
+                    alert("주문이 취소 되었습니다.");
+                    location.href = '/returns/' + [[${page}]];
+                },
+                error: function (jqXHR, status, error) {
+                    if (jqXHR.status == '401') {
+                        alert('로그인 후 이용해주세요');
+                        location.href = '/members/login';
+                    } else {
+                        alert(jqXHR.responseText);
+                    }
+                }
+            });
+        }
+
+        function reqReturnOrder(orderId) {
+            location.href = "/order/" + orderId + "/return";
+        }
+    </script>
+    <script type="text/javascript">
+        function orderReqReturn(orderId) {
+            var token = $("meta[name = '_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+
+            var url = "/order/" + orderId + "/return";
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                beforeSend: function (xhr) {
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
+                dataType: "json",
+                cache: false,
+                success: function (result, status) {
+                    location.href = "/returns";
+                },
+                error: function (jqXHR, status, error) {
+
+                    if (jqXHR.status == '401') {
+                        alert('로그인 후 이용해주세요');
+                        location.href = '/members/login';
+                    } else {
+                        alert(jqXHR.responseJSON.message);
+                    }
+
+                }
+            });
+        }
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#confirmBtn")
+                .off("click.order")
+                .on("click.order", function () {
+                    let orderId = $(this).attr("data-order");
+                    orderReqReturn(orderId);
+                });
+
+            $("#cancelBtn")
+                .off("click.order")
+                .on("click.order", function () {
+                    history.back();
+                });
+
+            $("#selAll")
+                .off("click.order")
+                .on("click.order", function () {
+                    let thisChecked = $("#selAll").prop("checked");
+
+                    let subtarget = $("#returnTable").find("input[name*=subChk-]");
+                    let grpTarget = $("#returnTable").find("input[name*=groupChk-]");
+
+
+                    if (thisChecked) {
+                        subtarget.prop("checked", true);
+                        grpTarget.prop("checked", true);
+                    } else {
+                        subtarget.prop("checked", false);
+                        grpTarget.prop("checked", false);
+                    }
+                });
+
+            $("[name*=groupChk-]")
+                .off("click.order")
+                .on("click.order", function () {
+                    let thisObj = $(this);
+                    let thisChecked = thisObj.prop("checked");
+
+                    let target = $("#returnTable").find("input[name=subChk-" + thisObj.val() + "]");
+                    if (thisChecked) {
+                        target.prop("checked", true);
+                    } else {
+                        target.prop("checked", false);
+                    }
+                });
+
+
+
+
+            //     //환불 총 금액
+            //     let table = $("#returnTable");
+            //     let totalPriceList = table.find("tr").find("td:eq(4)");
+            //     let totalPrice = 0;
+            //     $.each(totalPriceList, function () {
+            //         totalPrice += Number($(this).text());
+            //         $(this).text(Number($(this).text()).toLocaleString("ko-KR"));
+            //     });
+            //     $("#totalPrice").text(totalPrice.toLocaleString("ko-KR"));
+            //
+            //     //환불 총 배송비
+            //     let totalRefundShipPriceList = table.find("tr").find("td:eq(5)");
+            //     let totalRefundShipPrice = 0;
+            //     $.each(totalRefundShipPriceList, function () {
+            //         totalRefundShipPrice += Number($(this).text());
+            //         $(this).text(Number($(this).text()).toLocaleString("ko-KR"));
+            //     });
+            //     $("#totalRefundShipPrice").text(totalRefundShipPrice.toLocaleString("ko-KR"));
+            //
+            //     //예상 총 환불 예정 금액
+            //     let totalRefundExpectPriceList = table.find("tr").find("td:eq(6)");
+            //     let totalRefundExpectPrice = 0;
+            //     $.each(totalRefundExpectPriceList, function () {
+            //         totalRefundExpectPrice += Number($(this).text());
+            //         $(this).text(Number($(this).text()).toLocaleString("ko-KR"));
+            //     });
+            //     $("#totalRefundExpectPrice").text(totalRefundExpectPrice.toLocaleString("ko-KR"));
+        });
+    </script>
+
+</th:block>
+
+<!-- 사용자 CSS 추가 -->
+<th:block layout:fragment="css">
+    <style>
+        .orderBox, .pageBox {
+            margin-top: 20px;
+            float: left;
+            width: 100%;
+        }
+
+        .orderTable {
+            width: calc(100% - 50px);
+            margin-top: 20px
+        }
+
+        .table {
+            width: 100%;
+            height: 100%;
+            border: 1px solid #c9c9c9;;
+        }
+
+        .table th, .table tr, .table td {
+            border: 1px solid #c4c4c4;
+            text-align: center !important;
+            vertical-align: middle;
+        }
+
+        .prInfo {
+            list-style: none;
+            padding: 0px;
+            text-align: left;
+        }
+
+        .prInfoData {
+            font-weight: 600;
+        }
+
+        .secHeader {
+            color: black;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .orderButtonBox {
+            display: inline-block;
+            float: left;
+        }
+
+        .orderButtonBox .btnBox {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: block;
+            float: right;
+        }
+
+        .orderButtonBox .btnBox li {
+            flex-basis: 50%;
+            margin-left: 5px;
+            display: inline-block;
+        }
+
+        .orderButtonBox .btnBox li button {
+            width: 200px;
+            height: 50px;
+            border: 1px solid black;
+            background-color: #ffffff;
+            font-size: 15px;
+            font-weight: 600;
+        }
+
+    </style>
+
+</th:block>
+
+<div layout:fragment="content" class="content-mg">
+    <h2 class="mb-4">
+        반품 관리
+    </h2>
+
+    <div class="orderButtonBox">
+        <ul class="btnBox">
+            <li>
+                <button type="button" id="cancelBtn" class="btn">취소</button>
+            </li>
+            <li>
+                <button type="button" id="confirmBtn" class="btn">확인</button>
+            </li>
+        </ul>
+    </div>
+
+    <div class="orderBox">
+        <div class="orderTable">
+            <table id="returnTable" class="table">
+                <thread>
+                    <!--					<th>그룹</th>-->
+                    <th><input type="checkbox" id="selAll" name="selAll"/></th>
+                    <th>주문자</th>
+                    <th>상품명/요청일</th>
+                    <th>사유</th>
+                    <th>상품금액</th>
+                    <th>환불 배송비</th>
+                    <th>환불예정금액</th>
+                </thread>
+
+                <tbody>
+                <th:block th:each="orderItem: ${returns.getContent()}">
+                    <th:block th:each="item: ${orderItem.getOrderItemDtoList()}">
+                        <tr>
+                            <td th:if="${itemStat.index == 0 and orderItem.getOrderItemDtoList().size() > 1}" th:rowspan="${orderItem.getOrderItemDtoList().size()}">
+                                <input type="checkbox" th:name="${'groupChk-' + orderItem.orderId}" th:value="${orderItem.orderId}"/>
+                            </td>
+                            <td th:if="${itemStat.index == 0 and orderItem.getOrderItemDtoList().size() == 1}">
+                                <input type="checkbox" th:name="${'groupChk-' + orderItem.orderId}" th:value="${orderItem.orderId}"/>
+                            </td>
+                            <td th:text="${orderItem.orderId}"></td>
+                            <td th:text="${item.itemNm }"></td>
+                            <td>문제가 많아요.</td>
+                            <td th:text="${item.returnPrice }"></td>
+                            <td th:text="5000"></td>
+                            <td th:text="${(item.returnPrice * item.returnCount) - 5000}"></td>
+                        </tr>
+                    </th:block>
+                </th:block>
+                </tbody>
+                <tfoot>
+                <!--                <tr>-->
+                <!--                    <td colspan="4"><span style="font-weight: 600;">합계</span></td>-->
+                <!--                    &lt;!&ndash;환불 총 금액&ndash;&gt;-->
+                <!--                    <td id="totalPrice"></td>-->
+                <!--                    &lt;!&ndash;환불 총 배송비&ndash;&gt;-->
+                <!--                    <td id="totalRefundShipPrice"></td>-->
+                <!--                    &lt;!&ndash;예상 총 환불 예정 금액&ndash;&gt;-->
+                <!--                    <td id="totalRefundExpectPrice"></td>-->
+                <!--                </tr>-->
+                </tfoot>
+            </table>
+        </div>
+    </div>
+
+    <div class="pageBox" th:with="start=${(returns.number/maxPage)*maxPage + 1}, end=(${(returns.totalPages == 0) ? 1 : (start + (maxPage - 1) < returns.totalPages ? start + (maxPage - 1) : returns.totalPages)})">
+        <ul class="pagination justify-content-center">
+
+            <li class="page-item" th:classappend="${returns.number eq 0}?'disabled':''">
+                <a th:href="@{'/returns/' + ${returns.number-1}}" aria-label='Previous' class="page-link">
+                    <span aria-hidden='true'>이전</span>
+                </a>
+            </li>
+
+            <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}" th:classappend="${returns.number eq page-1}?'active':''">
+                <a th:href="@{'/returns/' + ${page-1}}" th:inline="text" class="page-link">[[${page}]]</a>
+            </li>
+
+            <li class="page-item" th:classappend="${returns.number+1 ge returns.totalPages}?'disabled':''">
+                <a th:href="@{'/returns/' + ${returns.number+1}}" aria-label='Next' class="page-link">
+                    <span aria-hidden='true'>다음</span>
+                </a>
+            </li>
+
+        </ul>
+    </div>
+
+</div>
+
+</html>

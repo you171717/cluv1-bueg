@@ -21,6 +21,7 @@ import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -108,6 +109,32 @@ public class OrderController {
         return "order/orderReturn";
     }
 
+    @PostMapping("/order/return/confirm")
+    @ResponseBody
+    public ResponseEntity returnOrderconfirm(
+            @RequestBody Map<String, Object> paramMap,
+            Principal principal, Model model) throws Exception {
+
+        List<String> orderIdList = (List<String>) paramMap.get("orderId");
+        for (String orderId : orderIdList) {
+            orderService.returnConfirmOrder(Long.valueOf(orderId));
+        }
+
+        return new ResponseEntity<String>("처리 완료되었습니다.", HttpStatus.OK);
+    }
+
+    @GetMapping(value = {"/returns", "/returns/{page}"})
+    public String returnsHist(@PathVariable("page") Optional<Integer> page, Principal principal, Model model) throws Exception {
+
+        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 4);
+        Page<OrderHistDto> ordersHistDtoList = orderService.getReturnList(principal.getName(), pageable);
+
+        model.addAttribute("returns", ordersHistDtoList);
+        model.addAttribute("page", pageable.getPageNumber());
+        model.addAttribute("maxPage", 5);
+
+        return "order/orderReturnHist";
+    }
 
 
 }

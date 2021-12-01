@@ -136,6 +136,50 @@ public class OrderService {
         orderRepository.save(order);
     }
 
+    @Transactional(readOnly = true)
+    public Page<OrderHistDto> getReturnList(String email, Pageable pageable) throws Exception{
+        List<Order> orders = orderRepository.findOrdersForReturnList(email, pageable);
+        Long totalCount = orderRepository.countOrderForReturnList(email);
+
+        List<OrderHistDto> orderHistDtos = new ArrayList<>();
+
+        for (Order order : orders) {
+            OrderHistDto orderHistDto = new OrderHistDto(order);
+            List<OrderItem> orderItems = order.getOrderItems();
+            for (OrderItem orderItem : orderItems) {
+                ItemImg itemImg = itemImgRepository.findByItemIdAndRepImgYn
+                        (orderItem.getItem().getId(), "Y");
+                OrderItemDto orderItemDto =
+                        new OrderItemDto(orderItem, itemImg.getImgUrl());
+                orderHistDto.addOrderItemDto(orderItemDto);
+            }
+
+            orderHistDtos.add(orderHistDto);
+        }
+
+        return new PageImpl<OrderHistDto>(orderHistDtos, pageable, totalCount);
+    }
+
+    @Transactional
+    public void returnConfirmOrder(Long orderId) {
+        Order order = this.getOrder(orderId);
+
+        List<OrderItem> orderItemList = order.getOrderItems();
+
+        for (OrderItem orderItem : orderItemList) {
+            orderItem.setReturnConfirmDate(LocalDateTime.now());
+            orderItem.setReturnPrice(orderItem.getOrderPrice());
+            orderItem.setReturnCount(orderItem.getCount());
+            orderItem.setReturnStatus(ReturnStatus.Y);
+            orderItemRepository.save(orderItem);
+        }
+        order.setReturnConfirmDate(LocalDateTime.now());
+        order.setOrderStatus(OrderStatus.RETURN);
+        order.setReturnStatus(ReturnStatus.Y);
+        orderRepository.save(order);
+
+    }
+
 
 
 }
