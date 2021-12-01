@@ -1,6 +1,7 @@
 package com.shop.entity;
 
 import com.shop.constant.OrderStatus;
+import com.shop.constant.ReturnStatus;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -31,6 +32,19 @@ public class Order extends BaseEntity {
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<OrderItem> orderItems = new ArrayList<>();
+
+    //반품 요청일
+    @Column(name = "return_req_date", nullable = true)
+    private LocalDateTime returnReqDate;
+
+    //반품 확정일
+    @Column(name = "return_confirm_date", nullable = true)
+    private LocalDateTime returnConfirmDate;
+
+    //반품 여부
+    @Enumerated(EnumType.STRING)
+    @Column(name = "return_status")
+    private ReturnStatus returnStatus;
 
     public void addOrderItem(OrderItem orderItem) {
         orderItems.add(orderItem);

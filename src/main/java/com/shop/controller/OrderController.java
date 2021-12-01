@@ -2,6 +2,7 @@ package com.shop.controller;
 
 import com.shop.dto.OrderDto;
 import com.shop.dto.OrderHistDto;
+import com.shop.entity.Order;
 import com.shop.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -17,6 +18,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.security.Principal;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,5 +79,35 @@ public class OrderController {
 
         return new ResponseEntity<Long>(orderId, HttpStatus.OK);
     }
+
+    @PostMapping("/order/{orderId}/return")
+    @ResponseBody
+    public ResponseEntity returnOrderProc(@PathVariable("orderId") Long orderId, Principal principal, Model model) throws Exception {
+
+        if (!orderService.validateOrder(orderId, principal.getName())) {
+            return new ResponseEntity<String>("반품 요청 권한이 없습니다.", HttpStatus.FORBIDDEN);
+        }
+
+        Order order = orderService.getOrder(orderId);
+
+        orderService.returnReqOrder(order);
+
+        return new ResponseEntity<Long>(orderId, HttpStatus.OK);
+    }
+
+    @GetMapping("/order/{orderId}/return")
+    public String returnOrder(@PathVariable("orderId") Long orderId, Principal principal, Model model) {
+
+        if (!orderService.validateOrder(orderId, principal.getName())) {
+            return "redirect:/orders";
+        }
+        Order order = orderService.getOrder(orderId);
+
+        model.addAttribute("order", order);
+        model.addAttribute("nowDate", new SimpleDateFormat("yyyy.MM.dd").format(new Date()));
+        return "order/orderReturn";
+    }
+
+
 
 }

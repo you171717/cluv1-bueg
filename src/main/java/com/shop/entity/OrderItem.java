@@ -1,9 +1,11 @@
 package com.shop.entity;
 
+import com.shop.constant.ReturnStatus;
 import lombok.Getter;
 import lombok.Setter;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Getter
@@ -26,6 +28,28 @@ public class OrderItem extends BaseEntity {
     private int orderPrice;
 
     private int count;
+
+    //반품 갯수
+    @Column(name = "return_count")
+    private int returnCount;
+
+    //반품 금액
+    @Column(name = "return_price")
+    private int returnPrice;
+
+    //반품 요청일
+    @Column(name = "return_req_date", nullable = true)
+    private LocalDateTime returnReqDate;
+
+    //반품 확정일
+    @Column(name = "return_confirm_date", nullable = true)
+    private LocalDateTime returnConfirmDate;
+
+    //반품 여부
+    @Enumerated(EnumType.STRING)
+    @Column(name = "return_status")
+    private ReturnStatus returnStatus;
+
 
     public static OrderItem createOrderItem(Item item, int count) {
         OrderItem orderItem = new OrderItem();
