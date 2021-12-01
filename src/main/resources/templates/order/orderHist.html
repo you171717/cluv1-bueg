@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
+<html xmlns:th="http://thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layoutGlobal}">
 
@@ -45,6 +45,10 @@
                         }
                     }
                 })
+            }
+
+            function reqReturnOrder(orderId) {
+                location.href = "/order/" + orderId + "/return";
             }
         </script>
     </th:block>
@@ -94,7 +98,9 @@
                 <h4 th:text="${order.orderDate} + ' 주문'"></h4>
                 <div class="ml-3">
                     <th:block th:if="${order.orderStatus == T(com.shop.constant.OrderStatus).ORDER}">
+
                         <button type="button" class="btn btn-outline-secondary" th:value="${order.orderId}" onclick="cancelOrder(this.value)">주문취소</button>
+                        <button type="button" class="btn btn-outline-secondary" th:value="${order.orderId}" onclick="reqReturnOrder(this.value)">반품신청</button>
                     </th:block>
                     <th:block th:unless="${order.orderStatus == T(com.shop.constant.OrderStatus).ORDER}">
                         <h4>(취소 완료)</h4>
