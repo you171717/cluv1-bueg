@@ -18,12 +18,21 @@ public class OrderItemDto {
 
     private String imgUrl;
 
+    private String comment;
+
+    private Long orderItemId;
+
+    private String reviewYn;
+
     public OrderItemDto(OrderItem orderItem, String imgUrl) {
         this.itemNm = orderItem.getItem().getItemNm();
         this.count = orderItem.getCount();
         this.orderPrice = orderItem.getOrderPrice();
         this.orderShippingFee = orderItem.getItem().getShippingFee();
         this.imgUrl = imgUrl;
+        this.reviewYn = orderItem.getReviewYn();
+        this.orderItemId = orderItem.getId();
+        this.comment = orderItem.getComment();
     }
 
 }

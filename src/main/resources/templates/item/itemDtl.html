@@ -132,9 +132,35 @@
                 max-width: 100%;
                 max-height: 400px;
             }
+            .reviewImgDiv{
+                margin-right:20px;
+                width:20%;
+            }
+            .reviewImg{
+                width:150px;
+                height:150px;
+            }
             .wd50{
                 height: auto;
                 width: 50%;
+            }
+            .content-mg{
+                margin-left:30%;
+                margin-right:30%;
+                margin-top:2%;
+                margin-bottom:100px;
+            }
+            .card{
+                width:750px;
+                height:100%;
+                padding:30px;
+                margin-bottom:20px;
+            }
+            .fs18{
+                font-size:18px
+            }
+            .fs24{
+                font-size:24px
             }
         </style>
     </th:block>
@@ -192,6 +218,27 @@
         <!-- 등록된 상품 이미지를 th:each 반복문을 이용하여 모두 출력하고 있음 -->
         <div th:each="itemImg : ${item.itemImgDtoList}" class="text-center">
             <img th:if="${not #strings.isEmpty(itemImg.imgUrl)}" th:src="${itemImg.imgUrl}" class="rounded mgb-15" width="800">
+        </div>
+
+        <div class="container">
+            <hr class="my-4">
+            <h2 class="mb-4"> 상품 리뷰 </h2>
+
+            <div th:each="orderItem : ${orderItemList}">
+                <div class="card d-flex">
+                    <div class="d-flex mb-3">
+                        <div class="reviewImgDiv">
+                            <img th:src="${reviewImgDtoList[0].reviewImgUrl}" class = "rounded reviewImg">
+                        </div>
+                        <div class="align-self-center w-75">
+                            <span th:text="${orderItem.comment}" class="fs24 font-weight-bold"></span>
+                            <div class="fs18 font-weight-light">
+                                <span th:text="${orderItem.email} +'님'"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
