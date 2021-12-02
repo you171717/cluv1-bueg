@@ -24,7 +24,6 @@ public class AddressService {
         Member member = memberRepository.findByEmail(email);
         Address address = Address.createAddress(member, addressDto);
         log.info(addressRepository.save(address).getId().toString());
-        log.info(addressDto.toString());
 
         return member.getId();
     }
