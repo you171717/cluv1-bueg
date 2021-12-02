@@ -1,5 +1,6 @@
 package com.shop.controller;
 
+import com.shop.constant.GiftStatus;
 import com.shop.dto.OrderDto;
 import com.shop.dto.OrderHistDto;
 import com.shop.service.OrderService;
@@ -63,6 +64,24 @@ public class OrderController {
         model.addAttribute("page", pageable.getPageNumber());
         model.addAttribute("maxPage", 5);
 
+        return "order/orderHist";
+    }
+
+    // 구매/선물 상태 조회
+    @GetMapping(value = {"/ordersStatus/{status}", "/ordersStatus/{page}"})
+    public String orderStatus(@PathVariable("page") Optional<Integer> page,
+                              @PathVariable(required = false, value="status") GiftStatus giftStatus,
+                              Principal principal, Model model){
+
+        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 4);
+        Page<OrderHistDto> ordersHistDtoList;
+
+        ordersHistDtoList =
+                orderService.getOrderListStatus(principal.getName(), pageable, giftStatus);
+
+        model.addAttribute("orders", ordersHistDtoList);
+        model.addAttribute("page", pageable.getPageNumber());
+        model.addAttribute("maxPage", 5);
         return "order/orderHist";
     }
 

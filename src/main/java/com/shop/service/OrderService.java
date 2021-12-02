@@ -98,6 +98,30 @@ public class OrderService {
         return new PageImpl<OrderHistDto>(orderHistDtos, pageable, totalCount);
     }
 
+    // 구매/선물 상태 조회
+    @Transactional(readOnly = true)
+    public Page<OrderHistDto> getOrderListStatus(String email, Pageable pageable, GiftStatus giftStatus){
+
+        List<Order> orders = orderRepository.findOrdersStatus(email, pageable, giftStatus);
+        Long totalCount = orderRepository.countOrder(email);
+
+        List<OrderHistDto> orderHistDtos = new ArrayList<>();
+
+        // 주문 리스트 순회
+        for(Order order : orders){
+            OrderHistDto orderHistDto = new OrderHistDto(order);  // 구매 이력 페이지에 전달할 DTO 생성
+            List<OrderItem> orderItems = order.getOrderItems();
+            for(OrderItem orderItem : orderItems) {
+                ItemImg itemImg = itemImgRepository.findByItemIdAndRepImgYn(orderItem.getItem().getId(), "Y");
+                OrderItemDto orderItemDto =
+                        new OrderItemDto(orderItem, itemImg.getImgUrl());
+                orderHistDto.addOrderItemDto(orderItemDto);
+            }
+            orderHistDtos.add(orderHistDto);
+        }
+        return new PageImpl<OrderHistDto>(orderHistDtos, pageable, totalCount);   // 페이지 구현 객체 생성, 반환
+    }
+
     @Transactional(readOnly = true)
     public boolean validateOrder(Long orderId, String email) {
         Member curMember = memberRepository.findByEmail(email);
