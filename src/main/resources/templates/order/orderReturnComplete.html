@@ -131,37 +131,6 @@
                         target.prop("checked", false);
                     }
                 });
-
-
-
-
-            //     //환불 총 금액
-            //     let table = $("#returnTable");
-            //     let totalPriceList = table.find("tr").find("td:eq(4)");
-            //     let totalPrice = 0;
-            //     $.each(totalPriceList, function () {
-            //         totalPrice += Number($(this).text());
-            //         $(this).text(Number($(this).text()).toLocaleString("ko-KR"));
-            //     });
-            //     $("#totalPrice").text(totalPrice.toLocaleString("ko-KR"));
-            //
-            //     //환불 총 배송비
-            //     let totalRefundShipPriceList = table.find("tr").find("td:eq(5)");
-            //     let totalRefundShipPrice = 0;
-            //     $.each(totalRefundShipPriceList, function () {
-            //         totalRefundShipPrice += Number($(this).text());
-            //         $(this).text(Number($(this).text()).toLocaleString("ko-KR"));
-            //     });
-            //     $("#totalRefundShipPrice").text(totalRefundShipPrice.toLocaleString("ko-KR"));
-            //
-            //     //예상 총 환불 예정 금액
-            //     let totalRefundExpectPriceList = table.find("tr").find("td:eq(6)");
-            //     let totalRefundExpectPrice = 0;
-            //     $.each(totalRefundExpectPriceList, function () {
-            //         totalRefundExpectPrice += Number($(this).text());
-            //         $(this).text(Number($(this).text()).toLocaleString("ko-KR"));
-            //     });
-            //     $("#totalRefundExpectPrice").text(totalRefundExpectPrice.toLocaleString("ko-KR"));
         });
     </script>
 
@@ -261,7 +230,6 @@
         <div class="orderTable">
             <table id="returnTable" class="table">
                 <thread>
-                    <!--					<th>그룹</th>-->
                     <th><input type="checkbox" id="selAll" name="selAll"/></th>
                     <th>주문자</th>
                     <th>상품명/요청일</th>
@@ -292,15 +260,6 @@
                 </th:block>
                 </tbody>
                 <tfoot>
-                <!--                <tr>-->
-                <!--                    <td colspan="4"><span style="font-weight: 600;">합계</span></td>-->
-                <!--                    &lt;!&ndash;환불 총 금액&ndash;&gt;-->
-                <!--                    <td id="totalPrice"></td>-->
-                <!--                    &lt;!&ndash;환불 총 배송비&ndash;&gt;-->
-                <!--                    <td id="totalRefundShipPrice"></td>-->
-                <!--                    &lt;!&ndash;예상 총 환불 예정 금액&ndash;&gt;-->
-                <!--                    <td id="totalRefundExpectPrice"></td>-->
-                <!--                </tr>-->
                 </tfoot>
             </table>
         </div>
