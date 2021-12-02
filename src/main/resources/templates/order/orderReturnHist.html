@@ -172,8 +172,7 @@
     <div class="orderBox">
         <div class="orderTable">
             <table id="returnTable" class="table">
-                <thread>
-                    <!--					<th>그룹</th>-->
+                <thead>
                     <th><input type="checkbox" id="selAll" name="selAll"/></th>
                     <th>주문자</th>
                     <th>상품명/요청일</th>
@@ -183,7 +182,7 @@
                     <th>환불 배송비</th>
                     <th>환불예정금액</th>
                     <th>반품처리 상태</th>
-                </thread>
+                </thead>
 
                 <tbody>
                 <th:block th:each="orderItem: ${returns.getContent()}">
@@ -221,20 +220,6 @@
                     </th:block>
                 </th:block>
                 </tbody>
-                <!--                <tfoot>-->
-                <!--                <tr>-->
-                <!--                    <td colspan="4"><span style="font-weight: 600;">합계</span></td>-->
-                <!--                    &lt;!&ndash;환불 총 금액&ndash;&gt;-->
-                <!--                    <td id="totalPrice"></td>-->
-                <!--                    &lt;!&ndash;환불 총 수량&ndash;&gt;-->
-                <!--                    <td id="totalCount"></td>-->
-                <!--                    &lt;!&ndash;환불 총 배송비&ndash;&gt;-->
-                <!--                    <td id="totalRefundShipPrice"></td>-->
-                <!--                    &lt;!&ndash;예상 총 환불 예정 금액&ndash;&gt;-->
-                <!--                    <td id="totalRefundExpectPrice"></td>-->
-                <!--                </tr>-->
-                <!--                </tfoot>-->
-                <!--            </table>-->
             </table>
         </div>
     </div>
