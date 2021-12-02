@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layoutGlobal}">
+
+<head>
+    <title>shop</title>
+    <meta charset="UTF-8">
+</head>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+
+<th:block layout:fragment="css"></th:block>
+
+<div layout:fragment="content">
+    <th:block th:replace="fragments/search"></th:block>
+    <div class="container">
+    <div class="row" style="float: none; margin:100 auto;">
+        <div class="col-md-12" style="float: none; margin:0 auto;" >
+            <div id="accordion" >
+                <div class="card" th:each="FAQDtoList : ${FAQDtoList}">
+                    <div class="card-header" th:id="|heading${FAQDtoList.id}|">
+                        <h5 class="mb-0">
+                            <button class="btn btn-link collapsed" data-toggle="collapse" th:attr="data-target='#collapse'+${FAQDtoList.id}"  aria-expanded="true" aria-controls="collapseThree" th:text="|Q. ${FAQDtoList.question}|">
+                            </button>
+                        </h5>
+                    </div>
+                    <div th:id="|collapse${FAQDtoList.id}|" class="collapse" aria-labelledby="headingThree" data-parent="#accordion">
+                        <div class="card-body" th:text="|A. ${FAQDtoList.answer}|"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+
+
