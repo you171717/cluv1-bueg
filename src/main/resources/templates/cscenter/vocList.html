@@ -3,12 +3,8 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layoutGlobal}">
 <head>
-    <title>shop</title>
-    <meta charset="UTF-8">
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
-</head>
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <link th:href="@{/css/vocList.css}" rel="stylesheet">
 <th:block layout:fragment="css">
     <style>
@@ -24,11 +20,6 @@
 </th:block>
 <th:block layout:fragment="script">
     <script th:inline="javascript">
-<!--        function deleteInquiry(id) {-->
-<!--          if(confirm("게시글을 삭제할까요?")){-->
-<!--             location.href="/cscenter/voclist/delete/"+id;-->
-<!--          }-->
-<!--        }-->
 
         function allChecked(target){
             if($(target).is(":checked")){
@@ -101,11 +92,9 @@
                });
             }
         }
-
-
-
 	</script>
 </th:block>
+</head>
 
 <div layout:fragment="content">
     <th:block th:replace="fragments/search"></th:block>

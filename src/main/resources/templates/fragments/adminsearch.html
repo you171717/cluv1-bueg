@@ -1,7 +1,5 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<meta charset="UTF-8">
-<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 <link th:href="@{/css/search.css}" rel="stylesheet">
 <body>
 
@@ -13,14 +11,14 @@
         </div>
 
         <div class="col-4" style="float: none; margin:0 auto;">
-            <form action="/admin/cscenter/search" role="form" method="post" th:object="${faqsearchdto}">
-                <input type="text" th:field="*{searchQuery}" class="search_input" placeholder="자주 묻는 질문 검색">
-                <button class="search_btn" >검색</button>
-                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-            </form>
+            <div style="margin: 0.67em 0;">
+                <form action="/cscenter/search" role="form" method="post" th:object="${faqsearchdto}">
+                    <input type="text" th:field="*{searchQuery}" class="search_input" placeholder="자주 묻는 질문 검색">
+                    <button class="search_btn" >검색</button>
+                    <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                </form>
+            </div>
         </div>
-
-
     </div>
     <br><br>
 </div>
