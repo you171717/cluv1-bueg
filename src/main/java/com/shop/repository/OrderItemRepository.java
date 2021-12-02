@@ -7,5 +7,5 @@ import java.util.List;
 
 public interface OrderItemRepository extends JpaRepository<OrderItem, Long> {
 
-    List<OrderItem> findByItemIdAndReviewYn(Long itemId, String reviewUn);
+    List<OrderItem> findByItemIdAndReviewYn(Long itemId, String reviewYn);
 }
