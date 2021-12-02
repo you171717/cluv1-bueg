@@ -1,6 +1,7 @@
 package com.shop.dto;
 
 import com.shop.constant.Bank;
+import com.shop.constant.Role;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.Length;
@@ -37,16 +38,6 @@ public class MemberFormDto {
     @NotEmpty(message = "환불 계좌 번호는 입력 값입니다.")
     private String refundAccount;
 
-    @Override
-    public String toString() {
-        return "MemberFormDto{" +
-                "name='" + name + '\'' +
-                ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
-                ", address='" + address + '\'' +
-                ", addressDetail='" + addressDetail + '\'' +
-                ", refundBank=" + refundBank +
-                ", refundAccount='" + refundAccount + '\'' +
-                '}';
-    }
+    private Role role;
+
 }
