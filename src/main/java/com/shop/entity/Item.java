@@ -21,6 +21,10 @@ public class Item extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id; // 상품 코드
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cateCode")
+    private Category category;           // 카테고리 코드 조인
+
     @Column(nullable = false, length = 50)
     private String itemNm; // 상품명
 
@@ -48,6 +52,18 @@ public class Item extends BaseEntity {
     )
     private List<Member> member;
     */
+
+    public static Item createItem(ItemFormDto itemFormDto, Category category){
+        Item item = new Item();
+        item.setCategory(category);
+        item.itemNm = itemFormDto.getItemNm();
+        item.price = itemFormDto.getPrice();
+        item.stockNumber = itemFormDto.getStockNumber();
+        item.itemDetail = itemFormDto.getItemDetail();
+        item.itemSellStatus = itemFormDto.getItemSellStatus();
+
+        return item;
+    }
 
     public void updateItem(ItemFormDto itemFormDto) {
         this.itemNm = itemFormDto.getItemNm();

@@ -1,5 +1,6 @@
 package com.shop.service;
 
+import com.shop.constant.GiftStatus;
 import com.shop.dto.OrderDto;
 import com.shop.dto.OrderHistDto;
 import com.shop.dto.OrderItemDto;
@@ -45,6 +46,27 @@ public class OrderService {
         Order order = Order.createOrder(member, orderItemList, BUY,
                 member.getAddress(), member.getAddressDetail());
         orderRepository.save(order);
+
+        return order.getId();
+    }
+
+    // 선물하기
+    public Long gift(OrderDto orderDto, String email) {
+        Item item = itemRepository.findById(orderDto.getItemId())              // 주문 상품 조회
+                .orElseThrow(EntityNotFoundException::new);
+        Member member = memberRepository.findByEmail(email);                  // 이메일 정보를 이용해 회원 정보 조회
+
+        List<OrderItem> orderItemList = new ArrayList<>();
+
+        // 주문할 상품 엔티티와 주문 수량을 이용하여 주문 상품 엔티티 생성
+        OrderItem orderItem =
+                OrderItem.createOrderItem(item, orderDto.getCount());
+        orderItemList.add(orderItem);
+
+        // 회원 정보와 주문할 상품 리스트 정보를 이용하여 주문 엔티티 생성 (상태 : 선물)
+        Order order = Order.createOrder(member, orderItemList , GiftStatus.GIFT,
+                orderDto.getAddress(), orderDto.getAddressDetail());
+        orderRepository.save(order);                                 // 생성한 주문 엔티티 저장
 
         return order.getId();
     }

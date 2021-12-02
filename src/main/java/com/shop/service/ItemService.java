@@ -1,9 +1,6 @@
 package com.shop.service;
 
-import com.shop.dto.ItemFormDto;
-import com.shop.dto.ItemImgDto;
-import com.shop.dto.ItemSearchDto;
-import com.shop.dto.MainItemDto;
+import com.shop.dto.*;
 import com.shop.entity.Item;
 import com.shop.entity.ItemImg;
 import com.shop.repository.ItemImgRepository;
@@ -92,4 +89,9 @@ public class ItemService {
         return itemRepository.getMainItemPage(itemSearchDto, pageable);
     }
 
+    // 선물하기 상품 데이터
+    @Transactional(readOnly = true)
+    public Page<GiftMainItemDto> getGiftItemPage(ItemSearchDto itemSearchDto, Pageable pageable, Long cateCode){
+        return itemRepository.getGiftItemPage(itemSearchDto, pageable, cateCode);
+    }
 }
