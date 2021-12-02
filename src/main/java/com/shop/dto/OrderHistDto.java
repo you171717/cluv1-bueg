@@ -1,5 +1,6 @@
 package com.shop.dto;
 
+import com.shop.constant.GiftStatus;
 import com.shop.constant.OrderStatus;
 import com.shop.entity.Order;
 import lombok.Getter;
@@ -19,12 +20,18 @@ public class OrderHistDto {
 
     private OrderStatus orderStatus;
 
+    private String orderAddress;           // 배송지
+
+    private GiftStatus giftStatus;    //  구매/선물 상태
+
     private List<OrderItemDto> orderItemDtoList = new ArrayList<>();
 
     public OrderHistDto(Order order) {
         this.orderId = order.getId();
         this.orderDate = order.getOrderDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         this.orderStatus = order.getOrderStatus();
+        this.orderStatus = order.getOrderStatus();
+        this.giftStatus = order.getGiftStatus();
     }
 
     public void addOrderItemDto(OrderItemDto orderItemDto) {

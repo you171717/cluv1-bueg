@@ -10,6 +10,7 @@ import com.shop.repository.MemberRepository;
 import com.shop.repository.OAuth2MemberRepository;
 import com.shop.service.MemberService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import javax.validation.Valid;
 import java.security.Principal;
 
+@Slf4j
 @RequestMapping("/members")
 @Controller
 @RequiredArgsConstructor

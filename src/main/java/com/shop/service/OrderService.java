@@ -20,6 +20,8 @@ import javax.persistence.EntityNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.shop.constant.GiftStatus.BUY;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -40,7 +42,8 @@ public class OrderService {
         OrderItem orderItem = OrderItem.createOrderItem(item, orderDto.getCount());
         orderItemList.add(orderItem);
 
-        Order order = Order.createOrder(member, orderItemList);
+        Order order = Order.createOrder(member, orderItemList, BUY,
+                member.getAddress(), member.getAddressDetail());
         orderRepository.save(order);
 
         return order.getId();
@@ -107,7 +110,7 @@ public class OrderService {
             orderItemList.add(orderItem);
         }
 
-        Order order = Order.createOrder(member, orderItemList);
+        Order order = Order.createOrder(member, orderItemList ,BUY, member.getAddress(), member.getAddressDetail());
 
         orderRepository.save(order);
 

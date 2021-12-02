@@ -31,6 +31,8 @@ public class Member extends BaseEntity {
 
     private String address;
 
+    private String addressDetail;
+
     @Enumerated(EnumType.STRING)
     private Bank refundBank;
 
@@ -47,6 +49,7 @@ public class Member extends BaseEntity {
         member.setName(memberFormDto.getName());
         member.setEmail(memberFormDto.getEmail());
         member.setAddress(memberFormDto.getAddress());
+        member.setAddressDetail(memberFormDto.getAddressDetail());
         String password = passwordEncoder.encode(memberFormDto.getPassword());
         member.setPassword(password);
         member.setRole(Role.USER);
