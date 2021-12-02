@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layoutGlobal}">
+<head>
+    <title>shop</title>
+    <meta charset="UTF-8">
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+<link th:href="@{/css/vocList.css}" rel="stylesheet">
+<th:block layout:fragment="css">
+    <style>
+        td{
+            overflow:hidden;
+            white-space:nowrap;
+            text-overflow:ellipsis;
+        }
+        .table{
+            table-layout:fixed;
+        }
+    </style>
+</th:block>
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+<!--        function deleteInquiry(id) {-->
+<!--          if(confirm("게시글을 삭제할까요?")){-->
+<!--             location.href="/cscenter/voclist/delete/"+id;-->
+<!--          }-->
+<!--        }-->
+
+        function allChecked(target){
+            if($(target).is(":checked")){
+                //체크박스 전체 체크
+                $(".chk").prop("checked", true);
+            }
+
+            else{
+                //체크박스 전체 해제
+                $(".chk").prop("checked", false);
+            }
+        }
+
+        //자식 체크박스 클릭 이벤트
+        function cchkClicked(){
+
+            //체크박스 전체개수
+            var allCount = $("input:checkbox[name=cchk]").length;
+
+            //체크된 체크박스 전체개수
+            var checkedCount = $("input:checkbox[name=cchk]:checked").length;
+
+            //체크박스 전체개수와 체크된 체크박스 전체개수가 같으면 체크박스 전체 체크
+            if(allCount == checkedCount){
+                $(".chk").prop("checked", true);
+            }
+
+            //같지않으면 전체 체크박스 해제
+            else{
+                $("#allCheckBox").prop("checked", false);
+            }
+        }
+
+        function inquiryDelete(){
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+
+            var inquiryIdxArray = [];
+
+            $("input:checkbox[name=cchk]:checked").each(function(){
+                inquiryIdxArray.push($(this).val());
+            });
+
+            console.log(inquiryIdxArray);
+
+            if(inquiryIdxArray == ""){
+                alert("삭제할 항목을 선택해주세요.");
+                return false;
+            }
+
+            var confirmAlert = confirm('정말로 삭제하시겠습니까?');
+            if(confirmAlert){
+
+                $.ajax({
+                    url : "/cscenter/voclist",
+                    type : 'DELETE',
+                    dataType : 'json',
+                    data : JSON.stringify(inquiryIdxArray),
+                    beforeSend : function(xhr){
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                    },
+                    complete:function(){
+                        location.reload();
+                    },
+                    contentType: 'application/json',
+                    error: function(request, status, error) {
+                   }
+               }).done(function(data){location.reload();
+               });
+            }
+        }
+
+
+
+	</script>
+</th:block>
+
+<div layout:fragment="content">
+    <th:block th:replace="fragments/search"></th:block>
+    <div class="container">
+        <div class="row" style="float: none; margin:100 auto;">
+            <div class="col-md-12" style="float: none; margin:0 auto;">
+                <table class="table">
+                    <tr>
+                        <td><input type="checkbox" id="allCheckBox" onclick="allChecked(this)"></td>
+                        <td>제목</td>
+                        <td>내용</td>
+                        <td>등록일</td>
+                        <td>작성자</td>
+                    </tr>
+                    <th:block th:each="Inquiry : ${InquiryList}">
+                        <tr>
+                            <td><input type="checkbox" class="chk" name="cchk" th:onclick="cchkClicked()" th:value="${Inquiry.id}"></td>
+                            <td><a th:href="'/cscenter/voclist/'+${Inquiry.id}" th:text="${Inquiry.title}"></a></td>
+                            <td th:text="${Inquiry.content}"></td>
+                            <td th:text="${#strings.substring(Inquiry.regTime,0,10)}"></td>
+                            <td th:text="${Inquiry.createdBy}"></td>
+                        </tr>
+                    </th:block>
+                </table>
+                <button class="btn btn-outline-secondary" th:onclick="inquiryDelete()">삭제</button>
+            </div>
+        </div>
+    </div>
+</div>
