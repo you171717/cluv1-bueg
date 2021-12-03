@@ -65,7 +65,7 @@ public class FAQController {
     admin이 question으로 faq 검색 결과 조회
     */
     @PostMapping(value = "/admin/cscenter/search")
-    public String adminsearch(FAQSearchDto faqSearchDto, Model model){
+    public String adminSearch(FAQSearchDto faqSearchDto, Model model){
         List<FAQDto> FAQDtoList=faqService.getSearchResult(faqSearchDto);
 
         //faq 검색 폼
