@@ -51,7 +51,7 @@ public class GiftController {
         model.addAttribute("itemSearchDto", itemSearchDto);
         model.addAttribute("maxPage", 5);
 
-        return "/gift/giftMain" ;
+        return "gift/giftMain" ;
     }
 
 

@@ -1,8 +1,10 @@
 package com.shop.service;
 
 import com.shop.dto.*;
+import com.shop.entity.Category;
 import com.shop.entity.Item;
 import com.shop.entity.ItemImg;
+import com.shop.repository.CategoryRepository;
 import com.shop.repository.ItemImgRepository;
 import com.shop.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
@@ -24,10 +26,17 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final ItemImgService itemImgService;
     private final ItemImgRepository itemImgRepository;
+    private final CategoryRepository categoryRepository;
 
     public Long saveItem(ItemFormDto itemFormDto, List<MultipartFile> itemImgFileList) throws Exception {
-        Item item = itemFormDto.createItem();
+
+        // 카테고리 정보 조회
+        Category category = categoryRepository.findByCateCode(itemFormDto.getCateCode());
+
+        // 상품 등록
+        Item item = Item.createItem(itemFormDto, category);
         itemRepository.save(item);
+
 
         for(int i = 0; i < itemImgFileList.size(); i++) {
             ItemImg itemImg = new ItemImg();

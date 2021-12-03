@@ -69,6 +69,17 @@
                     <option value="SOLD_OUT">품절</option>
                 </select>
             </div>
+<!--            상품 카테고리 필드-->
+            <div class="form-group">
+                <label>카테고리</label>
+                <select th:field="*{cateCode}" class="custom-select">
+                    <option value="1">레드</option>
+                    <option value="2">화이트</option>
+                    <option value="3">스파클링</option>
+                    <option value="4">로제</option>
+                    <option value="5">기타</option>
+                </select>
+            </div>
             <!-- 상품명 필드 -->
             <div class="input-group">
                 <div class="input-group-prepend">
