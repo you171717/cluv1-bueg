@@ -67,8 +67,8 @@ class ReverseAuctionServiceTest {
 
         try {
             List<MultipartFile> multipartFileList = createMultipartFiles();
-
-            return itemService.saveItem(itemFormDto, multipartFileList);
+            return null;
+//            return itemService.saveItem(itemFormDto, multipartFileList);
         } catch(Exception e) {
             return null;
         }

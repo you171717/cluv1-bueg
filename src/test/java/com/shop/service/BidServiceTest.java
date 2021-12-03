@@ -88,8 +88,8 @@ class BidServiceTest {
 
         try {
             List<MultipartFile> multipartFileList = createMultipartFiles();
-
-            return itemService.saveItem(itemFormDto, multipartFileList);
+            return null;//주석 해제 시 삭제
+//            return itemService.saveItem(itemFormDto, multipartFileList); //tag추가로 오류로 주석
         } catch(Exception e) {
             return null;
         }

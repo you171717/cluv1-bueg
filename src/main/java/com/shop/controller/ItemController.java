@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shop.dto.ItemFormDto;
 import com.shop.dto.ItemSearchDto;
 import com.shop.entity.Item;
+import com.shop.entity.Tag;
 import com.shop.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -19,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -36,7 +38,7 @@ public class ItemController {
     }
 
     @PostMapping(value = "/admin/item/new")
-    public String itemNew(@Valid ItemFormDto itemFormDto, BindingResult bindingResult, Model model, @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList) {
+    public String itemNew(@Valid ItemFormDto itemFormDto, BindingResult bindingResult, Model model, @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList, @RequestParam("tags[]") List<String> tags) {
         if(bindingResult.hasErrors()) {
             return "item/itemForm";
         }
@@ -48,7 +50,7 @@ public class ItemController {
         }
 
         try {
-            itemService.saveItem(itemFormDto, itemImgFileList);
+            itemService.saveItem(itemFormDto, itemImgFileList, tags);
         } catch(Exception e) {
             model.addAttribute("errorMessage", "상품 등록 중 에러가 발생하였습니다.");
 
@@ -62,6 +64,13 @@ public class ItemController {
     public String itemFormUpdate(@PathVariable("itemId") Long itemId, Model model) {
         try {
             ItemFormDto itemFormDto = itemService.getItemDtl(itemId);
+            List<Tag> tag = itemService.getTags(itemId);    //태그 조회
+            List<String> tagList = new ArrayList<>();
+
+            for(Tag t : tag) {
+                tagList.add(t.getId().toString());
+            }
+            model.addAttribute("tags",tagList);
 
             model.addAttribute("itemFormDto", itemFormDto);
         } catch(EntityNotFoundException e) {
@@ -75,7 +84,7 @@ public class ItemController {
     }
 
     @PostMapping(value = "/admin/item/{itemId}")
-    public String itemUpdate(@Valid ItemFormDto itemFormDto, BindingResult bindingResult, @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList, Model model) {
+    public String itemUpdate(@Valid ItemFormDto itemFormDto, BindingResult bindingResult, @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList, Model model,@RequestParam("tags[]") List<String> tags) {
         if(bindingResult.hasErrors()) {
             return "item/itemForm";
         }
@@ -87,7 +96,7 @@ public class ItemController {
         }
 
         try {
-            itemService.updateItem(itemFormDto, itemImgFileList);
+            itemService.updateItem(itemFormDto, itemImgFileList,tags);
         } catch(Exception e) {
             model.addAttribute("errorMessage", "상품 수정 중 에러가 발생하였습니다.");
 

@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 <head>
     <meta charset="UTF-8">
     <title>GS ITM Keyboard</title>
@@ -111,6 +112,7 @@
                     <input name="searchQuery" type="text" placeholder=" 검색어 입력...">
                     <button>검색</button>
                 </form>
+                <button onclick="location.href='/detailSearch'">태그검색</button>
             </div>
             <div class="header-submenu" sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
                 <div class="header-submenu-inner">
