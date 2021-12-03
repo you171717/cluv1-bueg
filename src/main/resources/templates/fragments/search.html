@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-<link th:href="@{/css/search.css}" rel="stylesheet">
 <body>
 
 <div class="container" style="background-color:#003156;" >
@@ -9,7 +8,6 @@
         <div class="col-2" style="float: none; margin:0 auto;">
             <h1 style="color:white;font-weight:900;">고객센터</h1>
         </div>
-
         <div class="col-4" style="float: none; margin:0 auto;">
             <div style="margin: 0.67em 0;">
                 <form action="/cscenter/search" role="form" method="post" th:object="${faqsearchdto}">
@@ -24,12 +22,11 @@
 </div>
 <div class="container">
     <div class="row">
-
-    <ul class="ul">
-        <li class="li"><a href="/cscenter">FAQ</a></li>
-        <li class="li"><a href="/cscenter/voc">1:1 문의</a></li>
-        <li class="li"><a href="/cscenter/voclist">문의 내역</a></li>
-    </ul>
+        <ul class="menu_ul">
+            <li class="menu_li"><a href="/cscenter">FAQ</a></li>
+            <li class="menu_li"><a href="/cscenter/voc">1:1 문의</a></li>
+            <li class="menu_li"><a href="/cscenter/voclist">문의 내역</a></li>
+        </ul>
     <br>
 </div>
 </div>
