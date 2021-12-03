@@ -3,11 +3,13 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layoutGlobal}">
 
-<th:block layout:fragment="css">
+<head>
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+	
+<th:block layout:fragment="css">
     <link th:href="@{/css/vocList.css}" rel="stylesheet">
-
     <style>
         td{
             overflow:hidden;
