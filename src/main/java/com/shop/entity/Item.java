@@ -19,11 +19,11 @@ public class Item extends BaseEntity {
     @Id
     @Column(name = "item_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id; // 상품 코드
+    private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cateCode")
-    private Category category;           // 카테고리 코드 조인
+    private Category category; // 카테고리 코드 조인
 
     @Column(nullable = false, length = 50)
     private String itemNm; // 상품명

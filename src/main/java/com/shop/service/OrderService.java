@@ -52,9 +52,10 @@ public class OrderService {
 
     // 선물하기
     public Long gift(OrderDto orderDto, String email) {
-        Item item = itemRepository.findById(orderDto.getItemId())              // 주문 상품 조회
+        Item item = itemRepository.findById(orderDto.getItemId())
                 .orElseThrow(EntityNotFoundException::new);
-        Member member = memberRepository.findByEmail(email);                  // 이메일 정보를 이용해 회원 정보 조회
+        // 이메일 정보를 이용해 회원 정보 조회
+        Member member = memberRepository.findByEmail(email);
 
         List<OrderItem> orderItemList = new ArrayList<>();
 
@@ -66,7 +67,7 @@ public class OrderService {
         // 회원 정보와 주문할 상품 리스트 정보를 이용하여 주문 엔티티 생성 (상태 : 선물)
         Order order = Order.createOrder(member, orderItemList , GiftStatus.GIFT,
                 orderDto.getAddress(), orderDto.getAddressDetail());
-        orderRepository.save(order);                                 // 생성한 주문 엔티티 저장
+        orderRepository.save(order);
 
         return order.getId();
     }
@@ -109,7 +110,7 @@ public class OrderService {
 
         // 주문 리스트 순회
         for(Order order : orders){
-            OrderHistDto orderHistDto = new OrderHistDto(order);  // 구매 이력 페이지에 전달할 DTO 생성
+            OrderHistDto orderHistDto = new OrderHistDto(order);
             List<OrderItem> orderItems = order.getOrderItems();
             for(OrderItem orderItem : orderItems) {
                 ItemImg itemImg = itemImgRepository.findByItemIdAndRepImgYn(orderItem.getItem().getId(), "Y");
@@ -119,7 +120,7 @@ public class OrderService {
             }
             orderHistDtos.add(orderHistDto);
         }
-        return new PageImpl<OrderHistDto>(orderHistDtos, pageable, totalCount);   // 페이지 구현 객체 생성, 반환
+        return new PageImpl<OrderHistDto>(orderHistDtos, pageable, totalCount);
     }
 
     @Transactional(readOnly = true)

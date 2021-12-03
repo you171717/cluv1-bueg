@@ -44,7 +44,7 @@ dependencies {
 	implementation group: 'com.querydsl', name: 'querydsl-apt', version: querydslVersion
 	implementation group: 'com.querydsl', name: 'querydsl-core', version: querydslVersion
 
-	// coolsmslib
+	// coolsms
 	implementation group: 'net.nurigo', name: 'javaSDK', version: '2.2'
 
 	annotationProcessor group: 'com.querydsl', name: 'querydsl-apt', version: querydslVersion

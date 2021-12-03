@@ -67,23 +67,28 @@ public class GiftController {
 
         HashMap<String, String> params = new HashMap<String, String>();
 
-        String email = principal.getName();           // principal 객체에서 현재 로그인한 회원의 이메일 정보 조회
+        String email = principal.getName();
         Long orderId;
 
-        params.put("to", "010-5363-6153"); // 수신번호
-        params.put("from", orderDto.getFrom()); // 발신번호
-        params.put("text", orderDto.getText()); // 문자내용
-        params.put("type", "sms"); // 문자 타입
-        params.put("app_version", "JAVA SDK v2.2"); // application name and version
+        // 수신번호
+        params.put("to", "010-5363-6153");
+        // 발신번호
+        params.put("from", orderDto.getFrom());
+        // 문자내용
+        params.put("text", orderDto.getText());
+        // 문자 타입
+        params.put("type", "sms");
+        // application name and version
+        params.put("app_version", "JAVA SDK v2.2");
 
         System.out.println(params);
 
-//        JSONObject result = coolsms.send(params); // 보내기&전송결과받기
+        // 보내기&전송결과받기
+//        JSONObject result = coolsms.send(params);
 
-//        log.info("문자 전송 결과" + result);
         log.info("문자 전송 완료");
 
-        return new ResponseEntity<Long>(HttpStatus.OK);    // HTTP 응답 상태 코드 반환
+        return new ResponseEntity<Long>(HttpStatus.OK);
     }
 
 
@@ -110,7 +115,7 @@ public class GiftController {
         }
 
         Long memberId;
-        String email = principal.getName();           // principal 객체에서
+        String email = principal.getName();
         log.info("AddressDto ===> " + addressDto.toString());
         memberId = addressService.address(addressDto,email);
 
@@ -122,27 +127,30 @@ public class GiftController {
     public ResponseEntity gift(@RequestBody @Valid OrderDto orderDto,
                         BindingResult bindingResult, Principal principal) {
 
-        if (bindingResult.hasErrors()) {                // orderDTO 객체에 데이터 바인딩시 에러 검사
+        if (bindingResult.hasErrors()) {
             StringBuilder sb = new StringBuilder();
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
             for (FieldError fieldError : fieldErrors) {
                 sb.append(fieldError.getDefaultMessage());
             }
+
+            // 에러 정보를 ResponseEntity 객체에 담아서 반환
             return new ResponseEntity<String>(sb.toString(),
-                    HttpStatus.BAD_REQUEST);           // 에러 정보를 ResponseEntity 객체에 담아서 반환
+                    HttpStatus.BAD_REQUEST);
         }
 
-        String email = principal.getName();           // principal 객체에서 현재 로그인한 회원의 이메일 정보 조회
+        String email = principal.getName();
         Long orderId;
 
+        // 주문 로직 호출
         try {
-            orderId = orderService.gift(orderDto, email);          // 주문 로직 호출
+            orderId = orderService.gift(orderDto, email);
             log.info("orderDto : " + orderDto.toString());
         } catch (Exception e) {
             return new ResponseEntity<String>(e.getMessage(),
                     HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<Long>(orderId, HttpStatus.OK);    // HTTP 응답 상태 코드 반환
+        return new ResponseEntity<Long>(orderId, HttpStatus.OK);
     }
 }

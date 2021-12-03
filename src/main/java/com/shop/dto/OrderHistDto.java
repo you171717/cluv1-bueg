@@ -20,9 +20,9 @@ public class OrderHistDto {
 
     private OrderStatus orderStatus;
 
-    private String orderAddress;           // 배송지
+    private String orderAddress;
 
-    private GiftStatus giftStatus;    //  구매/선물 상태
+    private GiftStatus giftStatus;
 
     private List<OrderItemDto> orderItemDtoList = new ArrayList<>();
 

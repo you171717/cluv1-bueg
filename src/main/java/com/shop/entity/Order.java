@@ -30,10 +30,10 @@ public class Order extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    private String address;            // 주문 배송지
+    private String address; // 주문 배송지
 
     @Enumerated(EnumType.STRING)
-    private GiftStatus giftStatus;      // 구매/선물 상태
+    private GiftStatus giftStatus; // 구매/선물 상태
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<OrderItem> orderItems = new ArrayList<>();
@@ -54,7 +54,7 @@ public class Order extends BaseEntity {
 
         order.setOrderStatus(OrderStatus.ORDER);
         order.setOrderDate(LocalDateTime.now());
-        order.setGiftStatus(giftStatus);                // 구매/선물 상태 받아옴
+        order.setGiftStatus(giftStatus);
         order.setAddress(address + " " +addressDetail);
 
 
