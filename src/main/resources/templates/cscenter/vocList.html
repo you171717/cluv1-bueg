@@ -2,11 +2,12 @@
 <html xmlns:th="http://www.thymeleaf.org"
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layoutGlobal}">
-<head>
+
+<th:block layout:fragment="css">
     <meta name="_csrf" th:content="${_csrf.token}"/>
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
-<link th:href="@{/css/vocList.css}" rel="stylesheet">
-<th:block layout:fragment="css">
+    <link th:href="@{/css/vocList.css}" rel="stylesheet">
+
     <style>
         td{
             overflow:hidden;
@@ -18,6 +19,7 @@
         }
     </style>
 </th:block>
+
 <th:block layout:fragment="script">
     <script th:inline="javascript">
 
@@ -94,7 +96,6 @@
         }
 	</script>
 </th:block>
-</head>
 
 <div layout:fragment="content">
     <th:block th:replace="fragments/search"></th:block>
