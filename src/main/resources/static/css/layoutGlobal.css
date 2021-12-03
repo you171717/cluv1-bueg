@@ -457,7 +457,6 @@ a, a:hover {
     width: 100px;
 }
 
-
 .pagination {
 	margin: 20px 0 10px;
 }
@@ -488,4 +487,41 @@ a, a:hover {
 	margin: 0 0 10px;
 	float: right;
 	font-size: 16px;
+}
+
+.search_input{
+    font-size:16px;
+    height :50px;
+    width:300px;
+    float:left;
+    margin-right:0px;
+}
+
+.search_btn{
+    width:50px;
+    height:50px;
+    border:0px;
+    background-color:#acb4c4 ;
+    outline:none;
+    color:black;
+}
+
+.menu_ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+}
+
+.menu_li {
+    float: left;
+}
+
+.menu_li a {
+    display: block;
+    text-align: center;
+    padding: 16px;
+    text-decoration: none;
+    color: black;
+    font-weight:900;
 }
