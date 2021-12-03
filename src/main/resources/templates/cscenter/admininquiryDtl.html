@@ -6,26 +6,23 @@
 <div layout:fragment="content">
     <th:block th:replace="fragments/adminsearch"></th:block>
     <div class="container">
-    <div class="row" style="float: none; margin:100 auto;">
-
-        <div class="col-md-12" style="float: none; margin:0 auto;border:1px solid #d3d3d3;padding: 35px 35px 35px 35px">
-            <h1 th:text="${inquiry.title}"></h1>
-            <div>
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar" viewBox="0 0 16 16">
-                    <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"></path>
-                </svg>
-                <th:block th:text="${#strings.substring(inquiry.regTime,0,10)}"></th:block>
+        <div class="row" style="float: none; margin:100 auto;">
+            <div class="col-md-12" style="float: none; margin:0 auto;border:1px solid #d3d3d3;padding: 35px 35px 35px 35px">
+                <h1 th:text="${inquiry.title}"></h1>
+                <div>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-calendar" viewBox="0 0 16 16">
+                        <path d="M3.5 0a.5.5 0 0 1 .5.5V1h8V.5a.5.5 0 0 1 1 0V1h1a2 2 0 0 1 2 2v11a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V3a2 2 0 0 1 2-2h1V.5a.5.5 0 0 1 .5-.5zM1 4v10a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1V4H1z"></path>
+                    </svg>
+                    <th:block th:text="${#strings.substring(inquiry.regTime,0,10)}"></th:block>
+                </div>
+                <hr>
+                <br>
+                <h3 th:text="${inquiry.content}"></h3>
             </div>
-            <hr>
-            <br>
-            <h3 th:text="${inquiry.content}"></h3>
-        </div>
+            <button class="btn btn-outline-secondary" style="margin-top:15px;" onclick="window.history.go(-1); return false;">목록</button>
 
-        <button class="btn btn-outline-secondary" style="margin-top:15px;" onclick="window.history.go(-1); return false;">목록</button>
-
-
-        <div class="col-md-12" style="float: none; margin:0 auto;">
-            <hr>
+            <div class="col-md-12" style="float: none; margin:0 auto;">
+                <hr>
                 <th:block th:each="commentlist : ${commentlist}">
                     <div style="margin-bottom:10px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-circle" viewBox="0 0 16 16">
@@ -37,24 +34,20 @@
                     </div>
                     <h5 th:text="${commentlist.content}"></h5>
                     <br>
-
                 </th:block>
                 <hr>
                 <br>
 
                 <form role="form" method="post" th:object="${comment}">
                     <div class="form-group">
-
-                        <input type="text" th:field="*{content}" class="form-control" placeholder="댓글을 입력해주세요"
-                               style="width:85%;display:inline;">
+                        <input type="text" th:field="*{content}" class="form-control" placeholder="댓글을 입력해주세요" style="width:85%;display:inline;">
                         <button type="submit" class="btn btn-primary">등록</button>
                         <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                     </div>
                 </form>
             </div>
-
+        </div>
     </div>
-</div>
 </div>
 
 </html>

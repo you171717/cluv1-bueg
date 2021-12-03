@@ -19,26 +19,24 @@
 <div layout:fragment="content">
     <th:block th:replace="fragments/adminsearch"></th:block>
     <div class="container">
-    <div class="row" style="float: none; margin:100 auto;">
-
-        <div class="col-md-12" style="float: none; margin:0 auto;">
-            <table class="table">
-                <tr>
-                    <td>제목</td>
-                    <td>등록일</td>
-                    <td>작성자</td>
-                </tr>
-                <th:block th:each="Inquiry : ${InquiryList}">
+        <div class="row" style="float: none; margin:100 auto;">
+            <div class="col-md-12" style="float: none; margin:0 auto;">
+                <table class="table">
                     <tr>
-                        <td><a th:href="'/admin/cscenter/voclist/'+${Inquiry.id}" th:text="${Inquiry.title}"></a></td>
-                        <td th:text="${#strings.substring(Inquiry.regTime,0,10)}"></td>
-                        <td th:text="${Inquiry.createdBy}"></td>
+                        <td>제목</td>
+                        <td>등록일</td>
+                        <td>작성자</td>
                     </tr>
-                </th:block>
-            </table>
+                    <th:block th:each="Inquiry : ${InquiryList}">
+                        <tr>
+                            <td><a th:href="'/admin/cscenter/voclist/'+${Inquiry.id}" th:text="${Inquiry.title}"></a></td>
+                            <td th:text="${#strings.substring(Inquiry.regTime,0,10)}"></td>
+                            <td th:text="${Inquiry.createdBy}"></td>
+                        </tr>
+                    </th:block>
+                </table>
+            </div>
         </div>
     </div>
 </div>
-
-
-</div>
+</html>
