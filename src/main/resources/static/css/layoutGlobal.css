@@ -489,3 +489,47 @@ a, a:hover {
 	float: right;
 	font-size: 16px;
 }
+
+/*best item style*/
+ol, ul, li{
+	list-style: none;
+}
+
+.footer{
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	width: 100%;
+	padding: 15px 0;
+	text-align: center;
+}
+
+.content{
+	margin-bottom: 100px;
+	margin-top: 50px;
+	margin-left: 200px;
+	margin-right: 200px;
+}
+
+/*
+*BestMenu Dropdown Style
+*/
+.dropdown{
+	position:relative;
+	margin:0 auto;
+	padding: 0%;
+}
+
+ul.nav>li>div>ul>li a{
+	color: aliceblue;
+}
+ul.nav>li .subMenu {
+	display: none;
+	z-index: 1;
+	position: fixed;
+	background-color: grey;
+}
+ul.nav>li:hover div.subMenu {
+	display: block;
+}
