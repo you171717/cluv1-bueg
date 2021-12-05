@@ -51,7 +51,7 @@ public class SmsService {
         Item item = itemRepository.findById(orderDto.getItemId()).
                 orElseThrow(EntityNotFoundException::new);
 
-        String text = "[GS SHOP] 주문 상품 내역\n" + "주문 상품 : " + item.getItemNm() + "\n주문 수량 : " + orderDto.getCount() +
+        String text = "[Bueg] 주문 상품 내역\n" + "주문 상품 : " + item.getItemNm() + "\n주문 수량 : " + orderDto.getCount() +
                 "\n주문 금액 : " + item.getPrice() * orderDto.getCount() + "원";
         sendSms(phone, text);
 
@@ -63,10 +63,10 @@ public class SmsService {
 
         Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
 
-        String smsText = "[GS SHOP]주문상품 내역\n";
+        String smsText = "[Bueg]주문상품 내역\n";
 
         StringBuffer sb = new StringBuffer(smsText);
-        //TODO. 장바구니 데이터 불러오기
+        //장바구니 데이터 불러오기
         for(OrderItem orderItem : order.getOrderItems()) {
             sb.append(orderItem.getItem().getItemNm());
             sb.append("(");

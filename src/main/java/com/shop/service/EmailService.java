@@ -1,6 +1,5 @@
 package com.shop.service;
 
-import com.shop.dto.CartOrderDto;
 import com.shop.dto.MemberFormDto;
 import com.shop.dto.OrderDto;
 import com.shop.entity.*;
@@ -18,8 +17,6 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpSession;
-import javax.validation.constraints.Email;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -52,8 +49,8 @@ public class EmailService {
 
         httpSession.setAttribute("authCode", code);
 
-        String subject = "인증코드입니다.";
-        String text = "인증코드는 " + code + "입니다.";
+        String subject = "[Bueg] 인증코드입니다.";
+        String text = "이메일 인증코드는 " + code + "입니다.";
 
         sendEmail(email, subject, text);
     }
@@ -62,7 +59,7 @@ public class EmailService {
         String subject = "주문 상품 내역입니다.";
         Item item = itemRepository.findById(orderDto.getItemId()).
                 orElseThrow(EntityNotFoundException::new);
-        String text = "[GS SHOP] 주문 상품 내역입니다.\n" + "주문 상품 : " + item.getItemNm() + "\n주문 수량 : " + orderDto.getCount() +
+        String text = "[Bueg] 주문 상품 내역입니다.\n" + "주문 상품 : " + item.getItemNm() + "\n주문 수량 : " + orderDto.getCount() +
                 "\n주문 금액 : " + item.getPrice() * orderDto.getCount() + "원 입니다.\n";
         sendEmail(email, subject, text);
 
@@ -76,12 +73,11 @@ public class EmailService {
         Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
 
         String subject = "주문 상품 내역입니다.";
-        String emailText = "[GS SHOP] 주문 상품 내역입니다.\n\n";  //String Buffer를 사용하기 위한 초기 text값
+        String emailText = "[Bueg] 주문 상품 내역입니다.\n\n";  //String Buffer를 사용하기 위한 초기 text값
 
-        //TODO. String Buffer와 String Builder 활용하여 바꿔보기
         StringBuffer sb = new StringBuffer(emailText);
 
-        //TODO. 장바구니 데이터 불러오기
+        //장바구니 데이터 불러오기
         for(OrderItem orderItem : order.getOrderItems()) {
             sb.append(orderItem.getItem().getItemNm());
             sb.append("(");
@@ -109,7 +105,7 @@ public class EmailService {
         try {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
             mimeMessageHelper.setTo(email); // 메일 수신자
-            mimeMessageHelper.setSubject("[GS SHOP] 비밀번호를 변경해주세요"); // 메일 제목
+            mimeMessageHelper.setSubject("[Bueg] 비밀번호를 변경해주세요"); // 메일 제목
             mimeMessageHelper.setText(
                     "<a href='http://localhost:8080/members/updatePassword?code=" + authTokenService.createToken(email).getCode() +
                             "&email="+email+"'>비밀번호 변경페이지</a>", true); // 메일 본문 내용, HTML 여부
