@@ -4,10 +4,7 @@ import com.shop.dto.OrderDto;
 import com.shop.dto.OrderHistDto;
 import com.shop.dto.OrderItemDto;
 import com.shop.entity.*;
-import com.shop.repository.ItemImgRepository;
-import com.shop.repository.ItemRepository;
-import com.shop.repository.MemberRepository;
-import com.shop.repository.OrderRepository;
+import com.shop.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -29,11 +26,19 @@ public class OrderService {
     private final ItemImgRepository itemImgRepository;
     private final MemberRepository memberRepository;
     private final OrderRepository orderRepository;
+    private final ItemTagRepository itemTagRepository;
 
     public Long order(OrderDto orderDto, String email) {
         Item item = itemRepository.findById(orderDto.getItemId()).orElseThrow(EntityNotFoundException::new);
 
         Member member = memberRepository.findByEmail(email);
+
+        //Tag별 누적 판매 증가
+        List<ItemTag> itemTag = itemTagRepository.findByItem_Id(item.getId());
+
+        for(ItemTag itemtag : itemTag) {
+            itemtag.getTag().addTotalSell();
+        }
 
         List<OrderItem> orderItemList = new ArrayList<>();
 

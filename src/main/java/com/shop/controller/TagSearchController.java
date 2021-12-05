@@ -25,7 +25,7 @@ import java.util.TreeMap;
 @Controller
 @RequiredArgsConstructor
 @Slf4j
-public class SearchController {
+public class TagSearchController {
 
     private final ItemService itemService;
     private final TagService tagService;
@@ -47,10 +47,10 @@ public class SearchController {
         model.addAttribute("itemSearchDto", itemSearchDto);
         model.addAttribute("maxPage", 5);
 
-        return "search/dtlSearch";
+        return "tagSearch/dtlSearch";
     }
 
-    @GetMapping(value = "/detailSearch/admin/showTagSell")
+    @GetMapping(value = "/admin/showTagSell")
     public String showTagSell(Model model) throws JsonProcessingException {
         Map<String, Integer> graphData = new TreeMap<>();
         List<Tag> tags = tagService.getTagList();
@@ -61,34 +61,13 @@ public class SearchController {
         convertMapToJson(graphData);
         log.error(graphData.toString());
         model.addAttribute("chartData", graphData);
-        return "search/showSellDemo";
+        return "showTagSell";
     }
-//    public JSONObject convertMapToJson(Map<String, Integer> map) {
-//
-//        JSONObject json = new JSONObject();
-//        String key = "";
-//        Object value = null;
-//        for(Map.Entry<String, Integer> entry : map.entrySet()) {
-//            key = entry.getKey();
-//            value = entry.getValue();
-//            json.put(key,value);
-//        }
-//        System.out.println("맵에 저장된 키들의 집합 : " + json.keySet());
-//
-//        return json;
-//    }
-    public ObjectMapper convertMapToJson(Map<String, Integer> map) throws JsonProcessingException {
+
+    public String convertMapToJson(Map<String, Integer> map) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
-        String key = "";
-        Object value = null;
-        for (Map.Entry<String, Integer> entry : map.entrySet()){
-            key = entry.getKey();
-            value = entry.getValue();
-            objectMapper.writeValueAsString(key);
-            objectMapper.writeValueAsString(value);
-        }
-//        System.out.println("맵에 저장된 집합 : " + objectMapper.readValueA);
-        return objectMapper;
+
+        return objectMapper.writeValueAsString(map);
     }
 
 

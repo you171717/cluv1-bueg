@@ -71,33 +71,6 @@
             location.href = "/detailSearch?filter=" + encodeURIComponent(filterdArray.join(','));
         }
 
-        function uploadArray() { //사용 안함
-            var token = $("meta[name='_csrf']").attr("content");
-            var header = $("meta[name='_csrf_header']").attr("content");
-            var url = "/detailSearch";
-
-            $.ajax({
-                url: url,
-                type: "POST",
-                beforeSend: function (xhr) {
-                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
-                    xhr.setRequestHeader(header, token);
-                },
-                cache: false,
-                traditional: true,
-                dataType: "json",
-                data: {
-                    "filteredArray": filterdArray
-                },
-                success: function (result) {
-                    alert("성공");
-                    console.log("넘어간 filter========>" + filterdArray);
-                },
-                error: function (error) {
-                    alert('실패');
-                }
-            });
-        }
     </script>
 </th:block>
 
@@ -184,8 +157,7 @@
 </th:block>
 <div layout:fragment="content">
     <h1 style="float: left">태그검색 페이지</h1>
-    <span style="float: right" sec:authorize="hasAnyAuthority('ROLE_ADMIN')"
-          onclick="location.href='/detailSearch/admin/showTagSell'">태그 판매량 조회</span><br>
+    <br>
     <div class="tag_filter" style="margin-top: 50px;">
         <div id="filter_select" style="width: 100%">
             <button class="filter_button" name="거실" id="tag_1" onclick="add_Filter(this)">
@@ -212,12 +184,6 @@
             <button class="filter_button" name="겨울" id="tag_8" onclick="add_Filter(this)">
                 <span>✔  </span>겨울
             </button>
-            <!--            <button class="filter_button">-->
-            <!--                <span>✔  </span>빈값-->
-            <!--            </button>-->
-            <!--            <button class="filter_button">-->
-            <!--                <span>✔  </span>빈값-->
-            <!--            </button>-->
         </div>
         <div style="margin-top: 20px;margin-bottom: 20px;">
             <div class="filter_bar_container" style="align : center;">
