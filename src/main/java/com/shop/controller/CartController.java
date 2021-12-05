@@ -3,7 +3,10 @@ package com.shop.controller;
 import com.shop.dto.CartDetailDto;
 import com.shop.dto.CartItemDto;
 import com.shop.dto.CartOrderDto;
+import com.shop.repository.MemberRepository;
 import com.shop.service.CartService;
+import com.shop.service.EmailService;
+import com.shop.service.SmsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +25,9 @@ import java.util.List;
 public class CartController {
 
     private final CartService cartService;
+    private final EmailService emailService;
+    private final SmsService smsService;
+    private final MemberRepository memberRepository;
 
     @PostMapping(value = "/cart")
     public @ResponseBody ResponseEntity order(@RequestBody @Valid CartItemDto cartItemDto, BindingResult bindingResult, Principal principal) {
@@ -98,6 +104,17 @@ public class CartController {
         }
 
         Long orderId = cartService.orderCartItem(cartOrderDtoList, principal.getName());
+
+        //알림 전송할 이메일, 휴대폰 정보, 알림 전송 방식 가져오기
+        String email = principal.getName();
+        String phone = memberRepository.findByEmail(email).getPhone();
+        String notice = cartOrderDto.getNotice();
+
+        if(notice.equals("email")){
+            emailService.sendCartOrderEmail(email, orderId);
+        } else if(notice.equals("sms")){
+            smsService.sendCartOrderSms(phone, orderId);
+        }
 
         return new ResponseEntity<Long>(orderId, HttpStatus.OK);
     }

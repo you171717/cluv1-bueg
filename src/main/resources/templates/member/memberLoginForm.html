@@ -27,6 +27,7 @@
             <button type="button" class="btn btn-success" onclick="location.href='/oauth2/login/naver'">네이버로 로그인</button>
             <button type="button" class="btn btn-primary" onclick="location.href='/oauth2/login/google'">구글로 로그인</button>
             <button type="button" class="btn btn-warning" onclick="location.href='/oauth2/login/kakao'">카카오로 로그인</button>
+            <a th:href="@{/members/findPassword}">비밀번호 찾기</a>
             <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
         </form>
     </div>

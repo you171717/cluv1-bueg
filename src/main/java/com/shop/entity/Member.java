@@ -39,6 +39,8 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    private String phone;  //SMS 알림 전송받을 휴대폰 번호 추가
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "member")
     private OAuth2Member oAuth2Member;
 
@@ -50,6 +52,7 @@ public class Member extends BaseEntity {
         String password = passwordEncoder.encode(memberFormDto.getPassword());
         member.setPassword(password);
         member.setRole(Role.USER);
+        member.setPhone(memberFormDto.getPhone());
         member.setRefundBank(memberFormDto.getRefundBank());
         member.setRefundAccount(memberFormDto.getRefundAccount());
         return member;

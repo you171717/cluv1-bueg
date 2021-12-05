@@ -18,4 +18,5 @@ public class OrderDto {
     @Max(value = 999, message = "최대 주문 수량은 999개 입니다.")
     private int count;
 
+    private String notice;  //알림 전송 방식 추가
 }

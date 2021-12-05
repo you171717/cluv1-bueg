@@ -37,7 +37,9 @@
                 var url = "/order";
                 var paramData = {
                     itemId: $("#itemId").val(),
-                    count: $("#count").val()
+                    count: $("#count").val(),
+                    notice : $('input[name="notice"]:checked').val()
+
                 };
 
                 var param = JSON.stringify(paramData);
@@ -176,6 +178,11 @@
                 <div th:if="${item.itemSellStatus == T(com.shop.constant.ItemSellStatus).SELL}" class="text-right">
                     <button type="button" class="btn btn-light border border-primary btn-lg" onclick="addCart()">장바구니 담기</button>
                     <button type="button" class="btn btn-primary btn-lg" onclick="order()">주문하기</button>
+                </div>
+                <!--알림 전송 방식 라디오 버튼-->
+                <div style="font-size: 20px; text-align: right">
+                    <input type="radio" name="notice" value="email" checked="checked">Email
+                    <input type="radio" name="notice" value="sms">SMS
                 </div>
                 <div th:unless="${item.itemSellStatus == T(com.shop.constant.ItemSellStatus).SELL}" class="text-right">
                     <button type="button" class="btn btn-danger btn-lg">품절</button>
