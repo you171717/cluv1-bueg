@@ -1,8 +1,6 @@
 package com.shop.service;
 
-import com.shop.dto.ItemImgDto;
-import com.shop.dto.UsedItemFormDto;
-import com.shop.dto.UsedItemImgDto;
+import com.shop.dto.*;
 import com.shop.entity.UsedItem;
 import com.shop.entity.UsedItemImg;
 import com.shop.repository.UsedItemImgRepository;
@@ -57,30 +55,30 @@ public class UsedItemService {
             itemImgDtoList.add(usedItemImgDto);
         }
 
-        UsedItem UsedItem = UsedItemRepository.findById(itemId)
+        UsedItem usedItem = usedItemRepository.findById(itemId)
                 .orElseThrow(EntityNotFoundException::new);
-        ItemFormDto itemFormDto = ItemFormDto.of(item);
-        itemFormDto.setItemImgDtoList(itemImgDtoList);
-        return itemFormDto;
+        UsedItemFormDto usedItemFormDto = UsedItemFormDto.of(usedItem);
+        usedItemFormDto.setUsedItemImgDtoList(itemImgDtoList);
+        return usedItemFormDto;
     }
 
-    public Long updateItem(ItemFormDto itemFormDto, List<MultipartFile> itemImgFileList) throws Exception {
+    public Long updateItem(UsedItemFormDto usedItemFormDto, List<MultipartFile> itemImgFileList) throws Exception {
 
         //상품 수정
-        Item item = itemRepository.findById(itemFormDto.getId())
+        UsedItem usedItem = usedItemRepository.findById(usedItemFormDto.getId())
                 .orElseThrow(EntityNotFoundException::new);
-        item.updateItem(itemFormDto);
+        usedItem.updateItem(usedItemFormDto);
 
-        List<Long> itemImgIds = itemFormDto.getItemImgIds();
+        List<Long> itemImgIds = usedItemFormDto.getItemImgIds();
         //이미지 등록
         for(int i=0;i<itemImgFileList.size();i++){
-            itemImgService.updateItemImg(itemImgIds.get(i), itemImgFileList.get(i));
+            usedItemImgService.updateItemImg(itemImgIds.get(i), itemImgFileList.get(i));
         }
 
-        return item.getId();
+        return usedItem.getId();
     }
 
     @Transactional(readOnly = true)
-    public Page<Item> getAdminItemPage(ItemSearchDto itemSearchDto, Pageable pageable){
-        return itemRepository.getAdminItemPage(itemSearchDto, pageable);
+    public Page<UsedItemDto> getUsedItemPage(UsedItemSearchDto usedItemSearchDto, Pageable pageable){
+        return usedItemRepository.getUsedItemPage (usedItemSearchDto, pageable);
     }

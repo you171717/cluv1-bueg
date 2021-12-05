@@ -1,6 +1,8 @@
 package com.shop.entity;
 
 import com.shop.constant.ItemSellStatus;
+import com.shop.constant.UsedItemSellStatus;
+import com.shop.dto.UsedItemFormDto;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
@@ -30,13 +32,20 @@ public class UsedItem extends BaseEntity{
     @Column(nullable = false)
     private String detail;  // 중고상품 상세설명
 
-    @Enumerated(EnumType.STRING) // SELL(판매중) , SOLD_OUT(거래완료)
-    private ItemSellStatus itemSellStatus; // 중고상품판매상태
+    @Enumerated(EnumType.STRING) // SELL(판매중) , SOLD_OUT(거래완료) , REZ(예약중)
+    private UsedItemSellStatus usedItemSellStatus; // 중고상품판매상태
 
-    @Column(name = "start_day")
     private LocalDateTime startDay;         // 게시글 게시일 컬럼
 
-    @Column(name = "end_day")
     private LocalDateTime endDay;           // 게시글 마감일 컬럼
+
+    public void updateItem(UsedItemFormDto usedItemFormDto) {
+        this.itemName = usedItemFormDto.getItemNm();
+        this.price = usedItemFormDto.getPrice();
+        this.detail = usedItemFormDto.getItemDetail();
+        this.usedItemSellStatus = usedItemFormDto.getUsedItemSellStatus();
+        this.startDay = usedItemFormDto.getStartDay();
+        this.endDay = usedItemFormDto.getEndDay();
+    }
 
 }

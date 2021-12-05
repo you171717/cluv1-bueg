@@ -1,16 +1,20 @@
 package com.shop.dto;
 
 import com.shop.constant.ItemSellStatus;
-import com.shop.entity.Item;
+import com.shop.constant.UsedItemSellStatus;
 import com.shop.entity.UsedItem;
+import lombok.Getter;
+import lombok.Setter;
 import org.modelmapper.ModelMapper;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+@Getter @Setter
 public class UsedItemFormDto {
     private Long id;
 
@@ -26,13 +30,13 @@ public class UsedItemFormDto {
     @NotNull(message = "재고는 필수 입력 값입니다.")
     private Integer stockNumber;
 
-    private ItemSellStatus itemSellStatus;
+    private UsedItemSellStatus usedItemSellStatus;
 
-    private Date start_day;                         // 게시글 작성 날
+    private LocalDateTime startDay;                         // 게시글 작성 날
 
-    private Date end_day;                         // 게시글 끝 날
+    private LocalDateTime endDay;                         // 게시글 끝 날
 
-    private List<ItemImgDto> itemImgDtoList = new ArrayList<>();
+    private List<UsedItemImgDto> usedItemImgDtoList = new ArrayList<>();
 
     private List<Long> itemImgIds = new ArrayList<>();
 
@@ -42,7 +46,7 @@ public class UsedItemFormDto {
         return modelMapper.map(this, UsedItem.class);
     }
 
-    public static UsedItemFormDto of(Item item){
-        return modelMapper.map(item,UsedItemFormDto.class);
+    public static UsedItemFormDto of(UsedItem usedItem){
+        return modelMapper.map(usedItem,UsedItemFormDto.class);
     }
 }
