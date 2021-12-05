@@ -45,7 +45,6 @@ public class OrderHistDto {
         }
 
         this.returnStatus = order.getReturnStatus();
-
     }
 
     public void addOrderItemDto(OrderItemDto orderItemDto) {
