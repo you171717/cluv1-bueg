@@ -65,7 +65,6 @@ public class EmailService {
 
         EmailNotice emailNotice = new EmailNotice();
         emailNoticeRepository.save(emailNotice);
-        System.out.println("============"+emailNoticeRepository.count());
     }
     //장바구니 주문 시 이메일 전송 메소드
     public void sendCartOrderEmail(String email, Long orderId){

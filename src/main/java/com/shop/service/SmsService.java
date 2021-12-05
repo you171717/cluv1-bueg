@@ -19,7 +19,6 @@ import java.util.HashMap;
 @RequiredArgsConstructor
 public class SmsService {
 
-    private final AuthTokenService authTokenService;
     private final ItemRepository itemRepository;
     private final OrderRepository orderRepository;
     private final SmsNoticeRepository smsNoticeRepository;
@@ -39,10 +38,8 @@ public class SmsService {
 
         try {
             JSONObject obj = (JSONObject) coolsms.send(params);
-            System.out.println(obj.toString());
         } catch (CoolsmsException e) {
             System.out.println(e.getMessage());
-            System.out.println(e.getCode());
         }
     }
 
