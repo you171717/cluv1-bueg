@@ -24,4 +24,5 @@ public class ReviewImgDto {
     public static ReviewImgDto of(ReviewImg reviewImg){
         return modelMapper.map(reviewImg, ReviewImgDto.class);
     }
+
 }

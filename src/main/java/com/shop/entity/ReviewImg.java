@@ -25,9 +25,10 @@ public class ReviewImg extends BaseEntity {
     @JoinColumn(name = "order_item_id")
     private OrderItem orderItem;
 
-    public void updateReviewImg(String reviewOriImgName, String reviewImgName, String reviewImgUrl){
+    public void updateReviewImg(String reviewOriImgName, String reviewImgName, String reviewImgUrl) {
         this.reviewOriImgName = reviewOriImgName;
         this.reviewImgName = reviewImgName;
         this.reviewImgUrl = reviewImgUrl;
     }
+
 }

@@ -33,8 +33,7 @@ public class ReviewController {
     private final ReviewImgService reviewImgService;
 
     @GetMapping(value = {"/reviews", "reviews/{page}"})
-    public String reviews(@PathVariable("page") Optional<Integer> page, Principal principal, Model model){
-
+    public String reviews(@PathVariable("page") Optional<Integer> page, Principal principal, Model model) {
         Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 4);
         Page<OrderHistDto> ordersHistDtoList = orderService.getOrderList(principal.getName(), pageable);
 
@@ -46,35 +45,38 @@ public class ReviewController {
     }
 
     @GetMapping("/reviews/new/{itemId}")
-    public String reviewForm(@PathVariable("itemId") Long orderItemId ,Model model){
+    public String reviewForm(@PathVariable("itemId") Long orderItemId ,Model model) {
         ReviewFormDto reviewFormDto = new ReviewFormDto();
         reviewFormDto.setReviewId(orderItemId);
+
         model.addAttribute("reviewFormDto", reviewFormDto);
+
         return "review/reviewWrite";
     }
 
     @PostMapping("/reviews/new/{itemId}")
-    public String reviewNew(@PathVariable("itemId") Long orderItemId, @Valid ReviewFormDto reviewFormDto,
-                            BindingResult bindingResult, Model model, @RequestParam("reviewImgFile")List<MultipartFile> reviewImgFile) {
-
+    public String reviewNew(@PathVariable("itemId") Long orderItemId, @Valid ReviewFormDto reviewFormDto, BindingResult bindingResult, Model model, @RequestParam("reviewImgFile") List<MultipartFile> reviewImgFile) {
         if (bindingResult.hasErrors()) {
             return "review/reviewWrite";
         }
 
-        if ( reviewImgFile.get(0).isEmpty()) {
+        if (reviewImgFile.get(0).isEmpty()) {
             model.addAttribute("errorMessage", "사진 등록은 필수 입력 값입니다.");
+
             return "review/reviewWrite";
         }
 
-        if( reviewFormDto.getComment().length() == 0){
+        if( reviewFormDto.getComment().length() == 0) {
             model.addAttribute("errorMessage", "리뷰 작성은 필수 입력 값입니다.");
+
             return "review/reviewWrite";
         }
 
-        try{
+        try {
             reviewService.saveReview(orderItemId, reviewFormDto, reviewImgFile);
-        } catch (Exception e){
+        } catch (Exception e) {
             model.addAttribute("errorMessage", "리뷰 작성 중 에러가 발생하였습니다.");
+
             return "review/reviewWrite";
         }
 
@@ -82,14 +84,16 @@ public class ReviewController {
     }
 
     @GetMapping("/reviews/update/{itemId}")
-    public String reviewDtl(@PathVariable("itemId") Long orderItemId, Model model){
-        try{
+    public String reviewDtl(@PathVariable("itemId") Long orderItemId, Model model) {
+        try {
             ReviewFormDto reviewFormDto = reviewService.getReviewDtl(orderItemId);
             reviewFormDto.setReviewId(orderItemId);
+
             model.addAttribute("reviewFormDto", reviewFormDto);
-        } catch(EntityNotFoundException e){
+        } catch(EntityNotFoundException e) {
             model.addAttribute("errorMessage", "후기를 작성하지 않았습니다.");
             model.addAttribute("reviewFormDto", new ReviewFormDto());
+
             return "review/reviewWrite";
         }
 
@@ -97,21 +101,22 @@ public class ReviewController {
     }
 
     @PostMapping("/reviews/update/{itemId}")
-    public String reviewUpdate(@PathVariable("itemId") Long orderItemId, @Valid ReviewFormDto reviewFormDto,
-                               BindingResult bindingResult, @RequestParam("reviewImgFile")List<MultipartFile> reviewImgFile,Model model){
-        if(bindingResult.hasErrors()){
+    public String reviewUpdate(@PathVariable("itemId") Long orderItemId, @Valid ReviewFormDto reviewFormDto, BindingResult bindingResult, @RequestParam("reviewImgFile") List<MultipartFile> reviewImgFile, Model model) {
+        if(bindingResult.hasErrors()) {
             return "review/reviewWrite";
         }
 
-        if(reviewFormDto.getComment() == null){
+        if(reviewFormDto.getComment() == null) {
             model.addAttribute("errorMessage", "후기 작성은 필수 입력 값입니다.");
+
             return "review/reviewWrite";
         }
 
-        try{
+        try {
             reviewService.updateReview(orderItemId, reviewFormDto, reviewImgFile);
-        }catch (Exception e){
+        }catch (Exception e) {
             model.addAttribute("errorMessage", "리뷰 작성 중 에러가 발생하였습니다.");
+
             return "review/reviewWrite";
         }
 
@@ -119,12 +124,11 @@ public class ReviewController {
     }
 
     @GetMapping("/reviews/delete/{itemId}")
-    public String reviewDelete(@PathVariable("itemId") Long orderItemId, ReviewFormDto reviewFormDto){
+    public String reviewDelete(@PathVariable("itemId") Long orderItemId, ReviewFormDto reviewFormDto) {
         reviewService.deleteReview(orderItemId, reviewFormDto);
         reviewImgService.deleteReviewImg(orderItemId);
 
         return "redirect:/reviews";
     }
-
 
 }

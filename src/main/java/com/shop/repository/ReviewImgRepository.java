@@ -10,4 +10,5 @@ public interface ReviewImgRepository extends JpaRepository<ReviewImg, Long> {
     List<ReviewImg> findByOrderItemIdOrderByIdAsc(Long orderItemId);
 
     ReviewImg findByOrderItemId(Long orderItemId);
+
 }

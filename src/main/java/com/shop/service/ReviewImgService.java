@@ -60,4 +60,5 @@ public class ReviewImgService {
         ReviewImg reviewImg = reviewImgRepository.findByOrderItemId(orderItemId);
         reviewImgRepository.delete(reviewImg);
     }
+
 }

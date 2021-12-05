@@ -15,12 +15,12 @@ public class ReviewItemDto {
 
     private String comment;
 
+    private List<ReviewItemDto> reviewItemDtoList = new ArrayList<>();
+
     public ReviewItemDto(OrderItem orderItem){
         this.email = orderItem.getCreatedBy();
         this.comment = orderItem.getComment();
     }
-
-    private List<ReviewItemDto> reviewItemDtoList = new ArrayList<>();
 
     public void addReviewItemDto(ReviewItemDto reviewItemDto){
         reviewItemDtoList.add(reviewItemDto);
