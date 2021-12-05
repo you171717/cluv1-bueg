@@ -1,4 +1,3 @@
-//회원 정보 및 포인트 조회 클래스
 package com.shop.repository;
 
 import com.querydsl.core.QueryResults;
