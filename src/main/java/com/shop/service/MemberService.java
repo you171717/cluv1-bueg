@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,10 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
-
     private final OAuth2MemberRepository oAuth2MemberRepository;
-
-    private final PasswordEncoder passwordEncoder;
 
     public Member saveMember(Member member) {
         validateDuplicateMember(member);
@@ -71,7 +69,7 @@ public class MemberService implements UserDetailsService {
 
     //비밀번호 변경 메소드
     public void updatePassword(Long memberId, String password) {
-        memberRepository.updatePassword(memberId, passwordEncoder.encode(password));
+        memberRepository.updatePassword(memberId, new BCryptPasswordEncoder().encode(password));
     }
 
 }
