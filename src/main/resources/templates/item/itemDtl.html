@@ -19,15 +19,26 @@
                 $("#count").change( function(){
                     calculateToalPrice();
                 });
+                $("#amountPrice").change( function(){
+                    calculateToalPrice();
+                }); // 총결제금액 변환
             });
 
             // 수량을 변경하면 결제 금액을 (제품 가격 * 수량)으로 계산해서 바꿔주는 함수
             function calculateToalPrice(){
                 var count = $("#count").val();
                 var price = $("#price").val();
+                var inputPoint = $("#input_point").val(); // 사용 포인트 불러오기
                 var shippingFee = $("#shippingFee").val();
                 var totalPrice = price*count+parseInt(shippingFee);
                 $("#totalPrice").html(numberFormat(totalPrice));
+
+                //총 결제 금액 계산
+                $("#totalPrice").html(totalPrice + '원');
+                var amountPrice = totalPrice - inputPoint;
+
+                // 원 단위 붙여서 표시
+                $("#amountPrice").html(amountPrice + '원');
             }
 
             function order() {
@@ -37,7 +48,8 @@
                 var url = "/order";
                 var paramData = {
                     itemId: $("#itemId").val(),
-                    count: $("#count").val()
+                    count: $("#count").val(),
+                    usedPoint : $("#input_point").val() // 사용된 포인트 가져오기
                 };
 
                 var param = JSON.stringify(paramData);
@@ -172,6 +184,14 @@
                 <div class="text-right mgt-50">
                     <h5>결제 금액</h5>
                     <h3 name="totalPrice" id="totalPrice" class="font-weight-bold"></h3>
+                    <!--                포인트 html-->
+                    <h5>사용 포인트</h5>
+                    <input type="number" name="input_point" id="input_point" class="font-weight-bold"  value="0" min="0">
+                    <span class="font-weight-bold">점</span>
+                    <!--                최종 결제 금액-->
+                    <h5>최종 결제 금액</h5>
+                    <h3 name="amountPrice" id="amountPrice" class="font-weight-bold"></h3>
+
                 </div>
                 <div th:if="${item.itemSellStatus == T(com.shop.constant.ItemSellStatus).SELL}" class="text-right">
                     <button type="button" class="btn btn-light border border-primary btn-lg" onclick="addCart()">장바구니 담기</button>

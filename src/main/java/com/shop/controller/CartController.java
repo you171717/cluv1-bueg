@@ -4,6 +4,7 @@ import com.shop.dto.CartDetailDto;
 import com.shop.dto.CartItemDto;
 import com.shop.dto.CartOrderDto;
 import com.shop.service.CartService;
+import com.shop.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,7 @@ import java.util.List;
 public class CartController {
 
     private final CartService cartService;
+    private final MemberService memberService; // 멤버 서비스 선언
 
     @PostMapping(value = "/cart")
     public @ResponseBody ResponseEntity order(@RequestBody @Valid CartItemDto cartItemDto, BindingResult bindingResult, Principal principal) {
@@ -52,8 +54,11 @@ public class CartController {
 
     @GetMapping(value = "/cart")
     public String orderHist(Principal principal, Model model) {
-        List<CartDetailDto> cartDetailList = cartService.getCartList(principal.getName());
 
+        String email = principal.getName(); // 현재 로그인 중인 회원 pricipal
+
+        List<CartDetailDto> cartDetailList = cartService.getCartList(principal.getName());
+        model.addAttribute("inputPoint", memberService.findpointByEmail(email)); // 현재 로그인된 회원의 포인트 불러오기
         model.addAttribute("cartItems", cartDetailList);
 
         return "cart/cartList";
@@ -97,7 +102,7 @@ public class CartController {
             }
         }
 
-        Long orderId = cartService.orderCartItem(cartOrderDtoList, principal.getName());
+        Long orderId = cartService.orderCartItem(cartOrderDtoList, principal.getName(), cartOrderDto.getUsedPoint()); // cartOrderDto.getUsedPoint() 추가
 
         return new ResponseEntity<Long>(orderId, HttpStatus.OK);
     }

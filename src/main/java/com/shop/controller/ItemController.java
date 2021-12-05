@@ -5,6 +5,7 @@ import com.shop.dto.ItemFormDto;
 import com.shop.dto.ItemSearchDto;
 import com.shop.entity.Item;
 import com.shop.service.ItemService;
+import com.shop.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -19,6 +20,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,6 +29,8 @@ import java.util.Optional;
 public class ItemController {
 
     private final ItemService itemService;
+
+    private final MemberService memberService;
 
     @GetMapping(value = "/admin/item/new")
     public String itemForm(Model model) {
@@ -110,10 +114,12 @@ public class ItemController {
     }
 
     @GetMapping(value = "/item/{itemId}")
-    public String itemDtl(Model model, @PathVariable("itemId") Long itemId) {
+    public String itemDtl(Model model, Principal principal, @PathVariable("itemId") Long itemId) {
+        String email = principal.getName(); //현재 로그인된 회원 찾기
         ItemFormDto itemFormDto = itemService.getItemDtl(itemId);
 
         model.addAttribute("item", itemFormDto);
+        model.addAttribute("inputPoint", memberService.findpointByEmail(email)); // 현재 로그인된 회원 포인트 불러오기
 
         return "item/itemDtl";
 //      return "item/itemDtlAjax";

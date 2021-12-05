@@ -39,6 +39,8 @@ public class Member extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    private int point; // 포인트 컬럼 추가
+
     @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "member")
     private OAuth2Member oAuth2Member;
 
@@ -50,6 +52,7 @@ public class Member extends BaseEntity {
         String password = passwordEncoder.encode(memberFormDto.getPassword());
         member.setPassword(password);
         member.setRole(Role.USER);
+        member.setPoint(1000); // 신규 가입시 포인트 추가
         member.setRefundBank(memberFormDto.getRefundBank());
         member.setRefundAccount(memberFormDto.getRefundAccount());
         return member;
