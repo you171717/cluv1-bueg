@@ -13,7 +13,7 @@ public class CartOrderDto {
 
     private List<CartOrderDto> cartOrderDtoList;
 
-    private int orderPrice; // 주문 가격
+    private int orderPrice;
 
     private int usedPoint; // 사용 포인트
 

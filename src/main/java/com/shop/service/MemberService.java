@@ -44,10 +44,11 @@ public class MemberService implements UserDetailsService {
         }
     }
 
+    // 회원 포인트 조회
     public int findpointByEmail(String email){
         Member member = memberRepository.findByEmail(email);
         return member.getPoint();
-    } // 회원 포인트 조회
+    }
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -64,9 +65,10 @@ public class MemberService implements UserDetailsService {
                 .build();
     }
 
+    // 관리자 회원 조회 페이지
     @Transactional(readOnly = true)
     public Page<Member> getAdminMemberPage(MemberSearchDto memberSearchDto, Pageable pageable){
         return memberRepository.getAdminMemberPage(memberSearchDto, pageable);
-    } // 관리자 회원 조회 페이지
+    }
 
 }

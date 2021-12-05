@@ -6,5 +6,5 @@ import lombok.Setter;
 @Setter
 public class MemberDto {
 
-    private int point; // point
+    private int point; // 멤버 포인트 받기
 }

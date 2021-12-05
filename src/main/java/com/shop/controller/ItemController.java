@@ -115,11 +115,13 @@ public class ItemController {
 
     @GetMapping(value = "/item/{itemId}")
     public String itemDtl(Model model, Principal principal, @PathVariable("itemId") Long itemId) {
-        String email = principal.getName(); //현재 로그인된 회원 찾기
+        //현재 로그인된 회원 찾기
+        String email = principal.getName();
         ItemFormDto itemFormDto = itemService.getItemDtl(itemId);
 
         model.addAttribute("item", itemFormDto);
-        model.addAttribute("inputPoint", memberService.findpointByEmail(email)); // 현재 로그인된 회원 포인트 불러오기
+        // 현재 로그인된 회원 포인트 불러오기
+        model.addAttribute("inputPoint", memberService.findpointByEmail(email));
 
         return "item/itemDtl";
 //      return "item/itemDtlAjax";

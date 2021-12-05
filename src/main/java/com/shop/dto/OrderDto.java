@@ -19,6 +19,6 @@ public class OrderDto {
     private int count;
 
     @Min(value = 0, message = "포인트는 0 이상의 숫자를 입력해주세요.")
-    private int usedPoint; // 사용 포인트 값
+    private int usedPoint; // 사용 포인트 값 불러오기
 
 }

@@ -23,7 +23,8 @@ import java.util.List;
 public class CartController {
 
     private final CartService cartService;
-    private final MemberService memberService; // 멤버 서비스 선언
+    // 멤버 서비스 선언
+    private final MemberService memberService;
 
     @PostMapping(value = "/cart")
     public @ResponseBody ResponseEntity order(@RequestBody @Valid CartItemDto cartItemDto, BindingResult bindingResult, Principal principal) {
@@ -55,10 +56,12 @@ public class CartController {
     @GetMapping(value = "/cart")
     public String orderHist(Principal principal, Model model) {
 
-        String email = principal.getName(); // 현재 로그인 중인 회원 pricipal
+        // 현재 로그인 중인 회원 pricipal
+        String email = principal.getName();
 
         List<CartDetailDto> cartDetailList = cartService.getCartList(principal.getName());
-        model.addAttribute("inputPoint", memberService.findpointByEmail(email)); // 현재 로그인된 회원의 포인트 불러오기
+        // 현재 로그인된 회원의 포인트 불러오기
+        model.addAttribute("inputPoint", memberService.findpointByEmail(email));
         model.addAttribute("cartItems", cartDetailList);
 
         return "cart/cartList";
@@ -102,7 +105,8 @@ public class CartController {
             }
         }
 
-        Long orderId = cartService.orderCartItem(cartOrderDtoList, principal.getName(), cartOrderDto.getUsedPoint()); // cartOrderDto.getUsedPoint() 추가
+        // cartOrderDto.getUsedPoint() 추가
+        Long orderId = cartService.orderCartItem(cartOrderDtoList, principal.getName(), cartOrderDto.getUsedPoint());
 
         return new ResponseEntity<Long>(orderId, HttpStatus.OK);
     }

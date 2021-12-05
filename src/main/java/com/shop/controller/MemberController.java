@@ -135,6 +135,8 @@ public class MemberController {
         return "redirect:/";
     }
 
+    // @GetMapping 새로 추가
+    // member 정보 및 포인트 조회 페이지 controller
     @GetMapping(value = {"/admin/memberMng", "/admin/memberMng/{page}"})
     public String memberMange(MemberSearchDto memberSearchDto, @PathVariable("page") Optional<Integer> page, Model model){
         Pageable pageable = PageRequest.of(page.isPresent()? page.get() : 0, 10);
@@ -143,7 +145,7 @@ public class MemberController {
         model.addAttribute("members", members);
         model.addAttribute("memberSearchDto", memberSearchDto);
         model.addAttribute("maxPage", 5);
-        return "member/memberMng"; // member 정보 및 포인트 조회 페이지 controller
+        return "member/memberMng";
     }
 
 }
