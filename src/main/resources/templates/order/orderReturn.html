@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layoutGlobal}">
+
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+
+<!-- 사용자 스크립트 추가 -->
+<th:block layout:fragment="script">
+
+    <script th:inline="javascript">
+        function cancelOrder(orderId) {
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+
+            var url = "/order/" + orderId + "/cancel";
+            var paramData = {
+                orderId: orderId,
+            };
+
+            var param = JSON.stringify(paramData);
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                contentType: "application/json",
+                data: param,
+                beforeSend: function (xhr) {
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
+                dataType: "json",
+                cache: false,
+                success: function (result, status) {
+                    alert("주문이 취소 되었습니다.");
+                    location.href = '/orders/' + [[${page}]];
+                },
+                error: function (jqXHR, status, error) {
+                    if (jqXHR.status == '401') {
+                        alert('로그인 후 이용해주세요');
+                        location.href = '/members/login';
+                    } else {
+                        alert(jqXHR.responseText);
+                    }
+                }
+            });
+        }
+
+        function reqReturnOrder(orderId) {
+            location.href = "/order/" + orderId + "/return";
+        }
+    </script>
+    <script type="text/javascript">
+        function orderReqReturn(orderId) {
+            var token = $("meta[name = '_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+
+            var url = "/order/" + orderId + "/return";
+
+            $.ajax({
+                url: url,
+                type: "POST",
+                beforeSend: function (xhr) {
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
+                dataType: "json",
+                cache: false,
+                success: function (result, status) {
+                    location.href = "/orders";
+                },
+                error: function (jqXHR, status, error) {
+
+                    if (jqXHR.status == '401') {
+                        alert('로그인 후 이용해주세요');
+                        location.href = '/members/login';
+                    } else {
+                        alert(jqXHR.responseJSON.message);
+                    }
+
+                }
+            });
+        }
+    </script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $("#confirmBtn")
+                .off("click.order")
+                .on("click.order", function () {
+                    let orderId = $(this).attr("data-order");
+                    orderReqReturn(orderId);
+                });
+
+            $("#cancelBtn")
+                .off("click.order")
+                .on("click.order", function () {
+                    history.back();
+                });
+
+            //환불 총 금액
+            let table = $("#returnTable");
+            let totalPriceList = table.find("tbody td:nth-child(3)");
+            let totalPrice = 0;
+            $.each(totalPriceList, function () {
+                totalPrice += Number($(this).text());
+                $(this).text(Number($(this).text()).toLocaleString("ko-KR"));
+            });
+            $("#totalPrice").text(totalPrice.toLocaleString("ko-KR"));
+
+            //환불 총 배송비
+            let totalRefundShipPriceList = table.find("tbody td:nth-child(4)");
+            let totalRefundShipPrice = 0;
+            $.each(totalRefundShipPriceList, function () {
+                totalRefundShipPrice += Number($(this).text());
+                $(this).text(Number($(this).text()).toLocaleString("ko-KR"));
+            });
+            $("#totalRefundShipPrice").text(totalRefundShipPrice.toLocaleString("ko-KR"));
+
+            //예상 총 환불 예정 금액
+            let totalRefundExpectPriceList = table.find("tbody td:nth-child(5)");
+            let totalRefundExpectPrice = 0;
+            $.each(totalRefundExpectPriceList, function () {
+                totalRefundExpectPrice += Number($(this).text());
+                $(this).text(Number($(this).text()).toLocaleString("ko-KR"));
+            });
+            $("#totalRefundExpectPrice").text(totalRefundExpectPrice.toLocaleString("ko-KR"));
+        });
+    </script>
+</th:block>
+
+<div layout:fragment="content" class="content-mg">
+    <h2 class="mb-4">
+        구매 이력
+    </h2>
+
+    <div class="orderDesc">
+        <h1 style="color: red; font-weight: 600; font-size: 24px;">중요공지</h1>
+        <br/>
+        <h2 style="color: black; font-weight: 600; font-size: 18px;">1. 제품 수령 후 7일 이내 반품 요청을 해주셔야 합니다.</h2>
+        <br/>
+        받아보셨던 상태 그대로 재포장하여 반품 하셔야 합니다.
+        <br/>
+        불량, 오배송일 경우 고객센터를 통해 제품을 촬영한 사진을 접수 부탁드립니다.
+        <br/><br/>
+        <h2 class="secHeader">2. 반품이 도착 후 검수 완료까지 영업일 기준 2~3일 정도 소요됩니다.</h2>
+        <br/>
+        <h2 class="secHeader">3. 검수 과정 완료 후 환불됩니다.</h2>
+        <br/>
+    </div>
+    <div class="orderBox">
+        <div class="orderNumberBox">
+
+        </div>
+        <div class="orderTable">
+            <table id="returnTable" class="table">
+                <thread>
+                    <th>상품명/요청일</th>
+                    <th>사유</th>
+                    <th>상품금액</th>
+                    <th>환불 배송비</th>
+                    <th>환불예정금액</th>
+                </thread>
+                <tbody>
+                <tr th:each="orderItem, status: ${order.orderItems}">
+                    <td>
+                        <ul class="prInfo">
+                            <!--아이템 제목-->
+                            <li><span class="prInfoData" th:text="${orderItem.item.itemNm}"></span></li>
+                            <!--수량정보-->
+                            <li>수량: <span th:text="${orderItem.count}"></span>개</li>
+                            <li></li>
+                            <li>요청일 : <span th:text="${nowDate}"></span></li>
+                        </ul>
+                    </td>
+                    <!--사유-->
+                    <td>상품 잘못주문</td>
+                    <!--가격정보-->
+                    <td th:text="${orderItem.orderPrice * orderItem.count}"></td>
+                    <!--환불 배송비-->
+                    <td th:text="5000"></td>
+                    <!--환불 예정 금액-->
+                    <td th:text="${(orderItem.orderPrice * orderItem.count) - 5000}"></td>
+                </tr>
+                </tbody>
+                <tfoot>
+                <tr>
+                    <td colspan="2"><span style="font-weight: 600;">합계</span></td>
+                    <!--환불 총 금액-->
+                    <td id="totalPrice"></td>
+                    <!--환불 총 배송비-->
+                    <td id="totalRefundShipPrice"></td>
+                    <!--예상 총 환불 예정 금액-->
+                    <td id="totalRefundExpectPrice"></td>
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div class="orderButtonBox">
+            <ul class="btnBox">
+                <li>
+                    <button type="button" id="cancelBtn" class="btn">취소</button>
+                </li>
+                <li>
+                    <button type="button" id="confirmBtn" class="btn" th:data-order="${order.id}">확인</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+</html>
