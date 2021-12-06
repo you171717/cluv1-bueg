@@ -13,7 +13,6 @@ import java.util.Map;
 @Service
 public class NaverOAuth2Service extends OAuth2ServiceType {
 
-
     @Value("${oauth.naver.client.id}")
     private String clientId;
 
