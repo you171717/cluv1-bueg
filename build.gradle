@@ -33,12 +33,12 @@ dependencies {
 	implementation 'org.modelmapper:modelmapper:2.3.9'
 	implementation 'org.mapstruct:mapstruct:1.4.2.Final'
 
-	//Mail 의존성
+	// Mail
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 	implementation group: 'javax.mail', name: 'mail', version: '1.4.7'
 	implementation group: 'org.springframework', name: 'spring-context-support', version: '5.3.12'
 
-	//SMS 의존성
+	// SMS
 	implementation group: 'net.nurigo', name: 'javaSDK', version: '2.2'
 
 	compileOnly 'org.projectlombok:lombok'
@@ -51,9 +51,6 @@ dependencies {
 	implementation group: 'com.querydsl', name: 'querydsl-jpa', version: querydslVersion
 	implementation group: 'com.querydsl', name: 'querydsl-apt', version: querydslVersion
 	implementation group: 'com.querydsl', name: 'querydsl-core', version: querydslVersion
-
-	// coolsms
-	implementation group: 'net.nurigo', name: 'javaSDK', version: '2.2'
 
 	annotationProcessor group: 'com.querydsl', name: 'querydsl-apt', version: querydslVersion
 	annotationProcessor group: 'com.querydsl', name: 'querydsl-apt', version: querydslVersion, classifier: 'jpa'
