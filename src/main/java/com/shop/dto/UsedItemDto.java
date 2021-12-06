@@ -22,19 +22,20 @@ public class UsedItemDto {
 
     private String imgUrl; // 이미지 조회 경로
 
-    private LocalDateTime startday; // 등록일
+    private LocalDateTime startDay; // 등록일
 
-    private LocalDateTime endday; // 마감일
+    private LocalDateTime endDay; // 마감일
 
     @QueryProjection
-    public UsedItemDto(Long id, String itemNm, String itemDetail, String imgUrl, Integer price){
+    public UsedItemDto(Long id, String itemName, String itemDetail, String imgUrl, Integer price
+                                ,LocalDateTime startDay, LocalDateTime endDay){
         this.id = id;
-        this.itemName = itemNm;
+        this.itemName = itemName;
         this.detail = itemDetail;
         this.imgUrl = imgUrl;
         this.price = price;
-        this.startday = startday;
-        this.endday = endday;
+        this.startDay = startDay;
+        this.endDay = endDay;
     }
 
 }

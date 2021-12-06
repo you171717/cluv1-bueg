@@ -25,28 +25,28 @@ public class UsedItemService {
     private final UsedItemImgService usedItemImgService;
     private final UsedItemImgRepository usedItemImgRepository;
 
-    public Long saveItem(UsedItemFormDto usedItemFormDto, List<MultipartFile> itemImgFileList) throws Exception {
+    public Long saveUsedItem(UsedItemFormDto usedItemFormDto, List<MultipartFile> itemImgFileList) throws Exception {
 
         //상품 등록
         UsedItem usedItem = usedItemFormDto.createItem();
         usedItemRepository.save(usedItem);
 
         //이미지 등록
-        for(int i=0;i<itemImgFileList.size();i++) {
+        for (int i = 0; i < itemImgFileList.size(); i++) {
             UsedItemImg usedItemImg = new UsedItemImg();
             usedItemImg.setUsedItem(usedItem);
-            if(i == 0)
+            if (i == 0)
                 usedItemImg.setRepimgYn("Y");
             else
                 usedItemImg.setRepimgYn("N");
-            usedItemImgService.saveItemImg(usedItemImg, itemImgFileList.get(i));
+            usedItemImgService.saveUsedItemImg(usedItemImg, itemImgFileList.get(i));
         }
 
         return usedItem.getId();
     }
 
     @Transactional(readOnly = true)
-    public UsedItemFormDto getItemDtl(Long itemId){
+    public UsedItemFormDto getItemDtl(Long itemId) {
 
         List<UsedItemImg> itemImgList = usedItemImgRepository.findByItemIdOrderByIdAsc(itemId);
         List<UsedItemImgDto> itemImgDtoList = new ArrayList<>();
@@ -62,7 +62,7 @@ public class UsedItemService {
         return usedItemFormDto;
     }
 
-    public Long updateItem(UsedItemFormDto usedItemFormDto, List<MultipartFile> itemImgFileList) throws Exception {
+    public Long updateUsedItem(UsedItemFormDto usedItemFormDto, List<MultipartFile> itemImgFileList) throws Exception {
 
         //상품 수정
         UsedItem usedItem = usedItemRepository.findById(usedItemFormDto.getId())
@@ -71,7 +71,7 @@ public class UsedItemService {
 
         List<Long> itemImgIds = usedItemFormDto.getItemImgIds();
         //이미지 등록
-        for(int i=0;i<itemImgFileList.size();i++){
+        for (int i = 0; i < itemImgFileList.size(); i++) {
             usedItemImgService.updateItemImg(itemImgIds.get(i), itemImgFileList.get(i));
         }
 
@@ -79,6 +79,7 @@ public class UsedItemService {
     }
 
     @Transactional(readOnly = true)
-    public Page<UsedItemDto> getUsedItemPage(UsedItemSearchDto usedItemSearchDto, Pageable pageable){
-        return usedItemRepository.getUsedItemPage (usedItemSearchDto, pageable);
+    public Page<UsedItemDto> getUsedItemPage(UsedItemSearchDto usedItemSearchDto, Pageable pageable) {
+        return usedItemRepository.getUsedItemPage(usedItemSearchDto, pageable);
     }
+}
