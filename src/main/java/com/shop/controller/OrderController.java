@@ -4,7 +4,10 @@ import com.shop.constant.GiftStatus;
 import com.shop.dto.OrderDto;
 import com.shop.dto.OrderHistDto;
 import com.shop.entity.Order;
+import com.shop.repository.MemberRepository;
+import com.shop.service.EmailService;
 import com.shop.service.OrderService;
+import com.shop.service.SmsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -30,6 +33,9 @@ import java.util.Optional;
 public class OrderController {
 
     private final OrderService orderService;
+    private final EmailService emailService;
+    private final SmsService smsService;
+    private final MemberRepository memberRepository;
 
     @PostMapping(value = "/order")
     public @ResponseBody ResponseEntity order(@RequestBody @Valid OrderDto orderDto, BindingResult bindingResult, Principal principal) {
@@ -46,11 +52,20 @@ public class OrderController {
         }
 
         String email = principal.getName();
+        String phone = memberRepository.findByEmail(email).getPhone();  //SMS 전송할 휴대폰 번호 갖고오기
 
         Long orderId;
 
+        String notice = orderDto.getNotice();  //알림 전송 방식 가져오기
+
         try {
             orderId = orderService.order(orderDto, email);
+
+            if(notice.equals("email")){
+                emailService.sendOrderEmail(email, orderDto);
+            } else if(notice.equals("sms")){
+                smsService.sendOrderSms(phone, orderDto);
+            }
         } catch(Exception e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }

@@ -17,6 +17,7 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
     <script src="//t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
+    <script src ="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
 
     <script>
         (function() {
@@ -131,6 +132,8 @@
                     <a th:href="@{/admin/cscenter}">고객센터</a>
                     <a th:href="@{/admin/showTagSell}">태그별 주문량 확인</a>
                     <a href="https://desk.channel.io/" target="_blank">채널톡 관리</a>
+                    <!--관리자 알림 전송량 통계 추가-->
+                    <a th:href="@{/admin/noticeStats}">알림통계</a>
                 </div>
             </div>
         </div>

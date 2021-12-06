@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layoutGlobal}">
+
+<head>
+    <title>알림 전송량 통계 페이지</title>
+    <style>
+        h1 { text-align: center; }
+    </style>
+</head>
+
+<div layout:fragment="content" style="align-content: center">
+    <h1>알림 전송량 통계</h1>
+    <canvas id="canvas" width="500" height="200"></canvas>
+</div>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        var _emailCount = [[${emailCount}]];
+        var _smsCount = [[${smsCount}]];
+
+        $(function () {
+            new Chart(document.getElementById("canvas"), {
+
+                type: 'bar',
+                data: { // 차트에 들어갈 데이터
+                    labels: [
+                        '알림 전송 방식'
+                    ],
+                    datasets: [
+                        {
+                            label: '이메일 전송량', //차트 제목
+                            fill: false, // line 형태일 때, 선 안쪽을 채우는지 안채우는지
+                            data: [
+                                _emailCount
+                            ],
+                            backgroundColor: [
+                                //색상
+                                'rgba(255, 99, 132, 0.2)',
+                            ],
+                            borderColor: [
+                                //경계선 색상
+                                'rgba(255, 99, 132, 1)',
+                            ],
+                            borderWidth: 1 //경계선 굵기
+                        }, {
+                            label: 'SMS 전송량', //차트 제목
+                            fill: false,
+                            data: [
+                                _smsCount
+                            ],
+                            backgroundColor: [
+                                //색상
+                                'rgba(54, 162, 235, 0.2)'
+                            ],
+                            borderColor: [
+                                //경계선 색상
+                                'rgba(54, 162, 235, 1)'
+                            ],
+                            borderWidth: 1 //경계선 굵기
+                        }
+                    ],
+                },
+                options: {
+                    scales: {
+                        yAxes: [
+                            {
+                                ticks: {
+                                    beginAtZero: true
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: '알림 전송량'
+                                }
+                            }
+                        ],
+                        xAxes: [
+                            {
+                                barPercentage: 0.5
+                            }
+                        ]
+                    }
+                }
+            })
+        });
+    </script>
+</th:block>
+</html>

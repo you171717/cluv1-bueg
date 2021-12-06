@@ -3,6 +3,12 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layoutGlobal}">
 
+<!--이메일 인증 코드 전송 위한 추가-->
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+
     <th:block layout:fragment="css">
         <style>
             .fieldError {
@@ -50,6 +56,34 @@
                     }
                 });
             });
+
+            function sendAuthCode(){
+                //POST방식 데이터 전송에 필요한 CSRF 토큰 값 조회
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+
+                var url = "/members/signUpEmail";
+
+                $.ajax({
+                    url      : url,
+                    type     : "POST",
+                    data: {
+                        email : $("#email").val()
+                    },
+                    beforeSend : function(xhr){
+                        /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                        xhr.setRequestHeader(header, token);
+                    },
+                    cache   : false,
+                    success  : function(result, status){
+                        console.log(result);
+                        alert("이메일로 인증코드가 전송되었습니다.");
+                    },
+                    error: function() {
+                        console.log(arguments);
+                    }
+                });
+            }
         </script>
     </th:block>
 
@@ -64,6 +98,14 @@
                 <label th:for="email">이메일주소</label>
                 <input type="email" th:field="*{email}" class="form-control" placeholder="이메일을 입력해주세요">
                 <p th:if="${#fields.hasErrors('email')}" th:errors="*{email}" class="fieldError">Incorrect data</p>
+                <!--이메일 인증 버튼 추가-->
+                <button type="button" class="btn btn-primary btn-lg" onclick="sendAuthCode()">이메일 인증</button>
+            </div>
+            <!--인증 코드 추가-->
+            <div class="form-group">
+                <label th:for="code">인증 코드</label>
+                <input type="text" th:field="*{code}" class="form-control" placeholder="인증코드를 입력해주세요">
+                <p th:if="${#fields.hasErrors('code')}" th:errors="*{code}" class="fieldError">Incorrect data</p>
             </div>
             <div class="form-group">
                 <label th:for="password">비밀번호</label>
@@ -86,6 +128,12 @@
                 <input th:field="*{addressDetail}" id="address_detail" name="address_detail"  type="text" class="form-control" placeholder="상세 주소를 입력해주세요" >
                 <p th:if="${#fields.hasErrors('addressDetail')}"
                    th:errors="*{addressDetail}" class="fieldError">Incorrect data</p>
+            </div>
+            <!--휴대폰 번호 추가-->
+            <div class="form-group">
+                <label th:for="phone">휴대폰 번호</label>
+                <input type="text" th:field="*{phone}" class="form-control" placeholder="휴대폰 번호를 입력해주세요">
+                <p th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="fieldError">Incorrect data</p>
             </div>
             <div class="form-group">
                 <label th:for="refundBank">환불 은행</label>

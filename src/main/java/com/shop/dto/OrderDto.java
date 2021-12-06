@@ -24,4 +24,6 @@ public class OrderDto {
     private String from;
     private String text;
 
+    private String notice;  //알림 전송 방식 추가
+    
 }
