@@ -36,5 +36,6 @@ out/
 ### VS Code ###
 .vscode/
 
-### OAuth2 ###
+### API Keys ###
 application-oauth.properties
+application-naver.properties

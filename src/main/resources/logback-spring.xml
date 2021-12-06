@@ -14,5 +14,4 @@
 		<appender-ref ref="CONSOLE" />
     </root>
     <logger name="com.shop" level="DEBUG" appender-ref="CONSOLE" />
-	<logger name="com.study" level="DEBUG" appender-ref="CONSOLE" />
 </configuration>
