@@ -23,7 +23,6 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
-
 @Controller
 @RequiredArgsConstructor
 public class ReviewController {
@@ -50,26 +49,31 @@ public class ReviewController {
         reviewFormDto.setReviewId(orderItemId);
 
         model.addAttribute("reviewFormDto", reviewFormDto);
+        model.addAttribute("reviewFormType", "WRITE");
 
-        return "review/reviewWrite";
+        return "review/reviewForm";
     }
 
     @PostMapping("/reviews/new/{itemId}")
-    public String reviewNew(@PathVariable("itemId") Long orderItemId, @Valid ReviewFormDto reviewFormDto, BindingResult bindingResult, Model model, @RequestParam("reviewImgFile") List<MultipartFile> reviewImgFile) {
+    public String reviewNew(@PathVariable("itemId") Long orderItemId, @Valid ReviewFormDto reviewFormDto, BindingResult bindingResult, @RequestParam("reviewImgFile") List<MultipartFile> reviewImgFile, Model model) {
+        model.addAttribute("reviewFormType", "WRITE");
+
+        reviewFormDto.setReviewId(orderItemId);
+
         if (bindingResult.hasErrors()) {
-            return "review/reviewWrite";
+            return "review/reviewForm";
         }
 
         if (reviewImgFile.get(0).isEmpty()) {
             model.addAttribute("errorMessage", "사진 등록은 필수 입력 값입니다.");
 
-            return "review/reviewWrite";
+            return "review/reviewForm";
         }
 
-        if( reviewFormDto.getComment().length() == 0) {
+        if (reviewFormDto.getComment().length() == 0) {
             model.addAttribute("errorMessage", "리뷰 작성은 필수 입력 값입니다.");
 
-            return "review/reviewWrite";
+            return "review/reviewForm";
         }
 
         try {
@@ -77,7 +81,7 @@ public class ReviewController {
         } catch (Exception e) {
             model.addAttribute("errorMessage", "리뷰 작성 중 에러가 발생하였습니다.");
 
-            return "review/reviewWrite";
+            return "review/reviewForm";
         }
 
         return "redirect:/reviews";
@@ -90,26 +94,32 @@ public class ReviewController {
             reviewFormDto.setReviewId(orderItemId);
 
             model.addAttribute("reviewFormDto", reviewFormDto);
+            model.addAttribute("reviewFormType", "UPDATE");
         } catch(EntityNotFoundException e) {
             model.addAttribute("errorMessage", "후기를 작성하지 않았습니다.");
             model.addAttribute("reviewFormDto", new ReviewFormDto());
+            model.addAttribute("reviewFormType", "WRITE");
 
-            return "review/reviewWrite";
+            return "review/reviewForm";
         }
 
-        return "review/reviewWrite";
+        return "review/reviewForm";
     }
 
     @PostMapping("/reviews/update/{itemId}")
     public String reviewUpdate(@PathVariable("itemId") Long orderItemId, @Valid ReviewFormDto reviewFormDto, BindingResult bindingResult, @RequestParam("reviewImgFile") List<MultipartFile> reviewImgFile, Model model) {
+        model.addAttribute("reviewFormType", "UPDATE");
+
+        reviewFormDto.setReviewId(orderItemId);
+
         if(bindingResult.hasErrors()) {
-            return "review/reviewWrite";
+            return "review/reviewForm";
         }
 
         if(reviewFormDto.getComment() == null) {
             model.addAttribute("errorMessage", "후기 작성은 필수 입력 값입니다.");
 
-            return "review/reviewWrite";
+            return "review/reviewForm";
         }
 
         try {
@@ -117,7 +127,7 @@ public class ReviewController {
         }catch (Exception e) {
             model.addAttribute("errorMessage", "리뷰 작성 중 에러가 발생하였습니다.");
 
-            return "review/reviewWrite";
+            return "review/reviewForm";
         }
 
         return "redirect:/reviews";
