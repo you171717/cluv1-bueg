@@ -20,6 +20,12 @@ public class OrderHistDto {
     private String orderDate;
 
     private OrderStatus orderStatus;
+    
+    private Integer usedPoint; // 사용 포인트 dto
+
+    private Integer accPoint; // 적립 포인트 dto
+
+    private Integer totalPrice; // 최종 결제 금액
 
     private String orderAddress;
 
@@ -52,6 +58,10 @@ public class OrderHistDto {
         }
 
         this.returnStatus = order.getReturnStatus();
+
+        this.usedPoint = order.getUsedPoint(); // 주문 시 사용된 포인트
+        this.accPoint = order.getAccPoint(); // 주문 시 적립된 포인트
+        this.totalPrice = order.getTotalPrice(); // 최종 결제 금액
     }
 
     public void addOrderItemDto(OrderItemDto orderItemDto) {

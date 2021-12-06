@@ -7,6 +7,7 @@ import com.shop.repository.MemberRepository;
 import com.shop.service.CartService;
 import com.shop.service.EmailService;
 import com.shop.service.SmsService;
+import com.shop.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,8 @@ public class CartController {
     private final EmailService emailService;
     private final SmsService smsService;
     private final MemberRepository memberRepository;
+    // 멤버 서비스 선언
+    private final MemberService memberService;
 
     @PostMapping(value = "/cart")
     public @ResponseBody ResponseEntity order(@RequestBody @Valid CartItemDto cartItemDto, BindingResult bindingResult, Principal principal) {
@@ -58,8 +61,13 @@ public class CartController {
 
     @GetMapping(value = "/cart")
     public String orderHist(Principal principal, Model model) {
-        List<CartDetailDto> cartDetailList = cartService.getCartList(principal.getName());
 
+        // 현재 로그인 중인 회원 pricipal
+        String email = principal.getName();
+
+        List<CartDetailDto> cartDetailList = cartService.getCartList(principal.getName());
+        // 현재 로그인된 회원의 포인트 불러오기
+        model.addAttribute("inputPoint", memberService.findpointByEmail(email));
         model.addAttribute("cartItems", cartDetailList);
 
         return "cart/cartList";
@@ -103,7 +111,8 @@ public class CartController {
             }
         }
 
-        Long orderId = cartService.orderCartItem(cartOrderDtoList, principal.getName());
+        // cartOrderDto.getUsedPoint() 추가
+        Long orderId = cartService.orderCartItem(cartOrderDtoList, principal.getName(), cartOrderDto.getUsedPoint());
 
         //알림 전송할 이메일, 휴대폰 정보, 알림 전송 방식 가져오기
         String email = principal.getName();

@@ -52,8 +52,17 @@ public class OrderService {
         OrderItem orderItem = OrderItem.createOrderItem(item, orderDto.getCount());
         orderItemList.add(orderItem);
 
+        // 사용 포인트 보다 가지고 있는 포인트가 적을 시 경고문 출력
+        if(member.getPoint() < orderDto.getUsedPoint()) {
+            throw new IllegalStateException("포인트가 부족합니다.");
+        }
+
         Order order = Order.createOrder(member, orderItemList, BUY,
                 member.getAddress(), member.getAddressDetail());
+
+        // 계산된 포인트 함수 호출
+        this.processPointUsage(member, order);
+
         orderRepository.save(order);
 
         return order.getId();
@@ -153,7 +162,7 @@ public class OrderService {
         order.cancelOrder();
     }
 
-    public Long orders(List<OrderDto> orderDtoList, String email) {
+    public Long orders(List<OrderDto> orderDtoList, String email, Integer usedPoint) {
         Member member = memberRepository.findByEmail(email);
 
         List<OrderItem> orderItemList = new ArrayList<>();
@@ -166,11 +175,26 @@ public class OrderService {
             orderItemList.add(orderItem);
         }
 
+        // 부족 경고문
+        if(member.getPoint() < usedPoint) {
+            throw new IllegalStateException("포인트가 부족합니다.");
+        }
+
         Order order = Order.createOrder(member, orderItemList ,BUY, member.getAddress(), member.getAddressDetail());
+
+        // 포인트 계산 함수 호출
+        this.processPointUsage(member, order);
 
         orderRepository.save(order);
 
         return order.getId();
+    }
+
+    // 포인트 계산 함수
+    public void processPointUsage(Member member, Order order) {
+        member.setPoint(member.getPoint() - order.getUsedPoint() + order.getAccPoint());
+
+        memberRepository.save(member);
     }
 
     public Order getOrder(Long orderId) {
@@ -237,7 +261,5 @@ public class OrderService {
         orderRepository.save(order);
 
     }
-
-
 
 }

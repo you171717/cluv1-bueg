@@ -124,6 +124,8 @@
             </div>
             <div class="header-submenu" sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
                 <div class="header-submenu-inner">
+<!--                    회원 포인트 및 정보 조회 페이지-->
+                    <a th:href="@{/members/admin/memberMng}">회원 관리</a>
                     <a th:href="@{/admin/item/new}">상품 등록</a>
                     <a th:href="@{/admin/items}">상품 관리</a>
                     <a th:href="@{/returns}">반품 관리</a>

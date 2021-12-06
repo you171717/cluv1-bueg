@@ -14,4 +14,9 @@ public class CartOrderDto {
     private List<CartOrderDto> cartOrderDtoList;
 
     private String notice;  //알림 전송 방식 추가
+    
+    private int orderPrice;
+
+    private int usedPoint; // 사용 포인트
+
 }

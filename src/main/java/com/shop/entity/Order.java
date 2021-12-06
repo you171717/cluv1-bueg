@@ -51,20 +51,28 @@ public class Order extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "return_status")
     private ReturnStatus returnStatus;
+    
+    private int usedPoint; // 적용 포인트
+
+    private int accPoint; // 사용된 포인트 기록
 
     public void addOrderItem(OrderItem orderItem) {
         orderItems.add(orderItem);
         orderItem.setOrder(this);
     }
 
-    public static Order createOrder(Member member, List<OrderItem> orderItemList, GiftStatus giftStatus,
+    public static Order createOrder(Member member, Integer usedPoint, List<OrderItem> orderItemList, GiftStatus giftStatus,
                                     String address, String addressDetail) {
         Order order = new Order();
         order.setMember(member);
 
+        order.setUsedPoint(usedPoint); // 사용 포인트 저장
+
         for(OrderItem orderItem : orderItemList) {
             order.addOrderItem(orderItem);
         }
+
+        order.setAccPoint((int)((order.getTotalPrice() - order.getUsedPoint()) * 0.01)); // 적립 포인트 저장
 
         order.setOrderStatus(OrderStatus.ORDER);
         order.setOrderDate(LocalDateTime.now());

@@ -2,6 +2,7 @@ package com.shop.controller;
 
 import com.shop.constant.Bank;
 import com.shop.dto.MemberFormDto;
+import com.shop.dto.MemberSearchDto;
 import com.shop.dto.MemberUpdateFormDto;
 import com.shop.entity.AuthToken;
 import com.shop.entity.Member;
@@ -15,6 +16,9 @@ import com.shop.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -22,10 +26,15 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.util.StringUtils;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
 import java.security.Principal;
+import java.util.Optional;
 
 @RequestMapping("/members")
 @Controller
@@ -211,6 +220,19 @@ public class MemberController {
         emailService.sendEmailAuthCode(email, httpSession);
 
         return new ResponseEntity<String>("", HttpStatus.OK);
+    }
+
+    // @GetMapping 새로 추가
+    // member 정보 및 포인트 조회 페이지 controller
+    @GetMapping(value = {"/admin/memberMng", "/admin/memberMng/{page}"})
+    public String memberMange(MemberSearchDto memberSearchDto, @PathVariable("page") Optional<Integer> page, Model model){
+        Pageable pageable = PageRequest.of(page.isPresent()? page.get() : 0, 10);
+
+        Page<Member> members = memberService.getAdminMemberPage(memberSearchDto, pageable);
+        model.addAttribute("members", members);
+        model.addAttribute("memberSearchDto", memberSearchDto);
+        model.addAttribute("maxPage", 5);
+        return "member/memberMng";
     }
 
 }

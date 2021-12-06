@@ -9,6 +9,7 @@ import com.shop.entity.Item;
 import com.shop.entity.Tag;
 import com.shop.service.ItemService;
 import com.shop.service.ReviewService;
+import com.shop.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +25,7 @@ import org.springframework.web.multipart.MultipartFile;
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,6 +35,7 @@ public class ItemController {
 
     private final ItemService itemService;
     private final ReviewService reviewService;
+    private final MemberService memberService;
 
     @GetMapping(value = "/admin/item/new")
     public String itemForm(Model model) {
@@ -123,7 +126,9 @@ public class ItemController {
     }
 
     @GetMapping(value = "/item/{itemId}")
-    public String itemDtl(Model model, @PathVariable("itemId") Long itemId) {
+    public String itemDtl(Model model, Principal principal, @PathVariable("itemId") Long itemId) {
+        //현재 로그인된 회원 찾기
+        String email = principal.getName();
         ItemFormDto itemFormDto = itemService.getItemDtl(itemId);
         List<ReviewItemDto> orderItemDtoList = reviewService.getReviewItem(itemId);
         List<ReviewImgDto> reviewImgDtoList = reviewService.getReviewItemImg(itemId);
@@ -131,6 +136,8 @@ public class ItemController {
         model.addAttribute("item", itemFormDto);
         model.addAttribute("orderItemList", orderItemDtoList);
         model.addAttribute("reviewImgDtoList", reviewImgDtoList);
+        // 현재 로그인된 회원 포인트 불러오기
+        model.addAttribute("inputPoint", memberService.findpointByEmail(email));
 
         return "item/itemDtl";
 //      return "item/itemDtlAjax";

@@ -26,4 +26,7 @@ public class OrderDto {
 
     private String notice;  //알림 전송 방식 추가
     
+    @Min(value = 0, message = "포인트는 0 이상의 숫자를 입력해주세요.")
+    private int usedPoint; // 사용 포인트 값 불러오기
+
 }
