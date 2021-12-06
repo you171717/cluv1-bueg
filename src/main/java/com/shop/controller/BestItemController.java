@@ -17,21 +17,21 @@ public class BestItemController {
 
     private final BestItemService myBatisService;
 
-    @GetMapping("/Day")
+    @GetMapping("/day")
     public String getBestItemByDays(Model model) {
         List<BestItemDto> items = myBatisService.getBestItemByDays();
         model.addAttribute("items", items);
         return "item/bestItem";
     }
 
-    @GetMapping(value = "/Week")
+    @GetMapping(value = "/week")
     public String getBestItemByWeek(Model model){
         List<BestItemDto> items = myBatisService.getBestItemByWeek();
         model.addAttribute("items", items);
         return "item/bestItem";
     }
 
-    @GetMapping(value = "/Month")
+    @GetMapping(value = "/month")
     public String getBestItemByMonth(Model model){
         List<BestItemDto> items = myBatisService.getBestItemByMonth();
         model.addAttribute("items", items);

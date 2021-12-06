@@ -28,4 +28,5 @@ public class BestItemService {
     public List<BestItemDto> getBestItemByMonth() {
         return myBatisBestItemMapper.getBestItemByMonth();
     }
+
 }
