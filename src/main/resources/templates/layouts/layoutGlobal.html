@@ -108,6 +108,7 @@
                     <li><a th:href="@{/rauctions}">역경매</a></li>
                     <li sec:authorize="isAuthenticated()"><a th:href="@{/giftMain/1}">선물하기</a></li>
                     <li sec:authorize="isAuthenticated()"><a th:href="@{/bids}">역경매 참여 내역</a></li>
+                    <li sec:authorize="isAuthenticated()"><a th:href="@{/uitem}">중고상품</a></li>
                     <li sec:authorize="isAuthenticated()"><a th:href="@{/cart}">장바구니</a></li>
                     <li sec:authorize="isAuthenticated()"><a th:href="@{/orders}">구매/선물 이력</a></li>
                     <li sec:authorize="hasAnyAuthority('ROLE_USER')"><a th:href="@{/cscenter}">고객센터</a></li>
@@ -127,6 +128,7 @@
 <!--                    회원 포인트 및 정보 조회 페이지-->
                     <a th:href="@{/members/admin/memberMng}">회원 관리</a>
                     <a th:href="@{/admin/item/new}">상품 등록</a>
+                    <a th:href="@{/admin/uitem/new}">중고 상품 등록</a>
                     <a th:href="@{/admin/items}">상품 관리</a>
                     <a th:href="@{/returns}">반품 관리</a>
                     <a th:href="@{/admin/rauctions}">역경매 관리</a>
