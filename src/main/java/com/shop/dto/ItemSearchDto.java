@@ -16,4 +16,13 @@ public class ItemSearchDto {
 
     private String searchQuery = "";
 
+    @Override
+    public String toString() {
+        return "ItemSearchDto{" +
+                "searchDateType='" + searchDateType + '\'' +
+                ", searchSellStatus=" + searchSellStatus +
+                ", searchBy='" + searchBy + '\'' +
+                ", searchQuery='" + searchQuery + '\'' +
+                '}';
+    }
 }

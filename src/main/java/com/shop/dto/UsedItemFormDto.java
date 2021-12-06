@@ -30,6 +30,8 @@ public class UsedItemFormDto {
     @NotNull(message = "재고는 필수 입력 값입니다.")
     private Integer stockNumber;
 
+    private int shippingFee;
+
     private UsedItemSellStatus usedItemSellStatus;
 
     private LocalDateTime startDay;                         // 게시글 작성 날
@@ -48,5 +50,22 @@ public class UsedItemFormDto {
 
     public static UsedItemFormDto of(UsedItem usedItem){
         return modelMapper.map(usedItem,UsedItemFormDto.class);
+    }
+
+    @Override
+    public String toString() {
+        return "UsedItemFormDto{" +
+                "id=" + id +
+                ", itemNm='" + itemNm + '\'' +
+                ", price=" + price +
+                ", itemDetail='" + itemDetail + '\'' +
+                ", stockNumber=" + stockNumber +
+                ", shippingFee=" + shippingFee +
+                ", usedItemSellStatus=" + usedItemSellStatus +
+                ", startDay=" + startDay +
+                ", endDay=" + endDay +
+                ", usedItemImgDtoList=" + usedItemImgDtoList +
+                ", itemImgIds=" + itemImgIds +
+                '}';
     }
 }

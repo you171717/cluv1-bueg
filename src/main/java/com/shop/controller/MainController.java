@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import java.util.Optional;
 
+import static org.reflections.Reflections.log;
+
 @Controller
 @RequiredArgsConstructor
 public class MainController {
@@ -22,6 +24,8 @@ public class MainController {
     @GetMapping(value = "/")
     public String main(ItemSearchDto itemSearchDto, Optional<Integer> page, Model model) {
         Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 6);
+
+        log.info("ItemSearchDto : " + itemSearchDto.toString());
         Page<MainItemDto> items = itemService.getMainItemPage(itemSearchDto, pageable);
 
         model.addAttribute("items", items);

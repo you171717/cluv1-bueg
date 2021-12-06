@@ -1,6 +1,5 @@
 package com.shop.repository;
 
-import com.shop.entity.Item;
 import com.shop.entity.UsedItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,17 +10,17 @@ import java.util.List;
 
 public interface UsedItemRepository extends JpaRepository<UsedItem, Long>, QuerydslPredicateExecutor<UsedItem>, UsedItemRepositoryCustom{
 
-    List<Item> findByItemName(String itemName);
+    List<UsedItem> findByItemName(String itemName);
 
-    List<Item> findByItemNmOrItemDetail(String itemNm, String itemDetail);
+    List<UsedItem> findByItemNameOrDetail(String itemName, String detail);
 
-    List<Item> findByPriceLessThan(Integer price);
+    List<UsedItem> findByPriceLessThan(Integer price);
 
-    List<Item> findByPriceLessThanOrderByPriceDesc(Integer price);
+    List<UsedItem> findByPriceLessThanOrderByPriceDesc(Integer price);
 
     @Query("select i from Item i where i.itemDetail like %:itemDetail% order by i.price desc")
-    List<Item> findByItemDetail(@Param("itemDetail") String itemDetail);
+    List<UsedItem> findByItemDetail(@Param("itemDetail") String itemDetail);
 
     @Query(value = "select * from item i where i.item_detail like %:itemDetail% order by i.price desc", nativeQuery = true)
-    List<Item> findByItemDetailByNative(@Param("itemDetail") String itemDetail);
+    List<UsedItem> findByItemDetailByNative(@Param("itemDetail") String itemDetail);
 }
