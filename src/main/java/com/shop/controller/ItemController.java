@@ -7,6 +7,9 @@ import com.shop.dto.ReviewImgDto;
 import com.shop.dto.ReviewItemDto;
 import com.shop.entity.Item;
 import com.shop.entity.Tag;
+import com.shop.dto.NaverApiDto;
+import com.shop.entity.Item;
+import com.shop.naverapi.NaverShopSearch;
 import com.shop.service.ItemService;
 import com.shop.service.ReviewService;
 import com.shop.service.MemberService;
@@ -36,6 +39,7 @@ public class ItemController {
     private final ItemService itemService;
     private final ReviewService reviewService;
     private final MemberService memberService;
+    private final NaverShopSearch naverShopSearch;
 
     @GetMapping(value = "/admin/item/new")
     public String itemForm(Model model) {
@@ -161,5 +165,22 @@ public class ItemController {
 
         return new ResponseEntity<String>(json, HttpStatus.OK);
     }
+
+
+    //상품 등록시 등록 상품 이름을 값으로 해당 상품의 네이버 쇼핑 API 값 리턴
+    @ResponseBody
+    @GetMapping(value = "/admin/item/newSearch")
+    public List<NaverApiDto> getItems(@RequestParam("title") String query) {
+        return naverShopSearch.search(query);
+    }
+
+    //상품 상세 페이지에서 등록된 상품의 네이버 최저가와 해당 상품 구매페이지 링크 리턴
+    @ResponseBody
+    @GetMapping(value = "/item/{itemId}/price")
+    public List<NaverApiDto> getPrice(@RequestParam("itemNm") String query) {
+        return naverShopSearch.search2(query);
+
+    }
+
 
 }

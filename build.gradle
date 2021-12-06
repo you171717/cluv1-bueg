@@ -32,6 +32,8 @@ dependencies {
 	implementation 'org.mariadb.jdbc:mariadb-java-client:2.4.1'
 	implementation 'org.modelmapper:modelmapper:2.3.9'
 	implementation 'org.mapstruct:mapstruct:1.4.2.Final'
+	//springdoc
+	implementation 'org.springdoc:springdoc-openapi-ui:1.5.4'
 
 	// Mail
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
@@ -51,6 +53,9 @@ dependencies {
 	implementation group: 'com.querydsl', name: 'querydsl-jpa', version: querydslVersion
 	implementation group: 'com.querydsl', name: 'querydsl-apt', version: querydslVersion
 	implementation group: 'com.querydsl', name: 'querydsl-core', version: querydslVersion
+
+	// https://mvnrepository.com/artifact/org.json/json 네이버 api 값 json 변환
+	implementation group: 'org.json', name: 'json', version: '20210307'
 
 	annotationProcessor group: 'com.querydsl', name: 'querydsl-apt', version: querydslVersion
 	annotationProcessor group: 'com.querydsl', name: 'querydsl-apt', version: querydslVersion, classifier: 'jpa'

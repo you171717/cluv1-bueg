@@ -15,6 +15,7 @@
         $(document).ready(function () {
 
             calculateToalPrice();
+            getPrice();
 
             $("#count").change(function () {
                 calculateToalPrice();
@@ -24,6 +25,43 @@
                 calculateToalPrice();
             });
         });
+
+        //네이버 API로 상품의 최저가 가져오기
+        function getPrice() {
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+
+            console.log($("#title").text());
+
+            var url = "/item/{itemId}/price" + "?itemNm="+encodeURI($("#title").text());
+            $.ajax({
+                url      : url,
+                type     : "GET",
+                contentType : "application/json", // 데이터 전송 형식 json 지정
+                beforeSend : function(xhr){
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
+                // data: encodeURI(param),
+                cache   : false,
+                success  : function(result){
+                    console.log(result);
+                    var naver = result;
+                    var priceresult = ""
+                    var nslink = ""
+                    $.each(naver, function(i){
+                        priceresult =naver[i].lprice;
+                        nslink = naver[i].slink;
+                    });
+                    $("#naverprice").append(priceresult);
+                    $("#naverlink").click(function (){ $(location).attr("href", nslink) });
+
+                },
+                error : function(error){
+                    console.log(error);
+                }
+            });
+        }
 
         // 수량을 변경하면 결제 금액을 (제품 가격 * 수량)으로 계산해서 바꿔주는 함수
         function calculateToalPrice() {
@@ -268,7 +306,7 @@
                   class="badge btn-danger mgb-15">
                     품절
                 </span>
-            <div class="h4" th:text="${item.itemNm}"></div>
+            <div class="h4" id="title" th:text="${item.itemNm}"></div>
             <hr class="my-4">
             <div class="text-right">
                 <div class="h4 text-danger text-left">
@@ -284,6 +322,13 @@
                         <span class="input-group-text">수량</span>
                     </div>
                     <input type="number" name="count" id="count" class="form-control" value="1" min="1">
+                </div>
+                <hr class="my-2">
+                <div class="text-right" mgt-20>
+                    <h5>네이버 쇼핑 최저가</h5>
+                    <h3><span id="naverprice" class="font-weight-bold"></span>원</h3>
+                    <button id ="naverlink" type="button" class="btn primary btn-primary" > 네이버 쇼핑몰로 사러가기 </button>
+
                 </div>
             </div>
             <hr class="my-4">

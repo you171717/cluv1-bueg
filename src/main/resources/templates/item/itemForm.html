@@ -3,6 +3,11 @@
       xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
       layout:decorate="~{layouts/layoutGlobal}">
 
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+
     <!-- 사용자 스크립트 추가 -->
     <th:block layout:fragment="script">
         <script th:inline="javascript">
@@ -37,6 +42,77 @@
                     $(this).siblings(".custom-file-label").html(fileName);
                 });
             }
+
+            //네이버 API 활용해서 입력한 상품명의 최저가 정보 불러오기
+            //입력한 상품명이 정확한 경우 맨위에 해당 상품명과 가격 나오고
+            //부정확한 경우 입력한 상품명이 포함된 결과를 받아옴
+            function getTitle(){
+
+                $('#modal').modal("show");
+
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+
+                var url = "/admin/item/newSearch" + "?title="+encodeURI($("#title").val());
+                $.ajax({
+                    url      : url,
+                    type     : "GET",
+                    contentType : "application/json", // 데이터 전송 형식 json 지정
+                    beforeSend : function(xhr){
+                        /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                        xhr.setRequestHeader(header, token);
+                    },
+                    cache   : false,
+                    success  : function(result){
+                        //결과 받아서 테이블에 뿌려주기
+                        var tblresult = result;
+                        var str = "";
+                        $.each(tblresult, function(i){
+                            str += "<TR>"
+                            str += '<TD>' + tblresult[i].title + '</TD><TD>' + tblresult[i].lprice + '</TD>'
+                            str += '</TR>'
+                        });
+                        $("#cateList").append(str);
+                    },
+                    error : function(error){
+                        console.log(error);
+                    }
+                });
+            }
+
+            function mdclose(){
+                $('#modal').modal("hide");
+                $("#cateList *").remove();
+
+            }
+
+            //최저가 불러온 테이블 클릭 시 해당 row의 내용 추출해서 입력 칸에 삽입
+            $(function() {
+                $("#modal #cateList").on("click", "tr", function () {
+
+                    var tdArr = new Array();
+
+                    var tr = $(this);
+                    var td = tr.children();
+
+                    td.each(function(i){
+                        tdArr.push(td.eq(i).text());
+                    });
+
+                    var title = td.eq(0).text();
+                    var lprice = td.eq(1).text();
+
+                    $("#title").val(title);
+
+                    var selectlprice = parseInt(lprice)
+                    console.log(typeof(selectlprice));
+                    var mysellprice = selectlprice - 100;
+
+                    $("#sellPrice").val(mysellprice);
+                    $('#modal').modal("hide");
+                });
+
+            });
         </script>
     </th:block>
 
@@ -58,6 +134,18 @@
     <div layout:fragment="content">
         <!-- 파일을 업로드할 때는 인코딩 타입을 `enctype="multipart/form-data"` 같이 설정하고 사용해야 함 -->
         <form role="form" method="post" enctype="multipart/form-data" th:object="${itemFormDto}">
+        <!--상품 최저가 표시할 모달창-->
+            <div id="modal" class="modal" data-backdrop="static">
+                <div class="modal_body">등록할 상품의 네이버 최저가
+                    <div style="text-align:right">
+                        <button id="close" type="button" class="btn btn-primary" onclick="mdclose()">닫기</button>
+                    </div>
+                    <div>
+                        <table id ="cateList" border = "1">
+                        </table>
+                    </div>
+                </div>
+            </div>
             <p class="h2" th:if="${#strings.isEmpty(itemFormDto.id)}">상품 등록</p>
             <p class="h2" th:unless="${#strings.isEmpty(itemFormDto.id)}">상품 수정</p>
             <!-- 상품 수정할 때 사용할 식별자 -->
@@ -85,7 +173,7 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text">상품명</span>
                 </div>
-                <input type="text" th:field="*{itemNm}" class="form-control" placeholder="상품명을 입력해주세요">
+                <input id="title" type="text" th:field="*{itemNm}" class="form-control" placeholder="상품명을 입력해주세요">
             </div>
             <p th:if="${#fields.hasErrors('itemNm')}" th:errors="*{itemNm}" class="fieldError">Incorrect data</p>
             <!-- 상품의 가격 필드 -->
@@ -93,9 +181,19 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text">가격</span>
                 </div>
-                <input type="number" th:field="*{price}" class="form-control" placeholder="상품의 가격을 입력해주세요">
+                <input id ="sellPrice" type="number" th:field="*{price}" class="form-control" placeholder="상품의 가격을 입력해주세요">
             </div>
             <p th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="fieldError">Incorrect data</p>
+
+            <!--최저가 검색 버튼-->
+            <div class="input-group">
+                <div style="text-align: left">
+                    <button id="lprice" type="button" class="btn btn-primary" onclick="getTitle()">최저가 검색</button>
+                </div>
+                <input type="number"  class="form-control">
+            </div>
+
+
             <!-- 상품의 재고 필드 -->
             <div class="input-group">
                 <div class="input-group-prepend">
