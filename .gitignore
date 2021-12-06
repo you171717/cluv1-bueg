@@ -39,3 +39,4 @@ out/
 ### API Keys ###
 application-oauth.properties
 application-naver.properties
+application-email.properties
