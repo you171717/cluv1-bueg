@@ -55,7 +55,6 @@ public class Member extends BaseEntity {
         member.setRole(Role.USER);
         member.setRefundBank(memberFormDto.getRefundBank());
         member.setRefundAccount(memberFormDto.getRefundAccount());
-        member.setRole(memberFormDto.getRole());
         return member;
     }
 
