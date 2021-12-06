@@ -15,5 +15,6 @@ public interface ItemRepositoryCustom {
 
     Page<GiftMainItemDto> getGiftItemPage(ItemSearchDto itemSearchDto, Pageable pageable, Long cateCode);
 
+    Page<MainItemDto> getDetailSearchPage(String[] filters, ItemSearchDto itemSearchDto, Pageable pageable);
 
 }

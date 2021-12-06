@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security"
+      layout:decorate="~{layouts/layoutGlobal}">
+
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+
+<!-- 사용자 스크립트 추가 -->
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        var filterdArray = [];
+
+        var initArray = [[${filters}]];
+
+        $(function () {
+            for (var i in initArray) {
+                if (initArray[i] !== '')
+                    add_Filter({name: initArray[i]}, true);
+            }
+        });
+
+        function add_Filter(attr, isInit) {
+            if (filterdArray.indexOf(attr.name) === -1) {
+                //리스트에 선택된 항목 삽입
+                filterdArray.push(attr.name);
+                console.log(filterdArray);
+                //필터 삽입할 div
+                var filterDiv = document.getElementById('filter');
+
+                //필터 삽입
+                var filterBlock = document.createElement('button');
+                filterBlock.setAttribute('class', 'filter_bar_tag');
+                filterBlock.setAttribute('customId', attr.id);
+                filterBlock.innerHTML = attr.name;
+                //x버튼
+                var deleteBtn = document.createElement('span');
+                deleteBtn.innerHTML = 'X';
+                filterBlock.appendChild(deleteBtn);
+                filterDiv.appendChild(filterBlock);
+                deleteBtn.onclick = function () {
+                    filterdArray.splice(filterdArray.indexOf(attr.name), 1);
+                    $(this).parent().remove();
+                    console.log(filterdArray);
+                    applyFilter();
+                };
+            } else {
+                // alert("이미 존재하는 항목입니다");
+                filterdArray.splice(filterdArray.indexOf(attr.name), 1);
+                $("button[customId='" + attr.id + "']").remove();
+                console.log(filterdArray);
+            }
+            // uploadArray();
+            if (isInit != true) {
+                applyFilter();
+            }
+        }
+
+        function refresh() {
+            filterdArray = [];
+            $('button').remove('.filter_bar_tag');
+            console.log(filterdArray);
+            // uploadArray();
+            applyFilter();
+        }
+
+        function applyFilter() {
+            location.href = "/detailSearch?filter=" + encodeURIComponent(filterdArray.join(','));
+        }
+
+    </script>
+</th:block>
+
+<!-- 사용자 CSS 추가 -->
+<th:block layout:fragment="css">
+<style>
+    .filter_button{
+        padding: 8px 10px;
+        border: 1px solid rgb(218, 220, 224);
+        border-radius: 4px;
+        box-sizing: border-box;
+        font-size: 20px;
+        font-weight: normal;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.21;
+        transition: color 0.1s ease 0s, background-color 0.1s ease 0s, border-color 0.1s ease 0s;
+        color: rgb(66, 66, 66);
+        background-color: rgb(255, 255, 255);
+        font-family: none;
+    }
+    .filter_bar_container{
+        /*position: absolute;*/
+        width: 100%;
+        height: 60px;
+        content: "";
+        background-color: #f7f8fa;
+        /*background-image: linear-gradient(*/
+        /*        270deg,#f7f8fa,#f7f8fa 4%,rgba(247,248,250,0));*/
+    }
+    .filter_bar_tag_list{
+        white-space: nowrap;
+        overflow: auto;
+        margin: 0;
+        padding: 8px 14px;
+        list-style: none;
+        line-height: 0;
+        margin-block-start: 1em;
+        margin-block-end: 1em;
+        margin-inline-start: 0px;
+        margin-inline-end: 0px;
+        padding-inline-start: 40px;
+    }
+    .filter_bar_tag_item {
+        display: inline-block;
+        margin: 0 2px;
+        padding: 10px;
+
+    }
+    .filter_bar_tag{
+        margin: 0;
+        padding: 8px 12px;
+        font-size: 18px;
+        border: 1px solid #37507d;
+        border-radius: 18px;
+        font-weight: 400;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: 1.21;
+        letter-spacing: normal;
+        color: #fff;
+        background-color: #37507d;
+    }
+    .filter-bar-tag-list_clear {
+        float: right;
+        margin: 0;
+        padding: 18px 16px 16px 12px;
+        border: none;
+        background-color: #f7f8fa;
+        font-size: 14px;
+        font-weight: 700;
+        font-stretch: normal;
+        font-style: normal;
+        line-height: normal;
+        letter-spacing: normal;
+        text-decoration: none;
+        text-align: center;
+        color: #757575;
+        cursor: pointer;
+        transition: opacity .1s ease;
+        white-space: nowrap;
+    }
+</style>
+</th:block>
+<div layout:fragment="content">
+    <h1 style="float: left">태그검색 페이지</h1>
+    <br>
+    <div class="tag_filter" style="margin-top: 50px;">
+        <div id="filter_select" style="width: 100%">
+            <button class="filter_button" name="거실" id="tag_1" onclick="add_Filter(this)">
+                <span>✔  </span>거실
+            </button>
+            <button class="filter_button" name="침실" id="tag_2" onclick="add_Filter(this)">
+                <span>✔  </span>침실
+            </button>
+            <button class="filter_button" name="1인" id="tag_3" onclick="add_Filter(this)">
+                <span>✔  </span>1인
+            </button>
+            <button class="filter_button" name="4인" id="tag_4" onclick="add_Filter(this)">
+                <span>✔  </span>4인
+            </button>
+            <button class="filter_button" name="봄" id="tag_5" onclick="add_Filter(this)">
+                <span>✔  </span>봄
+            </button>
+            <button class="filter_button" name="여름" id="tag_6" onclick="add_Filter(this)">
+                <span>✔  </span>여름
+            </button>
+            <button class="filter_button" name="가을" id="tag_7" onclick="add_Filter(this)">
+                <span>✔  </span>가을
+            </button>
+            <button class="filter_button" name="겨울" id="tag_8" onclick="add_Filter(this)">
+                <span>✔  </span>겨울
+            </button>
+        </div>
+        <div style="margin-top: 20px;margin-bottom: 20px;">
+            <div class="filter_bar_container" style="align : center;">
+                <div class="filter_bar_tag_item" style="float: left;" id="filter">
+                    <!--                    <button class="filter_bar_tag">거실<span>  X  </span></button>-->
+                    <!--                    <button class="filter_bar_tag">침실<span>  X  </span></button>-->
+                    <!--                    <button class="filter_bar_tag">1인<span>  X  </span></button>-->
+                    <!--                    <button class="filter_bar_tag">4인<span>  X  </span></button>-->
+                    <!--                    <button class="filter_bar_tag">거실<span>  X  </span></button>-->
+                </div>
+                <!--초기화-->
+                <button class="filter-bar-tag-list_clear" onclick="refresh()">초기화</button>
+            </div>
+        </div>
+    </div>
+    <!-- 상품 관리와 동일한 상품 조회 결과 출력 -->
+    <div class="row">
+        <th:block th:each="item, status: ${items.getContent()}">
+            <div class="col-md-4 margin">
+                <div class="card">
+                    <a th:href="'/item/' +${item.id}" class="text-dark">
+                        <img th:src="${item.imgUrl}" class="card-img-top" th:alt="${item.itemNm}" height="400">
+                        <div class="card-body">
+                            <h4 class="card-title">[[${item.itemNm}]]</h4>
+                            <p class="card-text">[[${item.itemDetail}]]</p>
+                            <h3 class="card-title text-danger">[[${#numbers.formatCurrency(item.price)}]]<small
+                                    style="font-size: 16px;"> (배송비 :
+                                <th:block th:text="${#numbers.formatCurrency(item.shippingFee)}"></th:block>
+                                )</small></h3>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </th:block>
+    </div>
+
+    <!-- 상품 관리와 동일한 페이징 처리 -->
+    <div th:with="start=${(items.number / maxPage) * maxPage + 1}, end=(${(items.totalPages == 0) ? 1 : (start + (maxPage - 1) < items.totalPages ? start + (maxPage - 1) : items.totalPages)})">
+        <ul class="pagination justify-content-center">
+            <li class="page-item" th:classappend="${items.number eq 0}?'disabled':''">
+                <a th:href="@{'/' + '?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${items.number - 1}}"
+                   aria-label='Previous' class="page-link">
+                    <span aria-hidden='true'>이전</span>
+                </a>
+            </li>
+            <li class="page-item" th:each="page: ${#numbers.sequence(start, end)}"
+                th:classappend="${items.number eq page - 1}?'active':''">
+                <a th:href="@{'/' +'?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${page - 1}}"
+                   th:inline="text" class="page-link">[[${page}]]</a>
+            </li>
+            <li class="page-item" th:classappend="${items.number+1 ge items.totalPages}?'disabled':''">
+                <a th:href="@{'/' +'?searchQuery=' + ${itemSearchDto.searchQuery} + '&page=' + ${items.number + 1}}"
+                   aria-label='Next' class="page-link">
+                    <span aria-hidden='true'>다음</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
+
+</html>

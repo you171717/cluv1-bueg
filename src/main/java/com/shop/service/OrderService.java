@@ -33,11 +33,19 @@ public class OrderService {
     private final MemberRepository memberRepository;
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
+    private final ItemTagRepository itemTagRepository;
 
     public Long order(OrderDto orderDto, String email) {
         Item item = itemRepository.findById(orderDto.getItemId()).orElseThrow(EntityNotFoundException::new);
 
         Member member = memberRepository.findByEmail(email);
+
+        //Tag별 누적 판매 증가
+        List<ItemTag> itemTag = itemTagRepository.findByItem_Id(item.getId());
+
+        for(ItemTag itemtag : itemTag) {
+            itemtag.getTag().addTotalSell();
+        }
 
         List<OrderItem> orderItemList = new ArrayList<>();
 

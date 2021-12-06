@@ -5,9 +5,14 @@ import com.shop.entity.Category;
 import com.shop.entity.Item;
 import com.shop.entity.ItemImg;
 import com.shop.repository.CategoryRepository;
+import com.shop.entity.ItemTag;
+import com.shop.entity.Tag;
 import com.shop.repository.ItemImgRepository;
 import com.shop.repository.ItemRepository;
+import com.shop.repository.ItemTagRepository;
+import com.shop.repository.TagRepository;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -27,16 +32,17 @@ public class ItemService {
     private final ItemImgService itemImgService;
     private final ItemImgRepository itemImgRepository;
     private final CategoryRepository categoryRepository;
+    private final ItemTagRepository itemTagRepository;
+    private final TagRepository tagRepository;
 
-    public Long saveItem(ItemFormDto itemFormDto, List<MultipartFile> itemImgFileList) throws Exception {
-
+    public Long saveItem(ItemFormDto itemFormDto, List<MultipartFile> itemImgFileList, List<String> tags) throws Exception {
         // 카테고리 정보 조회
         Category category = categoryRepository.findByCateCode(itemFormDto.getCateCode());
 
         // 상품 등록
         Item item = Item.createItem(itemFormDto, category);
+        
         itemRepository.save(item);
-
 
         for(int i = 0; i < itemImgFileList.size(); i++) {
             ItemImg itemImg = new ItemImg();
@@ -50,6 +56,16 @@ public class ItemService {
             }
 
             itemImgService.saveItemImg(itemImg, itemImgFileList.get(i));
+        }
+
+        //태그 등록
+        for (int i = 0; i < tags.size(); i++) {
+            ItemTag itemTag = new ItemTag();
+            Tag tag = tagRepository.findById(Long.parseLong(tags.get(i)))
+                    .orElseThrow(EntityNotFoundException::new);
+            itemTag.setItem(item);
+            itemTag.setTag(tag);
+            itemTagRepository.save(itemTag);
         }
 
         return item.getId();
@@ -74,7 +90,21 @@ public class ItemService {
         return itemFormDto;
     }
 
-    public Long updateItem(ItemFormDto itemFormDto, List<MultipartFile> itemImgFileList) throws Exception {
+    @Transactional(readOnly = true)
+    public List<Tag> getTags(Long itemId) {
+        List<ItemTag> itemTag = itemTagRepository.findByItem_Id(itemId);
+        List<Tag> tags = new ArrayList<>();
+        for (ItemTag itemtag : itemTag) {
+            Tag tag = itemtag.getTag();
+            Hibernate.initialize(tag);
+            Hibernate.unproxy(tag);
+
+            tags.add(tag);
+        }
+        return tags;
+    }
+
+    public Long updateItem(ItemFormDto itemFormDto, List<MultipartFile> itemImgFileList, List<String> tags) throws Exception {
         Item item = itemRepository.findById(itemFormDto.getId()).orElseThrow(EntityNotFoundException::new);
 
         item.updateItem(itemFormDto);
@@ -84,7 +114,22 @@ public class ItemService {
         for(int i = 0; i < itemImgFileList.size(); i++) {
             itemImgService.updateItemImg(itemImgIds.get(i), itemImgFileList.get(i));
         }
+        //태그 수정
+        List<ItemTag> savedItemTag = itemTagRepository.findByItem_Id(item.getId());
 
+        //기존 태그 삭제
+        for(ItemTag itemTag : savedItemTag) {
+            itemTagRepository.delete(itemTag);
+        }
+
+        //새 태그 등록
+        for(String tag : tags) {
+            ItemTag itemTag = new ItemTag();
+            Tag t = tagRepository.findById(Long.parseLong(tag)).orElseThrow(EntityNotFoundException::new);
+            itemTag.setItem(item);
+            itemTag.setTag(t);
+            itemTagRepository.save(itemTag);
+        }
         return item.getId();
     }
 
@@ -100,7 +145,12 @@ public class ItemService {
 
     // 선물하기 상품 데이터
     @Transactional(readOnly = true)
-    public Page<GiftMainItemDto> getGiftItemPage(ItemSearchDto itemSearchDto, Pageable pageable, Long cateCode){
+    public Page<GiftMainItemDto> getGiftItemPage(ItemSearchDto itemSearchDto, Pageable pageable, Long cateCode) {
         return itemRepository.getGiftItemPage(itemSearchDto, pageable, cateCode);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<MainItemDto> getDetailSearchPage(String[] filters, ItemSearchDto itemSearchDto, Pageable pageable) {
+        return itemRepository.getDetailSearchPage(filters, itemSearchDto, pageable);
     }
 }
