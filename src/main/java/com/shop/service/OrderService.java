@@ -2,6 +2,7 @@ package com.shop.service;
 
 import com.shop.constant.OrderStatus;
 import com.shop.constant.ReturnStatus;
+import com.shop.constant.GiftStatus;
 import com.shop.dto.OrderDto;
 import com.shop.dto.OrderHistDto;
 import com.shop.dto.OrderItemDto;
@@ -19,6 +20,8 @@ import javax.persistence.EntityNotFoundException;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import static com.shop.constant.GiftStatus.BUY;
 
 @Service
 @Transactional
@@ -41,7 +44,30 @@ public class OrderService {
         OrderItem orderItem = OrderItem.createOrderItem(item, orderDto.getCount());
         orderItemList.add(orderItem);
 
-        Order order = Order.createOrder(member, orderItemList);
+        Order order = Order.createOrder(member, orderItemList, BUY,
+                member.getAddress(), member.getAddressDetail());
+        orderRepository.save(order);
+
+        return order.getId();
+    }
+
+    // 선물하기
+    public Long gift(OrderDto orderDto, String email) {
+        Item item = itemRepository.findById(orderDto.getItemId())
+                .orElseThrow(EntityNotFoundException::new);
+        // 이메일 정보를 이용해 회원 정보 조회
+        Member member = memberRepository.findByEmail(email);
+
+        List<OrderItem> orderItemList = new ArrayList<>();
+
+        // 주문할 상품 엔티티와 주문 수량을 이용하여 주문 상품 엔티티 생성
+        OrderItem orderItem =
+                OrderItem.createOrderItem(item, orderDto.getCount());
+        orderItemList.add(orderItem);
+
+        // 회원 정보와 주문할 상품 리스트 정보를 이용하여 주문 엔티티 생성 (상태 : 선물)
+        Order order = Order.createOrder(member, orderItemList , GiftStatus.GIFT,
+                orderDto.getAddress(), orderDto.getAddressDetail());
         orderRepository.save(order);
 
         return order.getId();
@@ -71,6 +97,30 @@ public class OrderService {
             orderHistDtos.add(orderHistDto);
         }
 
+        return new PageImpl<OrderHistDto>(orderHistDtos, pageable, totalCount);
+    }
+
+    // 구매/선물 상태 조회
+    @Transactional(readOnly = true)
+    public Page<OrderHistDto> getOrderListStatus(String email, Pageable pageable, GiftStatus giftStatus){
+
+        List<Order> orders = orderRepository.findOrdersStatus(email, pageable, giftStatus);
+        Long totalCount = orderRepository.countOrder(email);
+
+        List<OrderHistDto> orderHistDtos = new ArrayList<>();
+
+        // 주문 리스트 순회
+        for(Order order : orders){
+            OrderHistDto orderHistDto = new OrderHistDto(order);
+            List<OrderItem> orderItems = order.getOrderItems();
+            for(OrderItem orderItem : orderItems) {
+                ItemImg itemImg = itemImgRepository.findByItemIdAndRepImgYn(orderItem.getItem().getId(), "Y");
+                OrderItemDto orderItemDto =
+                        new OrderItemDto(orderItem, itemImg.getImgUrl());
+                orderHistDto.addOrderItemDto(orderItemDto);
+            }
+            orderHistDtos.add(orderHistDto);
+        }
         return new PageImpl<OrderHistDto>(orderHistDtos, pageable, totalCount);
     }
 
@@ -108,7 +158,7 @@ public class OrderService {
             orderItemList.add(orderItem);
         }
 
-        Order order = Order.createOrder(member, orderItemList);
+        Order order = Order.createOrder(member, orderItemList ,BUY, member.getAddress(), member.getAddressDetail());
 
         orderRepository.save(order);
 

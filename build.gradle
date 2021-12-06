@@ -44,6 +44,9 @@ dependencies {
 	implementation group: 'com.querydsl', name: 'querydsl-apt', version: querydslVersion
 	implementation group: 'com.querydsl', name: 'querydsl-core', version: querydslVersion
 
+	// coolsms
+	implementation group: 'net.nurigo', name: 'javaSDK', version: '2.2'
+
 	annotationProcessor group: 'com.querydsl', name: 'querydsl-apt', version: querydslVersion
 	annotationProcessor group: 'com.querydsl', name: 'querydsl-apt', version: querydslVersion, classifier: 'jpa'
 	annotationProcessor("jakarta.persistence:jakarta.persistence-api")

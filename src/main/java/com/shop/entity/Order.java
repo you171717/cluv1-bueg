@@ -1,5 +1,6 @@
 package com.shop.entity;
 
+import com.shop.constant.GiftStatus;
 import com.shop.constant.OrderStatus;
 import com.shop.constant.ReturnStatus;
 import lombok.Getter;
@@ -30,6 +31,11 @@ public class Order extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
+    private String address; // 주문 배송지
+
+    @Enumerated(EnumType.STRING)
+    private GiftStatus giftStatus; // 구매/선물 상태
+
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<OrderItem> orderItems = new ArrayList<>();
 
@@ -51,7 +57,8 @@ public class Order extends BaseEntity {
         orderItem.setOrder(this);
     }
 
-    public static Order createOrder(Member member, List<OrderItem> orderItemList) {
+    public static Order createOrder(Member member, List<OrderItem> orderItemList, GiftStatus giftStatus,
+                                    String address, String addressDetail) {
         Order order = new Order();
         order.setMember(member);
 
@@ -61,6 +68,9 @@ public class Order extends BaseEntity {
 
         order.setOrderStatus(OrderStatus.ORDER);
         order.setOrderDate(LocalDateTime.now());
+        order.setGiftStatus(giftStatus);
+        order.setAddress(address + " " +addressDetail);
+
 
         return order;
     }

@@ -4,10 +4,9 @@ import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.shop.constant.ItemSellStatus;
-import com.shop.dto.ItemSearchDto;
-import com.shop.dto.MainItemDto;
-import com.shop.dto.QMainItemDto;
+import com.shop.dto.*;
 import com.shop.entity.Item;
+import com.shop.entity.QCategory;
 import com.shop.entity.QItem;
 import com.shop.entity.QItemImg;
 import org.springframework.data.domain.Page;
@@ -112,6 +111,41 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         long total = results.getTotal();
 
         return new PageImpl<>(content, pageable, total);
+    }
+
+    @Override
+    public Page<GiftMainItemDto> getGiftItemPage(ItemSearchDto itemSearchDto,
+                                                 Pageable pageable, Long cateCode) {
+        QItem item = QItem.item;
+        QItemImg itemImg = QItemImg.itemImg;
+        QCategory category = QCategory.category;
+
+        QueryResults<GiftMainItemDto> results = queryFactory
+                .select(
+                        new QGiftMainItemDto(
+                                item.id,
+                                category.cateCode,
+                                item.itemNm,
+                                item.itemDetail,
+                                itemImg.imgUrl,
+                                item.price)
+                )
+                .from(itemImg)
+                .join(itemImg.item, item)
+                .join(item.category, category)
+                .where(itemImg.repImgYn.eq("Y"))
+                .where(itemNmLike(itemSearchDto.getSearchQuery()))
+                .where(category.cateCode.eq(cateCode))
+                .orderBy(item.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+
+        List<GiftMainItemDto> content = results.getResults();
+
+        long total = results.getTotal();
+        return new PageImpl<>(content, pageable, total);
+
     }
 
 }

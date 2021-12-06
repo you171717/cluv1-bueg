@@ -11,6 +11,36 @@
     <!-- 사용자 스크립트 추가 -->
     <th:block layout:fragment="script">
         <script th:inline="javascript">
+
+            function getStatus() {
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+
+                var url = "/orders";
+                var paramData = {
+                    giftStatus: $("#statSelect").val()
+                };
+
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    contentType: "application/json",
+                    data: paramData,
+                    beforeSend: function (xhr) {
+                        /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                        xhr.setRequestHeader(header, token);
+                    },
+                    cache: false,
+                    success: function (result, status) {
+                        location.href="/ordersStatus/"+$("#statSelect").val();
+                        alert("상태 갱신 완료");
+                    },
+                    error: function () {
+                        alert("상태 갱신 오류")
+                    }
+                });
+            }
+
             function cancelOrder(orderId) {
                 var token = $("meta[name='_csrf']").attr("content");
                 var header = $("meta[name='_csrf_header']").attr("content");
@@ -90,12 +120,26 @@
     </th:block>
 
     <div layout:fragment="content" class="content-mg">
+
+        <div class="right-box">
+            <select id="statSelect" class="custom-select" onchange="getStatus();">
+                <option value="">전체</option>
+                <option value="BUY">구매</option>
+                <option value="GIFT">선물</option>
+            </select>
+        </div>
+
         <h2 class="mb-4">
-            구매 이력
+            구매/선물 이력
         </h2>
         <div class="d-flex flex-column align-items-center" th:each="order : ${orders.getContent()}">
             <div class="d-flex mb-3 align-self-center card-title">
+                <th:block th:if="${order.giftStatus == T(com.shop.constant.GiftStatus).BUY}">
                 <h4 th:text="${order.orderDate} + ' 주문'"></h4>
+                </th:block>
+                <th:block th:unless="${order.giftStatus == T(com.shop.constant.GiftStatus).BUY}">
+                <h4 th:text="${order.orderDate} + ' 선물'"></h4>
+                </th:block>
                 <div class="ml-3">
                     <th:block th:if="${order.orderStatus == T(com.shop.constant.OrderStatus).ORDER}">
 
@@ -121,6 +165,7 @@
                     <div class="align-self-center w-75">
                         <span th:text="${orderItem.itemNm}" class="fs24 font-weight-bold"></span>
                         <div class="fs18 font-weight-light" style="margin-top: 10px;">
+                            <br><span th:text="'배송지 : '+${order.orderAddress}"></span></br>
                             <span th:text="${#numbers.formatCurrency(orderItem.orderPrice)}"></span>
                             <span th:text="${orderItem.count} +'개'"></span>
                             <small class="text-danger">(배송비 : <th:block th:text="${#numbers.formatCurrency(orderItem.orderShippingFee)}"></th:block>)</small>

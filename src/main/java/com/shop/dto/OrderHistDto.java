@@ -1,5 +1,6 @@
 package com.shop.dto;
 
+import com.shop.constant.GiftStatus;
 import com.shop.constant.OrderStatus;
 import com.shop.constant.ReturnStatus;
 import com.shop.entity.Order;
@@ -20,6 +21,8 @@ public class OrderHistDto {
 
     private OrderStatus orderStatus;
 
+    private String orderAddress;
+
     //반품 요청일
     private String returnReqDate;
 
@@ -29,12 +32,16 @@ public class OrderHistDto {
     //반품 여부
     private ReturnStatus returnStatus;
 
+    private GiftStatus giftStatus;
+
     private List<OrderItemDto> orderItemDtoList = new ArrayList<>();
 
     public OrderHistDto(Order order) {
         this.orderId = order.getId();
         this.orderDate = order.getOrderDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
+        this.orderAddress = order.getAddress();
         this.orderStatus = order.getOrderStatus();
+        this.giftStatus = order.getGiftStatus();
 
         if( order.getReturnReqDate() != null ) {
             this.returnReqDate = order.getReturnReqDate().format(DateTimeFormatter.ofPattern("yyyy-mm-dd HH:mm"));
