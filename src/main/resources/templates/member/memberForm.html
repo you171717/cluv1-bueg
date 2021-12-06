@@ -13,7 +13,6 @@
 
     <th:block layout:fragment="script">
         <script th:inline="javascript">
-
             // 카카오 주소 API 추가
             window.onload = function(){
                 document.getElementById("address_kakao").addEventListener("click", function(){ //주소입력칸을 클릭하면
@@ -27,59 +26,30 @@
                 });
             }
 
-
             $(document).ready(function() {
-               var errorMessage = [[${errorMessage}]];
-               if(errorMessage != null) {
-                   alert(errorMessage);
-               }
+                var errorMessage = [[${errorMessage}]];
+                if(errorMessage != null) {
+                    alert(errorMessage);
+                }
 
-                //password Check
-                $("#passwordCheck").keyup(function(){
-                    $('button').removeAttr('disabled');
-                    var password = $("#password");
-                    var passwordCheck = $("#passwordCheck");
-                    if(password.val() == passwordCheck.val()){
-                        password.css('background-color','azure');
-                        passwordCheck.css('background-color','azure');
-                    }else{
-                        password.css('background-color','lavenderblush');
-                        passwordCheck.css('background-color','lavenderblush');
-                        $('button').attr('disabled','disabled');
-                    }
-                });
+                var $submitButton = $('.content button[type="submit"]');
+                var $password = $('#password');
+                var $passwordCheck = $('#passwordCheck');
 
-                //front-end blank check
-                $( "form" ).submit(function( event ) {
-                    $('.fieldError').remove();
-                    var name = $('#name')
-                    var email = $('#email')
-                    var password = $('#password')
-                    var passwordCheck = $('#passwordCheck')
-                    var address = $('#address')
-                    if (name.val()=='') {
-                        insertValidMessage(name, '이름을 입력하세요.');
-                        event.preventDefault();
-                    }else if(email.val() == ''){
-                        insertValidMessage(email, '이메일을 입력하세요.');
-                        event.preventDefault();
-                    }else if (password.val()){
-                        insertValidMessage(password, '비밀번호를 입력하세요.');
-                        event.preventDefault();
-                    }else if (passwordCheck.val()){
-                        insertValidMessage(passwordCheck, '비밀번호 확인을 진행하세요.');
-                        event.preventDefault();
-                    }else if (address.val()){
-                        insertValidMessage(address, '이메일을 입력하세요.');
-                        event.preventDefault();
+                $passwordCheck.keyup(function() {
+                    $submitButton.removeAttr('disabled');
+
+                    if($password.val() == $passwordCheck.val()) {
+                        $password.css('background-color', 'azure');
+                        $passwordCheck.css('background-color', 'azure');
+                    } else {
+                        $password.css('background-color', 'lavenderblush');
+                        $passwordCheck.css('background-color', 'lavenderblush');
+
+                        $submitButton.attr('disabled', 'disabled');
                     }
                 });
             });
-
-            function insertValidMessage(node, message) {
-                var element = '<p class="fieldError">'+message+'</p>';
-                node.after(element);
-            }
         </script>
     </th:block>
 
@@ -100,12 +70,10 @@
                 <input type="password" th:field="*{password}" class="form-control" placeholder="비밀번호 입력">
                 <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="fieldError">Incorrect data</p>
             </div>
-
             <!--  비밀번호 확인  -->
             <div class="form-group">
                 <input type="password" id="passwordCheck" class="form-control" placeholder="비밀번호 확인">
             </div>
-            
             <!-- 카카오 주소 API 추가-->
             <div class="form-group">
                 <label >주소</label>
@@ -119,7 +87,6 @@
                 <p th:if="${#fields.hasErrors('addressDetail')}"
                    th:errors="*{addressDetail}" class="fieldError">Incorrect data</p>
             </div>
-
             <div class="form-group">
                 <label th:for="refundBank">환불 은행</label>
                 <select th:field="*{refundBank}" class="form-control">
@@ -134,15 +101,6 @@
                 <input type="text" th:field="*{refundAccount}" class="form-control" placeholder="환불 계좌를 입력해주세요">
                 <p th:if="${#fields.hasErrors('refundAccount')}" th:errors="*{refundAccount}" class="fieldError">Incorrect data</p>
             </div>
-
-            <div class="form-group">
-                <label th:for="role">권한</label>
-                <select th:field="*{role}" class="custom-select">
-                    <option value="USER">사용자</option>
-                    <option value="ADMIN">관리자</option>
-                </select>
-            </div>
-
             <div style="text-align: center">
                 <button type="submit" class="btn btn-lg btn-primary">회원가입</button>
             </div>
