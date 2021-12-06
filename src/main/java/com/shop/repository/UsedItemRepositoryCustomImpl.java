@@ -3,6 +3,7 @@ package com.shop.repository;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.shop.dto.QUsedItemDto;
 import com.shop.dto.UsedItemDto;
 import com.shop.dto.UsedItemSearchDto;
 import com.shop.entity.QUsedItem;
@@ -24,7 +25,6 @@ public class UsedItemRepositoryCustomImpl implements UsedItemRepositoryCustom {
     public UsedItemRepositoryCustomImpl(EntityManager em) {
         this.queryFactory = new JPAQueryFactory(em);
     }
-
 
     @Override
     public Page<UsedItemDto> getUsedItemPage(UsedItemSearchDto usedItemSearchDto, Pageable pageable) {
