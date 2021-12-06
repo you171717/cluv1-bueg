@@ -1,6 +1,5 @@
 package com.shop.service;
 
-import com.shop.dto.ReviewFormDto;
 import com.shop.entity.ReviewImg;
 import com.shop.repository.ReviewImgRepository;
 import lombok.RequiredArgsConstructor;

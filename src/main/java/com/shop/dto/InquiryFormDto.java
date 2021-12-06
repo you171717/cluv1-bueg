@@ -1,15 +1,12 @@
 package com.shop.dto;
 
 import com.shop.entity.BaseEntity;
-import com.shop.entity.BaseTimeEntity;
 import com.shop.entity.Inquiry;
-import com.shop.entity.Item;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.modelmapper.ModelMapper;
-import org.springframework.data.annotation.LastModifiedBy;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;

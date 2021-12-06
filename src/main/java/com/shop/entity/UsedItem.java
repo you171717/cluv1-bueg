@@ -1,6 +1,5 @@
 package com.shop.entity;
 
-import com.shop.constant.ItemSellStatus;
 import com.shop.constant.UsedItemSellStatus;
 import com.shop.dto.UsedItemFormDto;
 import lombok.Getter;
@@ -11,7 +10,7 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "UsedItem")
+@Table(name = "used_item")
 @Getter
 @Setter
 @ToString

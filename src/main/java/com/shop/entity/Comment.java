@@ -2,10 +2,8 @@ package com.shop.entity;
 
 import com.shop.dto.CommentFormDto;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
 
 
 @Entity

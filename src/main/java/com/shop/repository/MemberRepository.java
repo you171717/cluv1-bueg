@@ -4,8 +4,8 @@ import com.shop.entity.Member;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.transaction.annotation.Transactional;
 
 public interface MemberRepository extends JpaRepository<Member, Long>, QuerydslPredicateExecutor<Member>, MemberRepositoryCustom {
 

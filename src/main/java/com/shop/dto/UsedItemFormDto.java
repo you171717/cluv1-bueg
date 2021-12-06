@@ -1,6 +1,5 @@
 package com.shop.dto;
 
-import com.shop.constant.ItemSellStatus;
 import com.shop.constant.UsedItemSellStatus;
 import com.shop.entity.UsedItem;
 import lombok.Getter;
@@ -11,7 +10,6 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Getter @Setter

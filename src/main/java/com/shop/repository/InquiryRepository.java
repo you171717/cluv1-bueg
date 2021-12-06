@@ -1,6 +1,5 @@
 package com.shop.repository;
 
-import com.shop.dto.InquiryFormDto;
 import com.shop.entity.Inquiry;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

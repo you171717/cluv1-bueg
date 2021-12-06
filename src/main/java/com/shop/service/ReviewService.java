@@ -1,6 +1,5 @@
 package com.shop.service;
 
-import com.shop.dto.OrderItemDto;
 import com.shop.dto.ReviewFormDto;
 import com.shop.dto.ReviewImgDto;
 import com.shop.dto.ReviewItemDto;

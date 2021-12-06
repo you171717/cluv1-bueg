@@ -1,16 +1,8 @@
 package com.shop.service;
 
 import com.shop.dto.*;
-import com.shop.entity.Category;
-import com.shop.entity.Item;
-import com.shop.entity.ItemImg;
-import com.shop.repository.CategoryRepository;
-import com.shop.entity.ItemTag;
-import com.shop.entity.Tag;
-import com.shop.repository.ItemImgRepository;
-import com.shop.repository.ItemRepository;
-import com.shop.repository.ItemTagRepository;
-import com.shop.repository.TagRepository;
+import com.shop.entity.*;
+import com.shop.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.hibernate.Hibernate;
 import org.springframework.data.domain.Page;

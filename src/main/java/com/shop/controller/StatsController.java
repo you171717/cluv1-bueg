@@ -1,6 +1,5 @@
 package com.shop.controller;
 
-import com.shop.entity.EmailNotice;
 import com.shop.repository.EmailNoticeRepository;
 import com.shop.repository.SmsNoticeRepository;
 import lombok.RequiredArgsConstructor;

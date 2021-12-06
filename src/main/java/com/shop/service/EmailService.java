@@ -2,7 +2,10 @@ package com.shop.service;
 
 import com.shop.dto.MemberFormDto;
 import com.shop.dto.OrderDto;
-import com.shop.entity.*;
+import com.shop.entity.EmailNotice;
+import com.shop.entity.Item;
+import com.shop.entity.Order;
+import com.shop.entity.OrderItem;
 import com.shop.repository.AuthTokenRepository;
 import com.shop.repository.EmailNoticeRepository;
 import com.shop.repository.ItemRepository;

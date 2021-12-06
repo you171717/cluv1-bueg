@@ -1,12 +1,10 @@
 package com.shop.repository;
 
 import com.querydsl.core.QueryResults;
-import com.querydsl.core.types.Expression;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.shop.dto.*;
-import com.shop.entity.QItem;
-import com.shop.entity.QItemImg;
+import com.shop.dto.UsedItemDto;
+import com.shop.dto.UsedItemSearchDto;
 import com.shop.entity.QUsedItem;
 import com.shop.entity.QUsedItemImg;
 import lombok.extern.slf4j.Slf4j;
@@ -16,8 +14,6 @@ import org.springframework.data.domain.Pageable;
 import org.thymeleaf.util.StringUtils;
 
 import javax.persistence.EntityManager;
-import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Slf4j

@@ -1,6 +1,7 @@
 package com.shop.controller;
 
-import com.shop.dto.*;
+import com.shop.dto.OrderHistDto;
+import com.shop.dto.ReviewFormDto;
 import com.shop.service.OrderService;
 import com.shop.service.ReviewImgService;
 import com.shop.service.ReviewService;

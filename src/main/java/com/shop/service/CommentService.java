@@ -1,7 +1,8 @@
 package com.shop.service;
 
 import com.shop.dto.CommentFormDto;
-import com.shop.entity.*;
+import com.shop.entity.Comment;
+import com.shop.entity.Inquiry;
 import com.shop.repository.CommentRepository;
 import com.shop.repository.InquiryRepository;
 import lombok.RequiredArgsConstructor;

@@ -7,8 +7,10 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Getter @Setter
-public class AuthToken extends BaseEntity{
+@Getter
+@Setter
+public class AuthToken extends BaseEntity {
+
     @Id
     @Column(name = "token_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -23,6 +25,5 @@ public class AuthToken extends BaseEntity{
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name= "member_id")
     private Member member;
-
 
 }

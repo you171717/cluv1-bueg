@@ -1,10 +1,8 @@
 package com.shop.controller;
 
-import com.shop.dto.ItemFormDto;
 import com.shop.dto.UsedItemDto;
 import com.shop.dto.UsedItemFormDto;
 import com.shop.dto.UsedItemSearchDto;
-import com.shop.service.UsedItemImgService;
 import com.shop.service.UsedItemService;
 import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;

@@ -1,10 +1,7 @@
 package com.shop.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
-import com.shop.entity.FAQ;
 import lombok.*;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Setter

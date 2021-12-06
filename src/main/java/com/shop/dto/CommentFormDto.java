@@ -3,13 +3,11 @@ package com.shop.dto;
 import com.shop.entity.BaseEntity;
 import com.shop.entity.Comment;
 import com.shop.entity.Inquiry;
-import com.shop.entity.Member;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.criteria.CriteriaBuilder;
 import java.time.LocalDateTime;
 
 @Getter

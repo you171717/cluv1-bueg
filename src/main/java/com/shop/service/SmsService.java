@@ -1,7 +1,10 @@
 package com.shop.service;
 
 import com.shop.dto.OrderDto;
-import com.shop.entity.*;
+import com.shop.entity.Item;
+import com.shop.entity.Order;
+import com.shop.entity.OrderItem;
+import com.shop.entity.SmsNotice;
 import com.shop.repository.ItemRepository;
 import com.shop.repository.OrderRepository;
 import com.shop.repository.SmsNoticeRepository;

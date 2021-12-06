@@ -1,7 +1,7 @@
 package com.shop.entity;
 
-import com.shop.dto.ReviewFormDto;
 import com.shop.constant.ReturnStatus;
+import com.shop.dto.ReviewFormDto;
 import lombok.Getter;
 import lombok.Setter;
 

@@ -11,7 +11,8 @@ import javax.persistence.*;
 @Getter
 @Setter
 @ToString
-public class FAQ{
+public class FAQ {
+
     @Id
     @Column(name="faq_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -24,4 +25,5 @@ public class FAQ{
     @Lob
     @Column(nullable=false)
     private String answer;
+
 }
