@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layout1}">
+
+<!-- 사용자 CSS 추가 -->
+<th:block layout:fragment="css">
+    <style>
+        .carousel-inner > .item {
+            height: 250px;
+        }
+        .margin{
+            margin-bottom:30px;
+        }
+        .banner{
+            height: 300px;
+            position: absolute; top:0; left: 20%;
+            width: 60%;
+            height: 100%;
+        }
+        .card-text{
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            overflow: hidden;
+        }
+        a:hover{
+            text-decoration:none;
+        }
+        .center{
+            text-align:center;
+        }
+    </style>
+</th:block>
+
+<th:block layout:fragment = "script">
+    <script type="javascript">
+        $(document).ready(function(){
+            var items = request.getParameter("items");
+            console.log(items[1].toString())
+        });
+    </script>
+</th:block>
+
+<div layout:fragment="content">
+
+    <div id="carouselControls" class="carousel slide margin" data-ride="carousel">
+        <div class="carousel-inner">
+            <div class="carousel-item active item">
+                <img class="d-block banner center" src="https://github.com/hiatus1225/spring_boot_pactice/blob/master/top10.jpg?raw=true" alt="오해 금지 일간 베스트 상품">
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <th:block th:each="item, status: ${items}">
+            <div class="col-md-4 margin">
+                <div class="card">
+                    <a th:href="'/item/' +${item.itemId}" class="text-dark">
+                        <img th:src="${item.imgUrl}" class="card-img-top" th:alt="${item.itemNm}" height="400">
+                        <div class="card-body">
+                            <h4 class="card-title">[[${item.itemNm}]]</h4>
+                            <p class="card-text">[[${item.itemDetail}]]</p>
+                            <h3 class="card-title text-danger">[[${#numbers.formatCurrency(item.price)}]]원</h3>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </th:block>
+    </div>
+
+</div>

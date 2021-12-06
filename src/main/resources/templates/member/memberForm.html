@@ -33,7 +33,53 @@
                if(errorMessage != null) {
                    alert(errorMessage);
                }
+
+                //password Check
+                $("#passwordCheck").keyup(function(){
+                    $('button').removeAttr('disabled');
+                    var password = $("#password");
+                    var passwordCheck = $("#passwordCheck");
+                    if(password.val() == passwordCheck.val()){
+                        password.css('background-color','azure');
+                        passwordCheck.css('background-color','azure');
+                    }else{
+                        password.css('background-color','lavenderblush');
+                        passwordCheck.css('background-color','lavenderblush');
+                        $('button').attr('disabled','disabled');
+                    }
+                });
+
+                //front-end blank check
+                $( "form" ).submit(function( event ) {
+                    $('.fieldError').remove();
+                    var name = $('#name')
+                    var email = $('#email')
+                    var password = $('#password')
+                    var passwordCheck = $('#passwordCheck')
+                    var address = $('#address')
+                    if (name.val()=='') {
+                        insertValidMessage(name, '이름을 입력하세요.');
+                        event.preventDefault();
+                    }else if(email.val() == ''){
+                        insertValidMessage(email, '이메일을 입력하세요.');
+                        event.preventDefault();
+                    }else if (password.val()){
+                        insertValidMessage(password, '비밀번호를 입력하세요.');
+                        event.preventDefault();
+                    }else if (passwordCheck.val()){
+                        insertValidMessage(passwordCheck, '비밀번호 확인을 진행하세요.');
+                        event.preventDefault();
+                    }else if (address.val()){
+                        insertValidMessage(address, '이메일을 입력하세요.');
+                        event.preventDefault();
+                    }
+                });
             });
+
+            function insertValidMessage(node, message) {
+                var element = '<p class="fieldError">'+message+'</p>';
+                node.after(element);
+            }
         </script>
     </th:block>
 
@@ -55,7 +101,12 @@
                 <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="fieldError">Incorrect data</p>
             </div>
 
-<!--            카카오 주소 API 추가-->
+            <!--  비밀번호 확인  -->
+            <div class="form-group">
+                <input type="password" id="passwordCheck" class="form-control" placeholder="비밀번호 확인">
+            </div>
+            
+            <!-- 카카오 주소 API 추가-->
             <div class="form-group">
                 <label >주소</label>
                 <input th:field="*{address}" id="address_kakao" name="address" readonly type="text" class="form-control" placeholder="주소를 입력해주세요" >
