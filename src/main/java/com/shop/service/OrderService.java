@@ -57,7 +57,7 @@ public class OrderService {
             throw new IllegalStateException("포인트가 부족합니다.");
         }
 
-        Order order = Order.createOrder(member, orderItemList, BUY,
+        Order order = Order.createOrder(member, orderDto.getUsedPoint(), orderItemList, BUY,
                 member.getAddress(), member.getAddressDetail());
 
         // 계산된 포인트 함수 호출
@@ -83,7 +83,7 @@ public class OrderService {
         orderItemList.add(orderItem);
 
         // 회원 정보와 주문할 상품 리스트 정보를 이용하여 주문 엔티티 생성 (상태 : 선물)
-        Order order = Order.createOrder(member, orderItemList , GiftStatus.GIFT,
+        Order order = Order.createOrder(member, 0, orderItemList , GiftStatus.GIFT,
                 orderDto.getAddress(), orderDto.getAddressDetail());
         orderRepository.save(order);
 
@@ -180,7 +180,7 @@ public class OrderService {
             throw new IllegalStateException("포인트가 부족합니다.");
         }
 
-        Order order = Order.createOrder(member, orderItemList ,BUY, member.getAddress(), member.getAddressDetail());
+        Order order = Order.createOrder(member, usedPoint, orderItemList ,BUY, member.getAddress(), member.getAddressDetail());
 
         // 포인트 계산 함수 호출
         this.processPointUsage(member, order);
