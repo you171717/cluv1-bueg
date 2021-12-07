@@ -26,11 +26,6 @@ import java.util.List;
 public class CartController {
 
     private final CartService cartService;
-    private final EmailService emailService;
-    private final SmsService smsService;
-    private final MemberRepository memberRepository;
-    // 멤버 서비스 선언
-    private final MemberService memberService;
 
     @PostMapping(value = "/cart")
     public @ResponseBody ResponseEntity order(@RequestBody @Valid CartItemDto cartItemDto, BindingResult bindingResult, Principal principal) {
@@ -61,13 +56,8 @@ public class CartController {
 
     @GetMapping(value = "/cart")
     public String orderHist(Principal principal, Model model) {
-
-        // 현재 로그인 중인 회원 pricipal
-        String email = principal.getName();
-
         List<CartDetailDto> cartDetailList = cartService.getCartList(principal.getName());
-        // 현재 로그인된 회원의 포인트 불러오기
-        model.addAttribute("inputPoint", memberService.getPointByEmail(email));
+
         model.addAttribute("cartItems", cartDetailList);
 
         return "cart/cartList";
@@ -111,19 +101,17 @@ public class CartController {
             }
         }
 
-        // cartOrderDto.getUsedPoint() 추가
         Long orderId = cartService.orderCartItem(cartOrderDtoList, principal.getName(), cartOrderDto.getUsedPoint());
 
-        //알림 전송할 이메일, 휴대폰 정보, 알림 전송 방식 가져오기
+        /* TODO. 서비스 단으로 옮기기
         String email = principal.getName();
-        String phone = memberRepository.findByEmail(email).getPhone();
-        String notice = cartOrderDto.getNotice();
 
         if(notice.equals("email")){
             emailService.sendCartOrderEmail(email, orderId);
         } else if(notice.equals("sms")){
             smsService.sendCartOrderSms(phone, orderId);
         }
+        */
 
         return new ResponseEntity<Long>(orderId, HttpStatus.OK);
     }

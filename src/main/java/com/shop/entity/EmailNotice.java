@@ -12,6 +12,7 @@ import javax.persistence.*;
 @Setter
 @ToString
 public class EmailNotice extends BaseEntity {
+
     @Id
     @Column(name = "email_notice_id")
     @GeneratedValue(strategy = GenerationType.AUTO)

@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.security.MessageDigest;
 import java.time.LocalDateTime;
 
 @Service
@@ -27,7 +26,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class BidService {
 
-    private static Logger logger = LoggerFactory.getLogger(BidService.class);
+    private static final Logger logger = LoggerFactory.getLogger(BidService.class);
 
     private final BidRepository bidRepository;
     private final MemberRepository memberRepository;
@@ -42,7 +41,7 @@ public class BidService {
 
             return member.getName() + uniqueSequence;
         } catch(Exception e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
 
             return null;
         }

@@ -16,7 +16,6 @@ public class Address {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    // 주소록 엔티티 다대일 매핑
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
     private Member member;
@@ -30,12 +29,13 @@ public class Address {
     private String addressDetail;
 
     public static Address createAddress(Member member, AddressDto addressDto) {
-        Address address =new Address();
+        Address address = new Address();
         address.setMember(member);
-        address.name = addressDto.getName();
-        address.phone = addressDto.getPhone();
-        address.address = addressDto.getAddress();
-        address.addressDetail = addressDto.getAddress_detail();
+        address.setName(addressDto.getName());
+        address.setPhone(addressDto.getPhone());
+        address.setAddress(addressDto.getAddress());
+        address.setAddressDetail(addressDto.getAddress_detail());
+
         return address;
     }
 

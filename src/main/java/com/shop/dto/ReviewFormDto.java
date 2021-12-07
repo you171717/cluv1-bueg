@@ -3,13 +3,16 @@ package com.shop.dto;
 import com.shop.entity.OrderItem;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.modelmapper.ModelMapper;
 
 import javax.validation.constraints.NotBlank;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter @Setter
+@Getter
+@Setter
+@ToString
 public class ReviewFormDto {
 
     private Long reviewId;

@@ -11,7 +11,6 @@ public interface MemberRepository extends JpaRepository<Member, Long>, QuerydslP
 
     Member findByEmail(String email);
 
-    //비밀번호 수정 쿼리
     @Transactional
     @Modifying
     @Query("update Member m set m.password = ?2 where m.id = ?1")

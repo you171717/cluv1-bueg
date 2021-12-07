@@ -2,10 +2,7 @@ package com.shop.dto;
 
 import com.shop.entity.BaseEntity;
 import com.shop.entity.Inquiry;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.modelmapper.ModelMapper;
 
 import javax.validation.constraints.NotBlank;
@@ -14,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
-@NoArgsConstructor
+@ToString
 public class InquiryFormDto extends BaseEntity {
 
     private Long id;
@@ -33,28 +30,19 @@ public class InquiryFormDto extends BaseEntity {
 
     private String modifiedBy;
 
-    private static ModelMapper modelMapper=new ModelMapper();
+    private static ModelMapper modelMapper = new ModelMapper();
 
     public Inquiry toEntity() {
-        Inquiry build = Inquiry.builder()
-                .id(id)
-                .title(title)
-                .content(content)
-                .build();
-        return build;
+        Inquiry inquiry = new Inquiry();
+        inquiry.setId(id);
+        inquiry.setTitle(title);
+        inquiry.setContent(content);
+
+        return inquiry;
     }
 
-    @Builder
-    public InquiryFormDto(Long id, String title, String content,LocalDateTime regTime,String createdBy) {
-        this.id=id;
-        this.title = title;
-        this.content = content;
-        this.regTime=regTime;
-        this.createdBy=createdBy;
-    }
-
-    public static InquiryFormDto of(Inquiry inquiry){
-        return modelMapper.map(inquiry,InquiryFormDto.class);
+    public static InquiryFormDto of(Inquiry inquiry) {
+        return modelMapper.map(inquiry, InquiryFormDto.class);
     }
 
 }

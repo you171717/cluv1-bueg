@@ -40,3 +40,4 @@ out/
 application-oauth.properties
 application-naver.properties
 application-email.properties
+application-sms.properties

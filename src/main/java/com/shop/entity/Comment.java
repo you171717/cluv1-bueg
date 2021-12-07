@@ -25,19 +25,12 @@ public class Comment extends BaseEntity {
 
     private String content;
 
-
-    public static Comment createComment(CommentFormDto commentFormDto, Inquiry inquiry){
-        Comment comment=new Comment();
+    public static Comment createComment(CommentFormDto commentFormDto, Inquiry inquiry) {
+        Comment comment = new Comment();
         comment.setContent(commentFormDto.getContent());
         comment.setInquiry(inquiry);
-        return comment;
-    }
 
-    @Builder
-    public Comment(Long id, String content, Inquiry inquiry) {
-        this.id=id;
-        this.content = content;
-        this.inquiry=inquiry;
+        return comment;
     }
 
 }

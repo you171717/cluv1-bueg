@@ -15,15 +15,15 @@ public class ReviewImg extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "order_item_id")
+    private OrderItem orderItem;
+
     private String reviewImgName;
 
     private String reviewOriImgName;
 
     private String reviewImgUrl;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_item_id")
-    private OrderItem orderItem;
 
     public void updateReviewImg(String reviewOriImgName, String reviewImgName, String reviewImgUrl) {
         this.reviewOriImgName = reviewOriImgName;

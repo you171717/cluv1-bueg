@@ -11,7 +11,9 @@ import com.shop.repository.SmsNoticeRepository;
 import lombok.RequiredArgsConstructor;
 import net.nurigo.java_sdk.api.Message;
 import net.nurigo.java_sdk.exceptions.CoolsmsException;
-import org.json.simple.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
@@ -22,15 +24,21 @@ import java.util.HashMap;
 @RequiredArgsConstructor
 public class SmsService {
 
+    private static final Logger logger = LoggerFactory.getLogger(SmsService.class);
+
     private final ItemRepository itemRepository;
     private final OrderRepository orderRepository;
     private final SmsNoticeRepository smsNoticeRepository;
 
+    @Value("${spring.sms.api-key}")
+    private String smsApiKey;
+
+    @Value("${spring.sms.api-secret}")
+    private String smsApiSecret;
+
     @Async
     public void sendSms(String phone, String text) {
-        String api_key = "NCS1TB65HVL5RIAO";
-        String api_secret = "EWBEAGXE92QMSABDLAP6BYLRNHCUZL8O";
-        Message coolsms = new Message(api_key, api_secret);
+        Message coolsms = new Message(smsApiKey, smsApiSecret);
         HashMap<String, String> params = new HashMap<String, String>();
 
         params.put("to", phone);
@@ -40,52 +48,54 @@ public class SmsService {
         params.put("app_version", "test app 1.2");
 
         try {
-            JSONObject obj = (JSONObject) coolsms.send(params);
+            coolsms.send(params);
         } catch (CoolsmsException e) {
-            System.out.println(e.getMessage());
+            logger.error(e.getMessage(), e);
         }
     }
 
-    public void sendOrderSms(String phone, OrderDto orderDto){
+    public void sendOrderSms(String phone, OrderDto orderDto) {
+        Item item = itemRepository.findById(orderDto.getItemId()).orElseThrow(EntityNotFoundException::new);
 
-        Item item = itemRepository.findById(orderDto.getItemId()).
-                orElseThrow(EntityNotFoundException::new);
+        StringBuffer sb = new StringBuffer("[Bueg] 주문 상품 내역\n");
+        sb.append("주문 상품 : ");
+        sb.append(item.getItemNm());
+        sb.append("\n주문 수량 : ");
+        sb.append(orderDto.getCount());
+        sb.append("\n주문 금액 : ");
+        sb.append(item.getPrice() * orderDto.getCount());
+        sb.append("원");
 
-        String text = "[Bueg] 주문 상품 내역\n" + "주문 상품 : " + item.getItemNm() + "\n주문 수량 : " + orderDto.getCount() +
-                "\n주문 금액 : " + item.getPrice() * orderDto.getCount() + "원";
-        sendSms(phone, text);
-
-        SmsNotice smsNotice = new SmsNotice();
-        smsNoticeRepository.save(smsNotice);
+        this.sendSms(phone, sb.toString());
+        this.addSmsCount();
     }
 
-    public void sendCartOrderSms(String phone, Long orderId){
-
+    public void sendCartOrderSms(String phone, Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
 
-        String smsText = "[Bueg]주문상품 내역\n";
+        StringBuffer sb = new StringBuffer("[Bueg]주문상품 내역\n");
 
-        StringBuffer sb = new StringBuffer(smsText);
-        //장바구니 데이터 불러오기
         for(OrderItem orderItem : order.getOrderItems()) {
             sb.append(orderItem.getItem().getItemNm());
             sb.append("(");
             sb.append(orderItem.getItem().getPrice());
             sb.append(" 원) x ");
-            sb.append(orderItem.getCount() + "개\n");
+            sb.append(orderItem.getCount());
+            sb.append("개\n");
         }
 
         sb.append("\n주문 금액 : ");
         sb.append(order.getTotalPrice());
         sb.append("원\n");
 
-        String text = sb.toString();
+        this.sendSms(phone, sb.toString());
+        this.addSmsCount();
+    }
 
-        sendSms(phone, text);
-
+    public void addSmsCount() {
         SmsNotice smsNotice = new SmsNotice();
+
         smsNoticeRepository.save(smsNotice);
     }
 
-//
 }

@@ -12,6 +12,7 @@ import javax.persistence.*;
 @Setter
 @ToString
 public class SmsNotice extends BaseEntity {
+
     @Id
     @Column(name = "sms_notice_id")
     @GeneratedValue(strategy = GenerationType.AUTO)

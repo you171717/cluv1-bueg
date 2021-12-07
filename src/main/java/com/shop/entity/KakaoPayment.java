@@ -16,14 +16,14 @@ public class KakaoPayment extends BaseEntity {
     @Column(name = "pay_id")
     private Long id;
 
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bid_id", nullable = false)
+    private Bid bid;
+
     @Column(nullable = false)
     private Integer amount;
 
     @Column(nullable = false)
     private LocalDateTime approvedTime;
-
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "bid_id", nullable = false)
-    private Bid bid;
 
 }

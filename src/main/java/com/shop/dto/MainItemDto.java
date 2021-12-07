@@ -3,9 +3,11 @@ package com.shop.dto;
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
+@ToString
 public class MainItemDto {
 
     private Long id;

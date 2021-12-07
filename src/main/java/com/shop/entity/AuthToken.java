@@ -16,14 +16,14 @@ public class AuthToken extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String code;
-
-    private LocalDateTime expireDate;
-
-    private String useYn = "N";
-
     @ManyToOne(fetch= FetchType.LAZY)
     @JoinColumn(name= "member_id")
     private Member member;
+
+    private String code;
+
+    private String useYn = "N";
+
+    private LocalDateTime expireDate;
 
 }

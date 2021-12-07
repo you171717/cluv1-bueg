@@ -1,8 +1,10 @@
 package com.shop.dto;
 
 import com.shop.constant.Bank;
+import com.shop.constant.NoticeType;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -11,6 +13,7 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
+@ToString
 public class MemberUpdateFormDto {
 
     @NotBlank(message = "이름은 필수 입력 값입니다.")
@@ -36,5 +39,8 @@ public class MemberUpdateFormDto {
 
     @NotEmpty(message = "환불 계좌 번호는 필수 입력 값입니다.")
     private String refundAccount;
+
+    @NotNull(message = "알림 서비스 종류는 필수 입력 값입니다.")
+    private NoticeType noticeType;
 
 }

@@ -161,11 +161,7 @@
             <div class="form-group">
                 <label>카테고리</label>
                 <select th:field="*{cateCode}" class="custom-select">
-                    <option value="1">레드</option>
-                    <option value="2">화이트</option>
-                    <option value="3">스파클링</option>
-                    <option value="4">로제</option>
-                    <option value="5">기타</option>
+                    <option th:each="category : ${categoryList}" th:value="${category.getCateCode()}" th:text="${category.getCateName()}"></option>
                 </select>
             </div>
             <!-- 상품명 필드 -->
@@ -186,13 +182,14 @@
             <p th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="fieldError">Incorrect data</p>
 
             <!--최저가 검색 버튼-->
+            <!--
             <div class="input-group">
                 <div style="text-align: left">
                     <button id="lprice" type="button" class="btn btn-primary" onclick="getTitle()">최저가 검색</button>
                 </div>
                 <input type="number"  class="form-control">
             </div>
-
+            -->
 
             <!-- 상품의 재고 필드 -->
             <div class="input-group">
@@ -220,26 +217,10 @@
                     <span class="input-group-text">상품 태그 설정</span>
                 </div>
                 <div class="form-control">
-                    <th:block th:if="${#lists.isEmpty(tags)}">
-                        <input type="checkbox" name="tags[]" value="1"/>거실
-                        <input type="checkbox" name="tags[]" value="2"/>침실
-                        <input type="checkbox" name="tags[]" value="3"/>1인
-                        <input type="checkbox" name="tags[]" value="4"/>4인
-                        <input type="checkbox" name="tags[]" value="5"/>봄
-                        <input type="checkbox" name="tags[]" value="6"/>여름
-                        <input type="checkbox" name="tags[]" value="7"/>가을
-                        <input type="checkbox" name="tags[]" value="8"/>겨울
-                    </th:block>
-                    <th:block th:unless="${#lists.isEmpty(tags)}">
-                        <input type="checkbox" name="tags[]" value="1" th:checked="${#lists.contains(tags, '1')}"/>거실
-                        <input type="checkbox" name="tags[]" value="2" th:checked="${#lists.contains(tags, '2')}"/>침실
-                        <input type="checkbox" name="tags[]" value="3" th:checked="${#lists.contains(tags, '3')}"/>1인
-                        <input type="checkbox" name="tags[]" value="4" th:checked="${#lists.contains(tags, '4')}"/>4인
-                        <input type="checkbox" name="tags[]" value="5" th:checked="${#lists.contains(tags, '5')}"/>봄
-                        <input type="checkbox" name="tags[]" value="6" th:checked="${#lists.contains(tags, '6')}"/>여름
-                        <input type="checkbox" name="tags[]" value="7" th:checked="${#lists.contains(tags, '7')}"/>가을
-                        <input type="checkbox" name="tags[]" value="8" th:checked="${#lists.contains(tags, '8')}"/>겨울
-                    </th:block>
+                    <span th:each="tag : ${tagList}">
+                        <input type="checkbox" th:field="*{tagIds}" th:value="${tag.getId()}">
+                        <label th:for="${#ids.prev('tagIds')}" th:text="${tag.getTagNm()}" class="form-check-label"></label>
+                    </span>
                 </div>
             </div>
             <p th:if="${#fields.hasErrors('itemDetail')}" th:errors="*{itemDetail}" class="fieldError">Incorrect data</p>

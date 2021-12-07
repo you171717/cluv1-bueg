@@ -16,7 +16,6 @@ public class StatsController {
 
     @GetMapping(value= "/admin/noticeStats")
     public String stats(Model model) {
-
         long emailCount = emailNoticeRepository.count();
         long smsCount = smsNoticeRepository.count();
 
@@ -25,4 +24,5 @@ public class StatsController {
 
         return "/notice/noticeStats";
     }
+
 }

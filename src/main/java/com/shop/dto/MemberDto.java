@@ -2,9 +2,13 @@ package com.shop.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
+
 @Getter
 @Setter
+@ToString
 public class MemberDto {
 
-    private int point; // 멤버 포인트 받기
+    private int point;
+
 }

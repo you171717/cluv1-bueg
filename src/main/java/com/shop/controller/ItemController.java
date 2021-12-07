@@ -4,8 +4,10 @@ import com.shop.dto.*;
 import com.shop.entity.Item;
 import com.shop.entity.Tag;
 import com.shop.naverapi.NaverShopSearch;
+import com.shop.service.CategoryService;
 import com.shop.service.ItemService;
 import com.shop.service.ReviewService;
+import com.shop.service.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -27,19 +29,26 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ItemController {
 
+    private final TagService tagService;
+    private final CategoryService categoryService;
     private final ItemService itemService;
     private final ReviewService reviewService;
     private final NaverShopSearch naverShopSearch;
 
     @GetMapping(value = "/admin/item/new")
     public String itemForm(Model model) {
+        model.addAttribute("categoryList", categoryService.getCategoryList());
+        model.addAttribute("tagList", tagService.getTagList());
         model.addAttribute("itemFormDto", new ItemFormDto());
 
         return "/item/itemForm";
     }
 
     @PostMapping(value = "/admin/item/new")
-    public String itemNew(@Valid ItemFormDto itemFormDto, BindingResult bindingResult, Model model, @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList, @RequestParam("tags[]") List<String> tags) {
+    public String itemNew(@Valid ItemFormDto itemFormDto, BindingResult bindingResult, @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList, Model model) {
+        model.addAttribute("categoryList", categoryService.getCategoryList());
+        model.addAttribute("tagList", tagService.getTagList());
+
         if(bindingResult.hasErrors()) {
             return "item/itemForm";
         }
@@ -63,15 +72,11 @@ public class ItemController {
 
     @GetMapping(value = "/admin/item/{itemId}")
     public String itemFormUpdate(@PathVariable("itemId") Long itemId, Model model) {
+        model.addAttribute("categoryList", categoryService.getCategoryList());
+        model.addAttribute("tagList", tagService.getTagList());
+
         try {
             ItemFormDto itemFormDto = itemService.getItemDtl(itemId);
-            List<Tag> tag = itemService.getTagList(itemId);    //태그 조회
-            List<String> tagList = new ArrayList<>();
-
-            for(Tag t : tag) {
-                tagList.add(t.getId().toString());
-            }
-            model.addAttribute("tags",tagList);
 
             model.addAttribute("itemFormDto", itemFormDto);
         } catch(EntityNotFoundException e) {
@@ -85,7 +90,10 @@ public class ItemController {
     }
 
     @PostMapping(value = "/admin/item/{itemId}")
-    public String itemUpdate(@Valid ItemFormDto itemFormDto, BindingResult bindingResult, @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList, Model model,@RequestParam("tags[]") List<String> tags) {
+    public String itemUpdate(@Valid ItemFormDto itemFormDto, BindingResult bindingResult, @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList, Model model) {
+        model.addAttribute("categoryList", categoryService.getCategoryList());
+        model.addAttribute("tagList", tagService.getTagList());
+
         if(bindingResult.hasErrors()) {
             return "item/itemForm";
         }
@@ -120,7 +128,7 @@ public class ItemController {
     }
 
     @GetMapping(value = "/item/{itemId}")
-    public String itemDtl(Model model, Principal principal, @PathVariable("itemId") Long itemId) {
+    public String itemDtl(@PathVariable("itemId") Long itemId, Model model) {
         ItemFormDto itemFormDto = itemService.getItemDtl(itemId);
         List<ReviewItemDto> orderItemDtoList = reviewService.getReviewItem(itemId);
         List<ReviewImgDto> reviewImgDtoList = reviewService.getReviewItemImg(itemId);

@@ -27,6 +27,7 @@ public class OAuth2Member extends BaseTimeEntity implements Serializable {
     private Member member;
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private OAuth2ProviderType type;
 
     public static OAuth2Member createOAuth2Member(OAuth2FormDto oAuth2FormDto, OAuth2ProviderType type) {
@@ -36,9 +37,10 @@ public class OAuth2Member extends BaseTimeEntity implements Serializable {
         member.setAddress(oAuth2FormDto.getAddress());
         member.setAddressDetail(oAuth2FormDto.getAddressDetail());
         member.setRefundBank(oAuth2FormDto.getRefundBank());
-        member.setPoint(1000); // 신규 가입시 포인트 추가
+        member.setPoint(1000);
         member.setPhone(oAuth2FormDto.getPhone());
         member.setRefundAccount(oAuth2FormDto.getRefundAccount());
+        member.setNoticeType(oAuth2FormDto.getNoticeType());
         member.setRole(Role.USER);
 
         OAuth2Member oAuth2Member = new OAuth2Member();

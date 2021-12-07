@@ -18,4 +18,5 @@ public enum Bank {
     public String toString() {
         return bankName;
     }
+
 }

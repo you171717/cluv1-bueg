@@ -16,6 +16,10 @@ public class ItemImg extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_id")
+    private Item item;
+
     private String imgName; // 이미지 파일명
 
     private String oriImgName; // 원본 이미지 파일명
@@ -24,11 +28,6 @@ public class ItemImg extends BaseEntity {
 
     private String repImgYn; // 대표 이미지 여부
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "item_id")
-    private Item item;
-
-    // 파일 정보 일괄 수정 메소드
     public void updateItemImg(String oriImgName, String imgName, String imgUrl) {
         this.oriImgName = oriImgName;
         this.imgName = imgName;

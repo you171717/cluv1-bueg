@@ -9,6 +9,7 @@ import com.shop.service.EmailService;
 import com.shop.service.OrderService;
 import com.shop.service.SmsService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
 public class OrderController {
@@ -40,9 +42,9 @@ public class OrderController {
     @PostMapping(value = "/order")
     public @ResponseBody ResponseEntity order(@RequestBody @Valid OrderDto orderDto, BindingResult bindingResult, Principal principal) {
         if(bindingResult.hasErrors()) {
-            StringBuilder sb = new StringBuilder();
-
             List<FieldError> fieldErrors = bindingResult.getFieldErrors();
+
+            StringBuffer sb = new StringBuffer();
 
             for(FieldError fieldError : fieldErrors) {
                 sb.append(fieldError.getDefaultMessage());
@@ -51,6 +53,19 @@ public class OrderController {
             return new ResponseEntity<String>(sb.toString(), HttpStatus.BAD_REQUEST);
         }
 
+        String email = principal.getName();
+
+        Long orderId;
+
+        try {
+            orderId = orderService.order(orderDto, email);
+        } catch(Exception e) {
+            log.error(e.getMessage(), e);
+
+            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+
+        /* TODO. 서비스 단으로 옮기기
         String email = principal.getName();
         String phone = memberRepository.findByEmail(email).getPhone();  //SMS 전송할 휴대폰 번호 갖고오기
 
@@ -69,6 +84,7 @@ public class OrderController {
         } catch(Exception e) {
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
+        */
 
         return new ResponseEntity<Long>(orderId, HttpStatus.OK);
     }
@@ -88,19 +104,14 @@ public class OrderController {
 
     // 구매/선물 상태 조회
     @GetMapping(value = {"/ordersStatus/{status}", "/ordersStatus/{page}"})
-    public String orderStatus(@PathVariable("page") Optional<Integer> page,
-                              @PathVariable(required = false, value="status") GiftStatus giftStatus,
-                              Principal principal, Model model){
-
+    public String orderStatus(@PathVariable("page") Optional<Integer> page, @PathVariable(required = false, value = "status") GiftStatus giftStatus, Principal principal, Model model){
         Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 4);
-        Page<OrderHistDto> ordersHistDtoList;
-
-        ordersHistDtoList =
-                orderService.getOrderListStatus(principal.getName(), pageable, giftStatus);
+        Page<OrderHistDto> ordersHistDtoList = orderService.getOrderListStatus(principal.getName(), pageable, giftStatus);
 
         model.addAttribute("orders", ordersHistDtoList);
         model.addAttribute("page", pageable.getPageNumber());
         model.addAttribute("maxPage", 5);
+
         return "order/orderHist";
     }
 
@@ -116,9 +127,7 @@ public class OrderController {
     }
 
     @PostMapping("/order/{orderId}/return")
-    @ResponseBody
-    public ResponseEntity returnOrderProc(@PathVariable("orderId") Long orderId, Principal principal, Model model) throws Exception {
-
+    public @ResponseBody ResponseEntity returnOrderProc(@PathVariable("orderId") Long orderId, Principal principal) {
         if (!orderService.validateOrder(orderId, principal.getName())) {
             return new ResponseEntity<String>("반품 요청 권한이 없습니다.", HttpStatus.FORBIDDEN);
         }
@@ -132,24 +141,22 @@ public class OrderController {
 
     @GetMapping("/order/{orderId}/return")
     public String returnOrder(@PathVariable("orderId") Long orderId, Principal principal, Model model) {
-
         if (!orderService.validateOrder(orderId, principal.getName())) {
             return "redirect:/orders";
         }
+
         Order order = orderService.getOrder(orderId);
 
         model.addAttribute("order", order);
         model.addAttribute("nowDate", new SimpleDateFormat("yyyy.MM.dd").format(new Date()));
+
         return "order/orderReturn";
     }
 
     @PostMapping("/order/return/confirm")
-    @ResponseBody
-    public ResponseEntity returnOrderconfirm(
-            @RequestBody Map<String, Object> paramMap,
-            Principal principal, Model model) throws Exception {
-
+    public @ResponseBody ResponseEntity returnOrderconfirm(@RequestBody Map<String, Object> paramMap) {
         List<String> orderIdList = (List<String>) paramMap.get("orderId");
+
         for (String orderId : orderIdList) {
             orderService.confirmReturn(Long.valueOf(orderId));
         }
@@ -158,8 +165,7 @@ public class OrderController {
     }
 
     @GetMapping(value = {"/returns", "/returns/{page}"})
-    public String returnsHist(@PathVariable("page") Optional<Integer> page, Principal principal, Model model) throws Exception {
-
+    public String returnsHist(@PathVariable("page") Optional<Integer> page, Principal principal, Model model) {
         Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 4);
         Page<OrderHistDto> ordersHistDtoList = orderService.getReturnList(principal.getName(), pageable);
 

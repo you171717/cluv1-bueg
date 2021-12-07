@@ -24,30 +24,36 @@ public class Order extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id")
+    @JoinColumn(name = "member_id", nullable = false)
     private Member member;
-
-    private LocalDateTime orderDate;
-
-    @Enumerated(EnumType.STRING)
-    private OrderStatus orderStatus;
-
-    private String address;
-
-    private int usedPoint;
-
-    private int accPoint;
-
-    @Enumerated(EnumType.STRING)
-    private GiftStatus giftStatus;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    @Column(name = "return_req_date", nullable = true)
+    @Column(nullable = false)
+    private LocalDateTime orderDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private OrderStatus orderStatus;
+
+    @Column(nullable = false)
+    private String address;
+
+    @Column(nullable = false)
+    private int usedPoint;
+
+    @Column(nullable = false)
+    private int accPoint;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private GiftStatus giftStatus;
+
+    @Column(name = "return_req_date")
     private LocalDateTime returnReqDate;
 
-    @Column(name = "return_confirm_date", nullable = true)
+    @Column(name = "return_confirm_date")
     private LocalDateTime returnConfirmDate;
 
     @Enumerated(EnumType.STRING)
@@ -66,7 +72,6 @@ public class Order extends BaseEntity {
         order.setOrderDate(LocalDateTime.now());
         order.setGiftStatus(orderDto.getGiftStatus());
         order.setUsedPoint(orderDto.getUsedPoint());
-        order.setAccPoint((int) ((order.getTotalPrice() - order.getUsedPoint()) * 0.01));
 
         if(orderDto.getGiftStatus().equals(GiftStatus.BUY)) {
             order.setAddress(member.getAddress() + " " + member.getAddressDetail());
@@ -77,6 +82,8 @@ public class Order extends BaseEntity {
         for(OrderItem orderItem : orderItemList) {
             order.addOrderItem(orderItem);
         }
+
+        order.setAccPoint((int) ((order.getTotalPrice() - order.getUsedPoint()) * 0.01));
 
         return order;
     }

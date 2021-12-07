@@ -15,4 +15,5 @@ public enum BidSearchSortColumn {
     public String toString() {
         return columnName;
     }
+
 }

@@ -4,10 +4,12 @@ import com.shop.constant.BidDepositType;
 import com.shop.constant.BidSearchSortColumn;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.springframework.data.domain.Sort;
 
 @Getter
 @Setter
+@ToString
 public class BidSearchDto {
 
     private String searchQuery = "";

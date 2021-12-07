@@ -17,4 +17,5 @@ public interface ReverseAuctionRepositoryCustom {
     List<ReverseAuctionHistoryDto> getPreviousReverseAuctionPage();
 
     ReverseAuctionDto getUserReverseAuctionDetailPage(Long id);
+
 }

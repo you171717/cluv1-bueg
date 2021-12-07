@@ -1,7 +1,7 @@
 package com.shop.service;
 
-import com.shop.entity.Tag;
-import com.shop.repository.TagRepository;
+import com.shop.entity.Category;
+import com.shop.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,13 +11,13 @@ import java.util.List;
 @Service
 @Transactional
 @RequiredArgsConstructor
-public class TagService {
+public class CategoryService {
 
-    private final TagRepository tagRepository;
+    private final CategoryRepository categoryRepository;
 
     @Transactional(readOnly = true)
-    public List<Tag> getTagList() {
-        return tagRepository.findAllByOrderByTotalSellDesc();
+    public List<Category> getCategoryList() {
+        return categoryRepository.findAllByOrderByCateCodeAsc();
     }
 
 }

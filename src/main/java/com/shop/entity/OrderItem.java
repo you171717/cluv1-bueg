@@ -19,38 +19,36 @@ public class OrderItem extends BaseEntity {
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "item_id")
+    @JoinColumn(name = "item_id", nullable = false)
     private Item item;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_id")
+    @JoinColumn(name = "order_id", nullable = false)
     private Order order;
 
+    @Column(nullable = false)
     private int orderPrice;
 
+    @Column(nullable = false)
     private int count;
 
-    private String reviewYn;
+    @Column(nullable = false)
+    private String reviewYn = "N";
 
     private String comment;
-    
-    //반품 갯수
+
     @Column(name = "return_count")
     private int returnCount;
 
-    //반품 금액
     @Column(name = "return_price")
     private int returnPrice;
 
-    //반품 요청일
-    @Column(name = "return_req_date", nullable = true)
+    @Column(name = "return_req_date")
     private LocalDateTime returnReqDate;
 
-    //반품 확정일
-    @Column(name = "return_confirm_date", nullable = true)
+    @Column(name = "return_confirm_date")
     private LocalDateTime returnConfirmDate;
 
-    //반품 여부
     @Enumerated(EnumType.STRING)
     @Column(name = "return_status")
     private ReturnStatus returnStatus;

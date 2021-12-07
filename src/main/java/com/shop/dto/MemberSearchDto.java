@@ -3,13 +3,15 @@ package com.shop.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
-// 회원 포인트 및 정보 조회 dto
+@ToString
 public class MemberSearchDto {
 
     private String searchBy;
 
     private String searchQuery = "";
+    
 }

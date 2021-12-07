@@ -3,9 +3,12 @@ package com.shop.dto;
 import com.shop.entity.ReviewImg;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.modelmapper.ModelMapper;
 
-@Getter @Setter
+@Getter
+@Setter
+@ToString
 public class ReviewImgDto {
 
     private Long id;

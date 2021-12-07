@@ -96,6 +96,7 @@
         <div class="nav">
             <div class="nav-inner">
                 <span class="nav-username" sec:authorize="isAuthenticated()"><b th:text="${memberName}"></b>님 환영합니다.</span>
+                <span class="nav-point" sec:authorize="isAuthenticated()">포인트: <b th:text="${memberPoint}"></b></span>
                 <a th:href="@{/members/update}" sec:authorize="isAuthenticated()">회원정보 수정</a>
                 <a th:href="@{/members/login}" sec:authorize="isAnonymous()">로그인</a>
                 <a th:href="@{/members/logout}" sec:authorize="isAuthenticated()">로그아웃</a>

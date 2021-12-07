@@ -5,9 +5,9 @@
     <!--    bestItemByDays    -->
     <select id="getBestItemByDays" resultType="com.shop.dto.BestItemDto">
         select i.item_id, i.item_nm, i.item_detail, img.img_url, i.price
-        from (select * from it1661.item where item_sell_status = 'SELL') i
-                 join it1661.order_item oi on oi.item_id = i.item_id
-                 join it1661.item_img img on img.item_id = i.item_id
+        from (select * from cluv1.item where item_sell_status = 'SELL') i
+                 join cluv1.order_item oi on oi.item_id = i.item_id
+                 join cluv1.item_img img on img.item_id = i.item_id
         where date_format(oi.reg_time,'%Y%m%d') = date_format(now(),'%Y%m%d')
         group by i.item_id
         order by count(oi.count) desc
@@ -17,9 +17,9 @@
     <!--   bestItemByWeek -->
     <select id="getBestItemByWeek" resultType="com.shop.dto.BestItemDto">
         select sell_item.item_id, sell_item.item_nm, sell_item.item_detail, img.img_url, sell_item.price
-        from (select item_id, item_nm, item_detail, price from it1661.item where item_sell_status = 'SELL') sell_item
-                 join it1661.order_item orders on orders.item_id = sell_item.item_id
-                 join it1661.item_img img on img.item_id = sell_item.item_id
+        from (select item_id, item_nm, item_detail, price from cluv1.item where item_sell_status = 'SELL') sell_item
+                 join cluv1.order_item orders on orders.item_id = sell_item.item_id
+                 join cluv1.item_img img on img.item_id = sell_item.item_id
         where date_format(now(),'%Y%m%d')-(dayofweek(now())-1)  and date_format(date_sub(now(), interval dayofweek(now())-7 DAY),'%Y%m%d')
         group by sell_item.item_id
         order by count(orders.count) desc
@@ -29,9 +29,9 @@
     <!--   bestItemByMonth -->
     <select id="getBestItemByMonth" resultType="com.shop.dto.BestItemDto">
         select sell_item.item_id, sell_item.item_nm, sell_item.item_detail, img.img_url, sell_item.price
-        from (select item_id, item_nm, item_detail, price from it1661.item where item_sell_status = 'SELL') sell_item
-                 join it1661.order_item orders on orders.item_id = sell_item.item_id
-                 join it1661.item_img img on img.item_id = sell_item.item_id
+        from (select item_id, item_nm, item_detail, price from cluv1.item where item_sell_status = 'SELL') sell_item
+                 join cluv1.order_item orders on orders.item_id = sell_item.item_id
+                 join cluv1.item_img img on img.item_id = sell_item.item_id
         where date_format(orders.reg_time,'%Y%m%d') between LAST_DAY(NOW() - interval 0 month)  and LAST_DAY(NOW() - interval 1 month)+ interval 1 DAY
         group by sell_item.item_id
         order by count(orders.count) desc

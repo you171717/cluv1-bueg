@@ -62,6 +62,15 @@ public class ItemService {
 
     @Transactional(readOnly = true)
     public ItemFormDto getItemDtl(Long itemId) {
+        List<ItemTag> itemTagList = itemTagRepository.findByItemId(itemId);
+        List<Long> tagIdList = new ArrayList<>();
+
+        for (ItemTag itemTag : itemTagList) {
+            Tag tag = itemTag.getTag();
+
+            tagIdList.add(tag.getId());
+        }
+
         List<ItemImg> itemImgList = itemImgRepository.findByItemIdOrderByIdAsc(itemId);
         List<ItemImgDto> itemImgDtoList = new ArrayList<>();
 
@@ -74,29 +83,19 @@ public class ItemService {
         Item item = itemRepository.findById(itemId).orElseThrow(EntityNotFoundException::new);
 
         ItemFormDto itemFormDto = ItemFormDto.of(item);
+        itemFormDto.setCateCode(item.getCategory().getCateCode());
         itemFormDto.setItemImgDtoList(itemImgDtoList);
+        itemFormDto.setTagIds(tagIdList);
 
         return itemFormDto;
-    }
-
-    @Transactional(readOnly = true)
-    public List<Tag> getTagList(Long itemId) {
-        List<ItemTag> itemTagList = itemTagRepository.findByItemId(itemId);
-        List<Tag> tagList = new ArrayList<>();
-
-        for (ItemTag itemTag : itemTagList) {
-            Tag tag = itemTag.getTag();
-
-            tagList.add(tag);
-        }
-
-        return tagList;
     }
 
     public Long updateItem(ItemFormDto itemFormDto, List<MultipartFile> itemImgFileList) throws Exception {
         Item item = itemRepository.findById(itemFormDto.getId()).orElseThrow(EntityNotFoundException::new);
 
-        item.updateItem(itemFormDto);
+        Category category = categoryRepository.findByCateCode(itemFormDto.getCateCode());
+
+        item.updateItem(itemFormDto, category);
 
         List<Long> itemImgIds = itemFormDto.getItemImgIds();
 

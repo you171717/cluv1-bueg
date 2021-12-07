@@ -61,17 +61,17 @@ public class ReviewController {
 
         reviewFormDto.setReviewId(orderItemId);
 
-        if (bindingResult.hasErrors()) {
+        if(bindingResult.hasErrors()) {
             return "review/reviewForm";
         }
 
-        if (reviewImgFile.get(0).isEmpty()) {
+        if(reviewImgFile.get(0).isEmpty()) {
             model.addAttribute("errorMessage", "사진 등록은 필수 입력 값입니다.");
 
             return "review/reviewForm";
         }
 
-        if (reviewFormDto.getComment().length() == 0) {
+        if(reviewFormDto.getComment().length() == 0) {
             model.addAttribute("errorMessage", "리뷰 작성은 필수 입력 값입니다.");
 
             return "review/reviewForm";
@@ -79,7 +79,7 @@ public class ReviewController {
 
         try {
             reviewService.saveReview(orderItemId, reviewFormDto, reviewImgFile);
-        } catch (Exception e) {
+        } catch(Exception e) {
             model.addAttribute("errorMessage", "리뷰 작성 중 에러가 발생하였습니다.");
 
             return "review/reviewForm";
@@ -125,7 +125,7 @@ public class ReviewController {
 
         try {
             reviewService.updateReview(orderItemId, reviewFormDto, reviewImgFile);
-        }catch (Exception e) {
+        } catch(Exception e) {
             model.addAttribute("errorMessage", "리뷰 작성 중 에러가 발생하였습니다.");
 
             return "review/reviewForm";

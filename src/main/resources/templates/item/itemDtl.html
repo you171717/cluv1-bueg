@@ -89,8 +89,8 @@
                 itemId: $("#itemId").val(),
                 count: $("#count").val(),
                 notice : $('input[name="notice"]:checked').val(),
-                // 사용된 포인트 가져오기
-                usedPoint : $("#input_point").val()
+                usedPoint : $("#input_point").val(),
+                giftStatus: 'BUY'
             };
 
             var param = JSON.stringify(paramData);
@@ -323,6 +323,7 @@
                     </div>
                     <input type="number" name="count" id="count" class="form-control" value="1" min="1">
                 </div>
+                <!--
                 <hr class="my-2">
                 <div class="text-right" mgt-20>
                     <h5>네이버 쇼핑 최저가</h5>
@@ -330,6 +331,7 @@
                     <button id ="naverlink" type="button" class="btn primary btn-primary" > 네이버 쇼핑몰로 사러가기 </button>
 
                 </div>
+                -->
             </div>
             <hr class="my-4">
             <div class="text-right mgt-50">

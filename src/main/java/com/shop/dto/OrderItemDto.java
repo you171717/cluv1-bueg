@@ -4,11 +4,13 @@ import com.shop.constant.ReturnStatus;
 import com.shop.entity.OrderItem;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.format.DateTimeFormatter;
 
 @Getter
 @Setter
+@ToString
 public class OrderItemDto {
 
     private String itemNm;
@@ -27,19 +29,14 @@ public class OrderItemDto {
 
     private String reviewYn;
 
-    //반품 갯수
     private int returnCount;
 
-    //반품 금액
     private int returnPrice;
 
-    //반품 요청일
     private String returnReqDate;
 
-    //반품 확정일
     private String returnConfirmDate;
 
-    //반품 여부
     private ReturnStatus returnStatus;
 
     public OrderItemDto(OrderItem orderItem, String imgUrl) {
@@ -48,22 +45,20 @@ public class OrderItemDto {
         this.orderPrice = orderItem.getOrderPrice();
         this.orderShippingFee = orderItem.getItem().getShippingFee();
         this.imgUrl = imgUrl;
-        this.reviewYn = orderItem.getReviewYn();
-        this.orderItemId = orderItem.getId();
         this.comment = orderItem.getComment();
-
+        this.orderItemId = orderItem.getId();
+        this.reviewYn = orderItem.getReviewYn();
         this.returnCount = orderItem.getReturnCount();
         this.returnPrice = orderItem.getReturnPrice();
+        this.returnStatus = orderItem.getReturnStatus();
 
-        if( orderItem.getReturnReqDate() != null ) {
+        if(orderItem.getReturnReqDate() != null) {
             this.returnReqDate = orderItem.getReturnReqDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         }
         
-        if( orderItem.getReturnConfirmDate() != null ) {
+        if(orderItem.getReturnConfirmDate() != null) {
             this.returnConfirmDate = orderItem.getReturnConfirmDate().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         }
-
-        this.returnStatus = orderItem.getReturnStatus();
     }
 
 }

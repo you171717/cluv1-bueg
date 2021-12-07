@@ -17,23 +17,18 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
+import java.util.*;
 
+@Slf4j
 @Controller
 @RequiredArgsConstructor
-@Slf4j
 public class TagSearchController {
 
     private final ItemService itemService;
     private final TagService tagService;
 
-
     @GetMapping(value = "/detailSearch")
-    public String detailSearch(ItemSearchDto itemSearchDto, Optional<Integer> page, Model model,
-                               @RequestParam(value = "filter", required = false) String filter){
+    public String detailSearch(ItemSearchDto itemSearchDto, Optional<Integer> page, Model model, @RequestParam(value = "filter", required = false) String filter){
         String[] filters = new String[] {};
 
         if(filter != null && !filter.equals("")) {
@@ -42,6 +37,7 @@ public class TagSearchController {
 
         Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 6);
         Page<MainItemDto> items = itemService.getDetailSearchPage(filters, itemSearchDto, pageable);
+
         model.addAttribute("filters", filters);
         model.addAttribute("items", items);
         model.addAttribute("itemSearchDto", itemSearchDto);
@@ -52,24 +48,21 @@ public class TagSearchController {
 
     @GetMapping(value = "/admin/showTagSell")
     public String showTagSell(Model model) throws JsonProcessingException {
-        Map<String, Integer> graphData = new TreeMap<>();
-        List<Tag> tags = tagService.getTagList();
-
-        for (Tag t : tags) {
-            graphData.put(t.getTagNm(), t.getTotalSell());
-        }
-        convertMapToJson(graphData);
-        log.error(graphData.toString());
-        model.addAttribute("chartData", graphData);
-        return "showTagSell";
-    }
-
-    public String convertMapToJson(Map<String, Integer> map) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
 
-        return objectMapper.writeValueAsString(map);
+        Map<String, Integer> graphData = new HashMap<>();
+
+        List<Tag> tags = tagService.getTagList();
+
+        for(Tag t : tags) {
+            graphData.put(t.getTagNm(), t.getTotalSell());
+        }
+
+        String json = objectMapper.writeValueAsString(graphData);
+
+        model.addAttribute("chartData", json);
+
+        return "tagSearch/showTagSell";
     }
-
-
 
 }

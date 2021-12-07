@@ -2,10 +2,15 @@ package com.shop.dto;
 
 import com.shop.constant.ItemSellStatus;
 import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
+@ToString
 public class ItemDto {
 
     private Long id; // 상품 코드

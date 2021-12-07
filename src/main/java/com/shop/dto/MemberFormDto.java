@@ -1,9 +1,11 @@
 package com.shop.dto;
 
 import com.shop.constant.Bank;
+import com.shop.constant.NoticeType;
 import com.shop.constant.Role;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Email;
@@ -13,6 +15,7 @@ import javax.validation.constraints.NotNull;
 
 @Getter
 @Setter
+@ToString
 public class MemberFormDto {
 
     @NotBlank(message = "이름은 필수 입력 값입니다.")
@@ -37,13 +40,14 @@ public class MemberFormDto {
 
     @NotEmpty(message = "환불 계좌 번호는 입력 값입니다.")
     private String refundAccount;
-
-    private Role role;
     
     @NotEmpty(message = "휴대폰 번호는 필수 입력 값입니다.")
     private String phone;
 
     @NotEmpty(message = "이메일 인증 코드는 필수 입력 값입니다.")
     private String code;
+
+    @NotNull(message = "알림 서비스 종류는 필수 입력 값입니다.")
+    private NoticeType noticeType = NoticeType.EMAIL;
 
 }

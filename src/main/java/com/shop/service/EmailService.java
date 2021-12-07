@@ -44,7 +44,7 @@ public class EmailService {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
             mimeMessageHelper.setTo(to);
             mimeMessageHelper.setSubject(subject);
-            mimeMessageHelper.setText(text, false);
+            mimeMessageHelper.setText(text, html);
 
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {

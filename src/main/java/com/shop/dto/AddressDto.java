@@ -2,11 +2,13 @@ package com.shop.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
+@ToString
 public class AddressDto {
 
     @NotBlank
@@ -21,13 +23,4 @@ public class AddressDto {
     @NotBlank
     private String address_detail;
 
-    @Override
-    public String toString() {
-        return "AddressDto{" +
-                ", name='" + name + '\'' +
-                ", phone='" + phone + '\'' +
-                ", address='" + address + '\'' +
-                ", address_detail='" + address_detail + '\'' +
-                '}';
-    }
 }

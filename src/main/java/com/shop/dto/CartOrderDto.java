@@ -2,21 +2,21 @@ package com.shop.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.util.List;
 
 @Getter
 @Setter
+@ToString
 public class CartOrderDto {
 
     private Long cartItemId;
 
     private List<CartOrderDto> cartOrderDtoList;
-
-    private String notice;  //알림 전송 방식 추가
     
     private int orderPrice;
 
-    private int usedPoint; // 사용 포인트
+    private int usedPoint;
 
 }

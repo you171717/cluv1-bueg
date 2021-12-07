@@ -25,42 +25,39 @@ public class ReviewService {
     private final ReviewImgService reviewImgService;
     private final ReviewImgRepository reviewImgRepository;
 
-    //리뷰 등록하기
-    public Long saveReview(Long orderItemId, ReviewFormDto reviewFormDto, List<MultipartFile> reviewImgFile) throws Exception{
-
-        //주문제품 아이디를 이용하여 주문 제품 조회
+    public Long saveReview(Long orderItemId, ReviewFormDto reviewFormDto, List<MultipartFile> reviewImgFile) throws Exception {
         OrderItem orderItem = orderItemRepository.findById(orderItemId).orElseThrow(EntityNotFoundException::new);
         orderItem.createReview(reviewFormDto);
-
         orderItem.setReviewYn("Y");
 
-        for(int i = 0; i < reviewImgFile.size(); i++){
+        for(int i = 0; i < reviewImgFile.size(); i++) {
             ReviewImg reviewImg = new ReviewImg();
             reviewImg.setOrderItem(orderItem);
+
             reviewImgService.saveReviewImg(reviewImg, reviewImgFile.get(i));
         }
 
         return orderItem.getId();
     }
 
-    //리뷰 불러오기
     @Transactional(readOnly = true)
-    public ReviewFormDto getReviewDtl(Long orderItemId){
-
+    public ReviewFormDto getReviewDtl(Long orderItemId) {
         List<ReviewImg> reviewImgList = reviewImgRepository.findByOrderItemIdOrderByIdAsc(orderItemId);
         List<ReviewImgDto> reviewImgDtoList = new ArrayList<>();
+
         for(ReviewImg reviewImg : reviewImgList){
             ReviewImgDto reviewImgDto = ReviewImgDto.of(reviewImg);
             reviewImgDtoList.add(reviewImgDto);
         }
 
         OrderItem orderItem = orderItemRepository.findById(orderItemId).orElseThrow(EntityNotFoundException::new);
+
         ReviewFormDto reviewFormDto = ReviewFormDto.of(orderItem);
         reviewFormDto.setReviewImgDtoList(reviewImgDtoList);
+
         return reviewFormDto;
     }
 
-    //리뷰 수정하기
     public Long updateReview(Long orderItemId, ReviewFormDto reviewFormDto, List<MultipartFile> reviewImgFile) throws Exception {
         OrderItem orderItem = orderItemRepository.findById(orderItemId).orElseThrow(EntityNotFoundException::new);
         orderItem.updateReview(reviewFormDto);
@@ -75,22 +72,17 @@ public class ReviewService {
 
     }
 
-    //리뷰 삭제하기
-    public Long deleteReview(Long orderItemId, ReviewFormDto reviewFormDto){
+    public Long deleteReview(Long orderItemId, ReviewFormDto reviewFormDto) {
         OrderItem orderItem = orderItemRepository.findById(orderItemId).orElseThrow(EntityNotFoundException::new);
         orderItem.deleteReview(reviewFormDto);
         orderItem.setReviewYn("N");
 
         return orderItem.getId();
-
     }
 
-    //상세 페이지에서 리뷰 보이게 하기
     @Transactional(readOnly = true)
-    public List<ReviewItemDto> getReviewItem(Long itemId){
-
+    public List<ReviewItemDto> getReviewItem(Long itemId) {
         List<OrderItem> orderItems = orderItemRepository.findByItemIdAndReviewYn(itemId, "Y");
-
         List<ReviewItemDto> reviewItemDtoList = new ArrayList<>();
 
         for(OrderItem orderItem : orderItems){
@@ -104,13 +96,15 @@ public class ReviewService {
     }
 
     @Transactional(readOnly = true)
-    public List<ReviewImgDto> getReviewItemImg(Long itemId){
+    public List<ReviewImgDto> getReviewItemImg(Long itemId) {
         List<OrderItem> orderItems = orderItemRepository.findByItemIdAndReviewYn(itemId, "Y");
         List<ReviewImgDto> reviewImgDtoList = new ArrayList<>();
 
         for(OrderItem orderItem : orderItems){
             Long orderItemId = orderItem.getId();
+
             ReviewImg reviewImg = reviewImgRepository.findByOrderItemId(orderItemId);
+
             ReviewImgDto reviewImgDto = new ReviewImgDto();
             reviewImgDto.setId(reviewImg.getId());
             reviewImgDto.setReviewImgName(reviewImg.getReviewImgName());

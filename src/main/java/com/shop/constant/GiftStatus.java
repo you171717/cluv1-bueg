@@ -4,7 +4,6 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
 public enum GiftStatus {
-
     BUY("BUY"),
     GIFT("GIFT");
 

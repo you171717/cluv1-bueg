@@ -141,8 +141,6 @@
                 });
 
                 paramData.cartOrderDtoList = dataList;
-                //알림 전송 방식 추가
-                paramData['notice'] = $('input[name="notice"]:checked').val();
                 // 주문시 사용 포인트 가져오기
                 paramData['usedPoint'] = $("#input_point").val();
 
@@ -272,11 +270,6 @@
             </h2>
             <div class="text-center mt-3">
                 <button type="button" class="btn btn-primary btn-lg" onclick="orders()">주문하기</button>
-            </div>
-            <!--알림 전송방식 선택 라디오 버튼-->
-            <div style="font-size: 20px; text-align: right">
-                <input type="radio" name="notice" value="email" checked="checked">Email
-                <input type="radio" name="notice" value="sms">SMS
             </div>
         </div>
     </div>

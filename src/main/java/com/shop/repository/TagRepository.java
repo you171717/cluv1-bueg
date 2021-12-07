@@ -9,9 +9,8 @@ import java.util.List;
 
 public interface TagRepository extends JpaRepository<Tag, Long> {
 
-     @Query("select t from Tag t " +
-            "order by t.totalSell desc")
-     List<Tag> findByOrderBy( );
+     @Query("select t from Tag t order by t.totalSell desc")
+     List<Tag> findAllByOrderByTotalSellDesc();
 
      Tag findByTagNm(String tagNm);
 

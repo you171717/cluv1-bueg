@@ -21,17 +21,11 @@ public class Inquiry extends BaseEntity {
 
     private String content;
 
-    @Builder
-    public Inquiry(Long id, String title, String content) {
-        this.id = id;
-        this.title = title;
-        this.content = content;
-    }
-
     public static Inquiry createInquiry(InquiryFormDto inquiryFormDto) {
         Inquiry inquiry = new Inquiry();
         inquiry.setTitle(inquiryFormDto.getTitle());
         inquiry.setContent(inquiryFormDto.getContent());
+
         return inquiry;
     }
 

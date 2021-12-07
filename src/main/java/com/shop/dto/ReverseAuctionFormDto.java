@@ -2,6 +2,7 @@ package com.shop.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Getter
 @Setter
+@ToString
 public class ReverseAuctionFormDto {
 
     private Long id;
