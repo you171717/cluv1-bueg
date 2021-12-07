@@ -56,13 +56,13 @@ public class MemberController {
     public String memberForm(@Valid MemberFormDto memberFormDto, BindingResult bindingResult, Model model, HttpSession httpSession) {
 
         //생성한 인증코드와 사용자가 입력한 인증코드 비교확인
-        if(!StringUtils.equals(memberFormDto.getCode(), httpSession.getAttribute("authCode"))){
+        if(!StringUtils.equals(memberFormDto.getCode(), httpSession.getAttribute("authCode")) && !memberFormDto.getEmail().equals("")){
             FieldError fieldError = new FieldError("memberFormDto", "code", "인증코드가 같지 않습니다.");
             bindingResult.addError(fieldError);
         }
+
         if(bindingResult.hasErrors()) {
             model.addAttribute("banks", Bank.values());
-
             return "member/memberForm";
         }
 
