@@ -3,7 +3,7 @@ package com.shop.entity;
 import com.shop.constant.GiftStatus;
 import com.shop.constant.OrderStatus;
 import com.shop.constant.ReturnStatus;
-import com.shop.exception.OutOfStockException;
+import com.shop.dto.OrderDto;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -32,54 +32,51 @@ public class Order extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
 
-    private String address; // 주문 배송지
+    private String address;
+
+    private int usedPoint;
+
+    private int accPoint;
 
     @Enumerated(EnumType.STRING)
-    private GiftStatus giftStatus; // 구매/선물 상태
+    private GiftStatus giftStatus;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<OrderItem> orderItems = new ArrayList<>();
 
-    //반품 요청일
     @Column(name = "return_req_date", nullable = true)
     private LocalDateTime returnReqDate;
 
-    //반품 확정일
     @Column(name = "return_confirm_date", nullable = true)
     private LocalDateTime returnConfirmDate;
 
-    //반품 여부
     @Enumerated(EnumType.STRING)
     @Column(name = "return_status")
     private ReturnStatus returnStatus;
-    
-    private int usedPoint; // 적용 포인트
-
-    private int accPoint; // 사용된 포인트 기록
 
     public void addOrderItem(OrderItem orderItem) {
         orderItems.add(orderItem);
         orderItem.setOrder(this);
     }
 
-    public static Order createOrder(Member member, Integer usedPoint, List<OrderItem> orderItemList, GiftStatus giftStatus,
-                                    String address, String addressDetail) {
+    public static Order createOrder(Member member, OrderDto orderDto, List<OrderItem> orderItemList) {
         Order order = new Order();
         order.setMember(member);
+        order.setOrderStatus(OrderStatus.ORDER);
+        order.setOrderDate(LocalDateTime.now());
+        order.setGiftStatus(orderDto.getGiftStatus());
+        order.setUsedPoint(orderDto.getUsedPoint());
+        order.setAccPoint((int) ((order.getTotalPrice() - order.getUsedPoint()) * 0.01));
 
-        order.setUsedPoint(usedPoint); // 사용 포인트 저장
+        if(orderDto.getGiftStatus().equals(GiftStatus.BUY)) {
+            order.setAddress(member.getAddress() + " " + member.getAddressDetail());
+        } else if(orderDto.getGiftStatus().equals(GiftStatus.GIFT)) {
+            order.setAddress(orderDto.getAddress() + " " + orderDto.getAddressDetail());
+        }
 
         for(OrderItem orderItem : orderItemList) {
             order.addOrderItem(orderItem);
         }
-
-        order.setAccPoint((int)((order.getTotalPrice() - order.getUsedPoint()) * 0.01)); // 적립 포인트 저장
-
-        order.setOrderStatus(OrderStatus.ORDER);
-        order.setOrderDate(LocalDateTime.now());
-        order.setGiftStatus(giftStatus);
-        order.setAddress(address + " " +addressDetail);
-
 
         return order;
     }
@@ -95,13 +92,12 @@ public class Order extends BaseEntity {
     }
 
     public void cancelOrder() {
+        this.orderStatus = OrderStatus.CANCEL;
         this.getMember().updatePoint(accPoint, usedPoint);
 
         for(OrderItem orderItem : orderItems) {
             orderItem.cancel();
         }
     }
-
-
 
 }

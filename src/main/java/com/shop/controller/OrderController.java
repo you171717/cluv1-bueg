@@ -56,7 +56,7 @@ public class OrderController {
 
         Long orderId;
 
-        String notice = orderDto.getNotice();  //알림 전송 방식 가져오기
+        String notice = "email";  //알림 전송 방식 가져오기
 
         try {
             orderId = orderService.order(orderDto, email);
@@ -125,7 +125,7 @@ public class OrderController {
 
         Order order = orderService.getOrder(orderId);
 
-        orderService.returnReqOrder(order);
+        orderService.requestReturn(order);
 
         return new ResponseEntity<Long>(orderId, HttpStatus.OK);
     }
@@ -151,7 +151,7 @@ public class OrderController {
 
         List<String> orderIdList = (List<String>) paramMap.get("orderId");
         for (String orderId : orderIdList) {
-            orderService.returnConfirmOrder(Long.valueOf(orderId));
+            orderService.confirmReturn(Long.valueOf(orderId));
         }
 
         return new ResponseEntity<String>("처리 완료되었습니다.", HttpStatus.OK);

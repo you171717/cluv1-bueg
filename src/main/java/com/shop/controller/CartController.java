@@ -67,7 +67,7 @@ public class CartController {
 
         List<CartDetailDto> cartDetailList = cartService.getCartList(principal.getName());
         // 현재 로그인된 회원의 포인트 불러오기
-        model.addAttribute("inputPoint", memberService.findpointByEmail(email));
+        model.addAttribute("inputPoint", memberService.getPointByEmail(email));
         model.addAttribute("cartItems", cartDetailList);
 
         return "cart/cartList";

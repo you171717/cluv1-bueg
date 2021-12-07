@@ -73,9 +73,11 @@ public class GiftController {
         // 수신번호
         params.put("to", "010-5363-6153");
         // 발신번호
-        params.put("from", orderDto.getFrom());
+        // params.put("from", orderDto.getFrom());
+        params.put("from", "");
         // 문자내용
-        params.put("text", orderDto.getText());
+        // params.put("text", orderDto.getText());
+        params.put("text", "");
         // 문자 타입
         params.put("type", "sms");
         // application name and version
@@ -144,7 +146,7 @@ public class GiftController {
 
         // 주문 로직 호출
         try {
-            orderId = orderService.gift(orderDto, email);
+            orderId = orderService.order(orderDto, email);
             log.info("orderDto : " + orderDto.toString());
         } catch (Exception e) {
             return new ResponseEntity<String>(e.getMessage(),

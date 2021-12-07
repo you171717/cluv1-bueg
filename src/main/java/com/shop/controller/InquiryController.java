@@ -120,7 +120,7 @@ public class InquiryController {
     */
     @GetMapping(value = "/admin/cscenter/voclist")
     public String adminReadInquiry(Model model){
-        List<InquiryFormDto> InquiryList = inquiryService.getALLInquiryList();
+        List<InquiryFormDto> InquiryList = inquiryService.getAllInquiryList();
         model.addAttribute("faqsearchdto",new FAQSearchDto());
         model.addAttribute("InquiryList", InquiryList);
         return "cscenter/adminvocList";

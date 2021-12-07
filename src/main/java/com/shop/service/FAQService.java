@@ -22,29 +22,31 @@ public class FAQService {
         List<FAQDto> faqDtoList = new ArrayList<>();
 
         for(FAQ faq : faqLists) {
-            FAQDto faqDto = FAQDto.builder()
-                    .id(faq.getId())
-                    .question(faq.getQuestion())
-                    .answer(faq.getAnswer())
-                    .build();
+            FAQDto faqDto = new FAQDto();
+            faqDto.setId(faq.getId());
+            faqDto.setQuestion(faq.getQuestion());
+            faqDto.setAnswer(faq.getAnswer());
+
             faqDtoList.add(faqDto);
         }
+
         return faqDtoList;
     }
 
     @Transactional(readOnly = true)
-    public List<FAQDto> getSearchResult(FAQSearchDto faqSearchDto){
+    public List<FAQDto> getSearchResult(FAQSearchDto faqSearchDto) {
         List<FAQ> faqLists = faqRepository.findByQuestion(faqSearchDto.getSearchQuery());
         List<FAQDto> faqDtoList = new ArrayList<>();
 
         for(FAQ faq : faqLists) {
-            FAQDto faqDto = FAQDto.builder()
-                    .id(faq.getId())
-                    .question(faq.getQuestion())
-                    .answer(faq.getAnswer())
-                    .build();
+            FAQDto faqDto = new FAQDto();
+            faqDto.setId(faq.getId());
+            faqDto.setQuestion(faq.getQuestion());
+            faqDto.setAnswer(faq.getAnswer());
+
             faqDtoList.add(faqDto);
         }
+
         return faqDtoList;
 
     }

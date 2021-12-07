@@ -23,22 +23,17 @@ public class ItemService {
     private final ItemRepository itemRepository;
     private final ItemImgService itemImgService;
     private final ItemImgRepository itemImgRepository;
-    private final CategoryRepository categoryRepository;
     private final ItemTagRepository itemTagRepository;
+    private final CategoryRepository categoryRepository;
     private final TagRepository tagRepository;
 
-    public Long saveItem(ItemFormDto itemFormDto, List<MultipartFile> itemImgFileList, List<String> tags) throws Exception {
-        // 카테고리 정보 조회
+    public Long saveItem(ItemFormDto itemFormDto, List<MultipartFile> itemImgFileList) throws Exception {
         Category category = categoryRepository.findByCateCode(itemFormDto.getCateCode());
 
-        // 상품 등록
         Item item = Item.createItem(itemFormDto, category);
-        
-        itemRepository.save(item);
 
         for(int i = 0; i < itemImgFileList.size(); i++) {
             ItemImg itemImg = new ItemImg();
-
             itemImg.setItem(item);
 
             if(i == 0) {
@@ -50,15 +45,17 @@ public class ItemService {
             itemImgService.saveItemImg(itemImg, itemImgFileList.get(i));
         }
 
-        //태그 등록
-        for (int i = 0; i < tags.size(); i++) {
+        for (Long tagId : itemFormDto.getTagIds()) {
+            Tag tag = tagRepository.findById(tagId).orElseThrow(EntityNotFoundException::new);
+
             ItemTag itemTag = new ItemTag();
-            Tag tag = tagRepository.findById(Long.parseLong(tags.get(i)))
-                    .orElseThrow(EntityNotFoundException::new);
             itemTag.setItem(item);
             itemTag.setTag(tag);
+
             itemTagRepository.save(itemTag);
         }
+
+        itemRepository.save(item);
 
         return item.getId();
     }
@@ -83,20 +80,20 @@ public class ItemService {
     }
 
     @Transactional(readOnly = true)
-    public List<Tag> getTags(Long itemId) {
-        List<ItemTag> itemTag = itemTagRepository.findByItem_Id(itemId);
-        List<Tag> tags = new ArrayList<>();
-        for (ItemTag itemtag : itemTag) {
-            Tag tag = itemtag.getTag();
-            Hibernate.initialize(tag);
-            Hibernate.unproxy(tag);
+    public List<Tag> getTagList(Long itemId) {
+        List<ItemTag> itemTagList = itemTagRepository.findByItemId(itemId);
+        List<Tag> tagList = new ArrayList<>();
 
-            tags.add(tag);
+        for (ItemTag itemTag : itemTagList) {
+            Tag tag = itemTag.getTag();
+
+            tagList.add(tag);
         }
-        return tags;
+
+        return tagList;
     }
 
-    public Long updateItem(ItemFormDto itemFormDto, List<MultipartFile> itemImgFileList, List<String> tags) throws Exception {
+    public Long updateItem(ItemFormDto itemFormDto, List<MultipartFile> itemImgFileList) throws Exception {
         Item item = itemRepository.findById(itemFormDto.getId()).orElseThrow(EntityNotFoundException::new);
 
         item.updateItem(itemFormDto);
@@ -106,22 +103,21 @@ public class ItemService {
         for(int i = 0; i < itemImgFileList.size(); i++) {
             itemImgService.updateItemImg(itemImgIds.get(i), itemImgFileList.get(i));
         }
-        //태그 수정
-        List<ItemTag> savedItemTag = itemTagRepository.findByItem_Id(item.getId());
 
-        //기존 태그 삭제
-        for(ItemTag itemTag : savedItemTag) {
-            itemTagRepository.delete(itemTag);
-        }
+        List<ItemTag> savedItemTag = itemTagRepository.findByItemId(item.getId());
 
-        //새 태그 등록
-        for(String tag : tags) {
+        itemTagRepository.deleteAll(savedItemTag);
+
+        for(Long tagIds : itemFormDto.getTagIds()) {
+            Tag tag = tagRepository.findById(tagIds).orElseThrow(EntityNotFoundException::new);
+
             ItemTag itemTag = new ItemTag();
-            Tag t = tagRepository.findById(Long.parseLong(tag)).orElseThrow(EntityNotFoundException::new);
             itemTag.setItem(item);
-            itemTag.setTag(t);
+            itemTag.setTag(tag);
+
             itemTagRepository.save(itemTag);
         }
+
         return item.getId();
     }
 
@@ -145,4 +141,5 @@ public class ItemService {
     public Page<MainItemDto> getDetailSearchPage(String[] filters, ItemSearchDto itemSearchDto, Pageable pageable) {
         return itemRepository.getDetailSearchPage(filters, itemSearchDto, pageable);
     }
+
 }

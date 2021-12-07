@@ -3,15 +3,20 @@ package com.shop.constant;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@RequiredArgsConstructor
-@Getter
-// 구매/선물
 public enum GiftStatus {
 
-    BUY("0"),
-    GIFT("1");
+    BUY("BUY"),
+    GIFT("GIFT");
 
-    private final String key;
+    private final String statusType;
 
+    GiftStatus(String statusType) {
+        this.statusType = statusType;
+    }
+
+    @Override
+    public String toString() {
+        return statusType;
+    }
 
 }

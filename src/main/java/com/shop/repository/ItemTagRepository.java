@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface ItemTagRepository extends JpaRepository<ItemTag,Long> {
 
-    List<ItemTag> findByItem_Id(@Param(value = "itemID") Long itemId);
+    List<ItemTag> findByItemId(@Param(value = "itemId") Long itemId);
 
 }

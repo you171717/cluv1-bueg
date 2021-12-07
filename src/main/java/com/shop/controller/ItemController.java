@@ -1,19 +1,15 @@
 package com.shop.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.shop.dto.*;
 import com.shop.entity.Item;
 import com.shop.entity.Tag;
 import com.shop.naverapi.NaverShopSearch;
 import com.shop.service.ItemService;
-import com.shop.service.MemberService;
 import com.shop.service.ReviewService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -33,7 +29,6 @@ public class ItemController {
 
     private final ItemService itemService;
     private final ReviewService reviewService;
-    private final MemberService memberService;
     private final NaverShopSearch naverShopSearch;
 
     @GetMapping(value = "/admin/item/new")
@@ -56,7 +51,7 @@ public class ItemController {
         }
 
         try {
-            itemService.saveItem(itemFormDto, itemImgFileList, tags);
+            itemService.saveItem(itemFormDto, itemImgFileList);
         } catch(Exception e) {
             model.addAttribute("errorMessage", "상품 등록 중 에러가 발생하였습니다.");
 
@@ -70,7 +65,7 @@ public class ItemController {
     public String itemFormUpdate(@PathVariable("itemId") Long itemId, Model model) {
         try {
             ItemFormDto itemFormDto = itemService.getItemDtl(itemId);
-            List<Tag> tag = itemService.getTags(itemId);    //태그 조회
+            List<Tag> tag = itemService.getTagList(itemId);    //태그 조회
             List<String> tagList = new ArrayList<>();
 
             for(Tag t : tag) {
@@ -102,7 +97,7 @@ public class ItemController {
         }
 
         try {
-            itemService.updateItem(itemFormDto, itemImgFileList,tags);
+            itemService.updateItem(itemFormDto, itemImgFileList);
         } catch(Exception e) {
             model.addAttribute("errorMessage", "상품 수정 중 에러가 발생하였습니다.");
 
@@ -137,19 +132,16 @@ public class ItemController {
         return "item/itemDtl";
     }
 
-    //상품 등록시 등록 상품 이름을 값으로 해당 상품의 네이버 쇼핑 API 값 리턴
     @ResponseBody
     @GetMapping(value = "/admin/item/newSearch")
     public List<NaverApiDto> getItems(@RequestParam("title") String query) {
         return naverShopSearch.search(query);
     }
 
-    //상품 상세 페이지에서 등록된 상품의 네이버 최저가와 해당 상품 구매페이지 링크 리턴
     @ResponseBody
     @GetMapping(value = "/item/{itemId}/price")
     public List<NaverApiDto> getPrice(@RequestParam("itemNm") String query) {
         return naverShopSearch.search2(query);
-
     }
 
 }

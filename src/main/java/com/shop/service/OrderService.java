@@ -21,30 +21,39 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.shop.constant.GiftStatus.BUY;
-
 @Service
 @Transactional
 @RequiredArgsConstructor
 public class OrderService {
 
+    private final MemberRepository memberRepository;
     private final ItemRepository itemRepository;
     private final ItemImgRepository itemImgRepository;
-    private final MemberRepository memberRepository;
+    private final ItemTagRepository itemTagRepository;
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
-    private final ItemTagRepository itemTagRepository;
+
+    public void processPointUsage(Member member, Order order) {
+        member.setPoint(member.getPoint() - order.getUsedPoint() + order.getAccPoint());
+
+        memberRepository.save(member);
+    }
+
+    public void processTagTotalSell(Item item) {
+        List<ItemTag> itemTag = itemTagRepository.findByItemId(item.getId());
+
+        for(ItemTag itemtag : itemTag) {
+            itemtag.getTag().addTotalSell();
+        }
+    }
 
     public Long order(OrderDto orderDto, String email) {
         Item item = itemRepository.findById(orderDto.getItemId()).orElseThrow(EntityNotFoundException::new);
 
         Member member = memberRepository.findByEmail(email);
 
-        //Tag별 누적 판매 증가
-        List<ItemTag> itemTag = itemTagRepository.findByItem_Id(item.getId());
-
-        for(ItemTag itemtag : itemTag) {
-            itemtag.getTag().addTotalSell();
+        if(member.getPoint() < orderDto.getUsedPoint()) {
+            throw new IllegalStateException("포인트가 부족합니다.");
         }
 
         List<OrderItem> orderItemList = new ArrayList<>();
@@ -52,15 +61,9 @@ public class OrderService {
         OrderItem orderItem = OrderItem.createOrderItem(item, orderDto.getCount());
         orderItemList.add(orderItem);
 
-        // 사용 포인트 보다 가지고 있는 포인트가 적을 시 경고문 출력
-        if(member.getPoint() < orderDto.getUsedPoint()) {
-            throw new IllegalStateException("포인트가 부족합니다.");
-        }
+        Order order = Order.createOrder(member, orderDto, orderItemList);
 
-        Order order = Order.createOrder(member, orderDto.getUsedPoint(), orderItemList, BUY,
-                member.getAddress(), member.getAddressDetail());
-
-        // 계산된 포인트 함수 호출
+        this.processTagTotalSell(item);
         this.processPointUsage(member, order);
 
         orderRepository.save(order);
@@ -68,34 +71,72 @@ public class OrderService {
         return order.getId();
     }
 
-    // 선물하기
-    public Long gift(OrderDto orderDto, String email) {
-        Item item = itemRepository.findById(orderDto.getItemId())
-                .orElseThrow(EntityNotFoundException::new);
-        // 이메일 정보를 이용해 회원 정보 조회
+    public Long orders(List<OrderDto> orderDtoList, String email, Integer usedPoint) {
         Member member = memberRepository.findByEmail(email);
+
+        if(member.getPoint() < usedPoint) {
+            throw new IllegalStateException("포인트가 부족합니다.");
+        }
 
         List<OrderItem> orderItemList = new ArrayList<>();
 
-        // 주문할 상품 엔티티와 주문 수량을 이용하여 주문 상품 엔티티 생성
-        OrderItem orderItem =
-                OrderItem.createOrderItem(item, orderDto.getCount());
-        orderItemList.add(orderItem);
+        for(OrderDto orderDto : orderDtoList) {
+            Item item = itemRepository.findById(orderDto.getItemId()).orElseThrow(EntityNotFoundException::new);
 
-        // 회원 정보와 주문할 상품 리스트 정보를 이용하여 주문 엔티티 생성 (상태 : 선물)
-        Order order = Order.createOrder(member, 0, orderItemList , GiftStatus.GIFT,
-                orderDto.getAddress(), orderDto.getAddressDetail());
+            OrderItem orderItem = OrderItem.createOrderItem(item, orderDto.getCount());
+
+            orderItemList.add(orderItem);
+        }
+
+        OrderDto orderDto = new OrderDto();
+        orderDto.setAddress(member.getAddress());
+        orderDto.setAddressDetail(member.getAddressDetail());
+        orderDto.setUsedPoint(usedPoint);
+        orderDto.setGiftStatus(GiftStatus.BUY);
+
+        Order order = Order.createOrder(member, orderDto, orderItemList);
+
+        this.processPointUsage(member, order);
+
+        for(OrderItem orderItem : orderItemList) {
+            this.processTagTotalSell(orderItem.getItem());
+        }
+
         orderRepository.save(order);
 
         return order.getId();
     }
 
     @Transactional(readOnly = true)
+    public Order getOrder(Long orderId) {
+        return orderRepository.getById(orderId);
+    }
+
+    @Transactional(readOnly = true)
     public Page<OrderHistDto> getOrderList(String email, Pageable pageable) {
         List<Order> orders = orderRepository.findOrders(email, pageable);
-
         Long totalCount = orderRepository.countOrder(email);
 
+        return this.getPaginatedOrderList(orders, pageable, totalCount);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<OrderHistDto> getOrderListStatus(String email, Pageable pageable, GiftStatus giftStatus) {
+        List<Order> orders = orderRepository.findOrdersStatus(email, pageable, giftStatus);
+        Long totalCount = orderRepository.countOrder(email);
+
+        return this.getPaginatedOrderList(orders, pageable, totalCount);
+    }
+
+    @Transactional(readOnly = true)
+    public Page<OrderHistDto> getReturnList(String email, Pageable pageable) {
+        List<Order> orders = orderRepository.findOrdersForReturnList(email, pageable);
+        Long totalCount = orderRepository.countOrderForReturnList(email);
+
+        return this.getPaginatedOrderList(orders, pageable, totalCount);
+    }
+
+    private Page<OrderHistDto> getPaginatedOrderList(List<Order> orders, Pageable pageable, Long totalCount) {
         List<OrderHistDto> orderHistDtos = new ArrayList<>();
 
         for (Order order : orders) {
@@ -117,43 +158,14 @@ public class OrderService {
         return new PageImpl<OrderHistDto>(orderHistDtos, pageable, totalCount);
     }
 
-    // 구매/선물 상태 조회
-    @Transactional(readOnly = true)
-    public Page<OrderHistDto> getOrderListStatus(String email, Pageable pageable, GiftStatus giftStatus){
-
-        List<Order> orders = orderRepository.findOrdersStatus(email, pageable, giftStatus);
-        Long totalCount = orderRepository.countOrder(email);
-
-        List<OrderHistDto> orderHistDtos = new ArrayList<>();
-
-        // 주문 리스트 순회
-        for(Order order : orders){
-            OrderHistDto orderHistDto = new OrderHistDto(order);
-            List<OrderItem> orderItems = order.getOrderItems();
-            for(OrderItem orderItem : orderItems) {
-                ItemImg itemImg = itemImgRepository.findByItemIdAndRepImgYn(orderItem.getItem().getId(), "Y");
-                OrderItemDto orderItemDto =
-                        new OrderItemDto(orderItem, itemImg.getImgUrl());
-                orderHistDto.addOrderItemDto(orderItemDto);
-            }
-            orderHistDtos.add(orderHistDto);
-        }
-        return new PageImpl<OrderHistDto>(orderHistDtos, pageable, totalCount);
-    }
-
     @Transactional(readOnly = true)
     public boolean validateOrder(Long orderId, String email) {
-        Member curMember = memberRepository.findByEmail(email);
-
         Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
 
+        Member curMember = memberRepository.findByEmail(email);
         Member savedMember = order.getMember();
 
-        if (!StringUtils.equals(curMember.getEmail(), savedMember.getEmail())) {
-            return false;
-        }
-
-        return true;
+        return StringUtils.equals(curMember.getEmail(), savedMember.getEmail());
     }
 
     public void cancelOrder(Long orderId) {
@@ -161,47 +173,7 @@ public class OrderService {
         order.cancelOrder();
     }
 
-    public Long orders(List<OrderDto> orderDtoList, String email, Integer usedPoint) {
-        Member member = memberRepository.findByEmail(email);
-
-        List<OrderItem> orderItemList = new ArrayList<>();
-
-        for (OrderDto orderDto : orderDtoList) {
-            Item item = itemRepository.findById(orderDto.getItemId()).orElseThrow(EntityNotFoundException::new);
-
-            OrderItem orderItem = OrderItem.createOrderItem(item, orderDto.getCount());
-
-            orderItemList.add(orderItem);
-        }
-
-        // 부족 경고문
-        if(member.getPoint() < usedPoint) {
-            throw new IllegalStateException("포인트가 부족합니다.");
-        }
-
-        Order order = Order.createOrder(member, usedPoint, orderItemList ,BUY, member.getAddress(), member.getAddressDetail());
-
-        // 포인트 계산 함수 호출
-        this.processPointUsage(member, order);
-
-        orderRepository.save(order);
-
-        return order.getId();
-    }
-
-    // 포인트 계산 함수
-    public void processPointUsage(Member member, Order order) {
-        member.setPoint(member.getPoint() - order.getUsedPoint() + order.getAccPoint());
-
-        memberRepository.save(member);
-    }
-
-    public Order getOrder(Long orderId) {
-        return orderRepository.getById(orderId);
-    }
-
-    @Transactional
-    public void returnReqOrder(Order order) throws Exception {
+    public void requestReturn(Order order) {
         List<OrderItem> orderItemList = order.getOrderItems();
 
         for (OrderItem orderItem : orderItemList) {
@@ -209,40 +181,18 @@ public class OrderService {
             orderItem.setReturnPrice(orderItem.getOrderPrice());
             orderItem.setReturnCount(orderItem.getCount());
             orderItem.setReturnStatus(ReturnStatus.N);
+
             orderItemRepository.save(orderItem);
         }
+
         order.setReturnReqDate(LocalDateTime.now());
         order.setOrderStatus(OrderStatus.RETURN);
         order.setReturnStatus(ReturnStatus.N);
+
         orderRepository.save(order);
     }
 
-    @Transactional(readOnly = true)
-    public Page<OrderHistDto> getReturnList(String email, Pageable pageable) throws Exception{
-        List<Order> orders = orderRepository.findOrdersForReturnList(email, pageable);
-        Long totalCount = orderRepository.countOrderForReturnList(email);
-
-        List<OrderHistDto> orderHistDtos = new ArrayList<>();
-
-        for (Order order : orders) {
-            OrderHistDto orderHistDto = new OrderHistDto(order);
-            List<OrderItem> orderItems = order.getOrderItems();
-            for (OrderItem orderItem : orderItems) {
-                ItemImg itemImg = itemImgRepository.findByItemIdAndRepImgYn
-                        (orderItem.getItem().getId(), "Y");
-                OrderItemDto orderItemDto =
-                        new OrderItemDto(orderItem, itemImg.getImgUrl());
-                orderHistDto.addOrderItemDto(orderItemDto);
-            }
-
-            orderHistDtos.add(orderHistDto);
-        }
-
-        return new PageImpl<OrderHistDto>(orderHistDtos, pageable, totalCount);
-    }
-
-    @Transactional
-    public void returnConfirmOrder(Long orderId) {
+    public void confirmReturn(Long orderId) {
         Order order = this.getOrder(orderId);
 
         List<OrderItem> orderItemList = order.getOrderItems();
@@ -252,13 +202,15 @@ public class OrderService {
             orderItem.setReturnPrice(orderItem.getOrderPrice());
             orderItem.setReturnCount(orderItem.getCount());
             orderItem.setReturnStatus(ReturnStatus.Y);
+
             orderItemRepository.save(orderItem);
         }
+
         order.setReturnConfirmDate(LocalDateTime.now());
         order.setOrderStatus(OrderStatus.RETURN);
         order.setReturnStatus(ReturnStatus.Y);
-        orderRepository.save(order);
 
+        orderRepository.save(order);
     }
 
 }

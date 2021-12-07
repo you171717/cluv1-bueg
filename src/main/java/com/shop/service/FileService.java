@@ -7,8 +7,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.UUID;
 
-@Service
 @Log
+@Service
 public class FileService {
 
     public String uploadFile(String uploadPath, String originalFileName, byte[] fileData) throws Exception {
@@ -26,11 +26,12 @@ public class FileService {
         return savedFileName;
     }
 
-    public void deleteFile(String filePath) throws Exception {
+    public void deleteFile(String filePath) {
         File deleteFile = new File(filePath);
 
         if(deleteFile.exists()) {
             deleteFile.delete();
+
             log.info("파일을 삭제하였습니다.");
         } else {
             log.info("파일이 존재하지 않습니다.");

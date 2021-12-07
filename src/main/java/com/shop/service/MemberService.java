@@ -44,12 +44,6 @@ public class MemberService implements UserDetailsService {
         }
     }
 
-    // 회원 포인트 조회
-    public int findpointByEmail(String email){
-        Member member = memberRepository.findByEmail(email);
-        return member.getPoint();
-    }
-
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
         Member member = memberRepository.findByEmail(email);
@@ -65,22 +59,26 @@ public class MemberService implements UserDetailsService {
                 .build();
     }
 
-    //이메일, 이름 일치 확인 메소드
+    public int getPointByEmail(String email) {
+        Member member = memberRepository.findByEmail(email);
+
+        return member.getPoint();
+    }
+
+    public void updatePassword(Long memberId, String password) {
+        memberRepository.updatePassword(memberId, new BCryptPasswordEncoder().encode(password));
+    }
+
     public boolean checkEmailAndName(String email, String name) {
         Member member = memberRepository.findByEmail(email);
 
         if(member == null || !member.getName().equals(name)) {
             throw new IllegalStateException("이메일과 이름이 일치하지 않습니다.");
         }
+
         return true;
     }
 
-    //비밀번호 변경 메소드
-    public void updatePassword(Long memberId, String password) {
-        memberRepository.updatePassword(memberId, new BCryptPasswordEncoder().encode(password));
-    }
-
-    // 관리자 회원 조회 페이지
     @Transactional(readOnly = true)
     public Page<Member> getAdminMemberPage(MemberSearchDto memberSearchDto, Pageable pageable){
         return memberRepository.getAdminMemberPage(memberSearchDto, pageable);
