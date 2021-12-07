@@ -123,6 +123,8 @@ public class OAuth2Controller {
             OAuth2FormDto originalFormDto = (OAuth2FormDto) session.getAttribute("OAuth2FormDto");
 
             originalFormDto.setAddress(oAuth2FormDto.getAddress());
+            originalFormDto.setAddressDetail(oAuth2FormDto.getAddressDetail());
+            originalFormDto.setPhone(oAuth2FormDto.getPhone());
             originalFormDto.setRefundBank(oAuth2FormDto.getRefundBank());
             originalFormDto.setRefundAccount(oAuth2FormDto.getRefundAccount());
 

@@ -21,6 +21,12 @@ public class OAuth2FormDto {
     @NotEmpty(message = "주소는 필수 입력 값입니다.")
     private String address;
 
+    @NotEmpty(message = "상세 주소는 필수 입력 값입니다.")
+    private String addressDetail;
+
+    @NotEmpty(message = "휴대폰 번호는 필수 입력 값입니다.")
+    private String phone;
+
     @NotNull(message = "환불 은행은 필수 입력 값입니다.")
     private Bank refundBank;
 

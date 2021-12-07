@@ -34,7 +34,10 @@ public class OAuth2Member extends BaseTimeEntity implements Serializable {
         member.setName(oAuth2FormDto.getName());
         member.setEmail(oAuth2FormDto.getEmail());
         member.setAddress(oAuth2FormDto.getAddress());
+        member.setAddressDetail(oAuth2FormDto.getAddressDetail());
         member.setRefundBank(oAuth2FormDto.getRefundBank());
+        member.setPoint(1000); // 신규 가입시 포인트 추가
+        member.setPhone(oAuth2FormDto.getPhone());
         member.setRefundAccount(oAuth2FormDto.getRefundAccount());
         member.setRole(Role.USER);
 

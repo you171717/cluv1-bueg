@@ -74,7 +74,7 @@
             </div>
             <!--  비밀번호 확인  -->
             <div class="form-group">
-                <input type="password" id="passwordCheck" class="form-control" placeholder="비밀번호 확인">
+                <input type="password" id="passwordCheck" class="form-control" placeholder="비밀번호 확인" th:readonly="${oAuth2Member != null}">
             </div>
             <!-- 카카오 주소 API 추가-->
             <div class="form-group">
