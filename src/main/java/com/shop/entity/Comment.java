@@ -26,7 +26,7 @@ public class Comment extends BaseEntity {
     private String content;
 
 
-    public static Comment createComment(Inquiry inquiry,CommentFormDto commentFormDto){
+    public static Comment createComment(CommentFormDto commentFormDto, Inquiry inquiry){
         Comment comment=new Comment();
         comment.setContent(commentFormDto.getContent());
         comment.setInquiry(inquiry);

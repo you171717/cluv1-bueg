@@ -4,7 +4,6 @@ import com.shop.entity.AuthToken;
 import com.shop.entity.Member;
 import com.shop.repository.AuthTokenRepository;
 import com.shop.repository.MemberRepository;
-import com.shop.utils.EncryptionUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,56 +17,57 @@ public class AuthTokenService {
 
     private final AuthTokenRepository authTokenRepository;
     private final MemberRepository memberRepository;
+    private final EncryptionService encryptionService;
 
     public String getTokenCode(String email) {
-        //해당 Email에 해당하는 Member에 할당된 code 가져오기(해쉬값)
-        String code = EncryptionUtils.encryptMD5(email + LocalDateTime.now());
-
-        return code;
+        return encryptionService.encryptMD5(email + LocalDateTime.now());
     }
-    public AuthToken getToken(String email) {
+
+    public AuthToken getTokenByEmail(String email) {
         Member member = memberRepository.findByEmail(email);
-        AuthToken authtoken = authTokenRepository.findFirstByMemberOrderByRegTimeDesc(member);
-        return authtoken;
+
+        return authTokenRepository.findFirstByMemberOrderByRegTimeDesc(member);
+    }
+
+    public AuthToken getTokenByCode(String code){
+        return authTokenRepository.findFirstByCodeOrderByRegTimeDesc(code);
     }
 
     public AuthToken createToken(String email) {
+        Member member = memberRepository.findByEmail(email);
+
+        if(member == null) {
+            throw new IllegalStateException("등록된 이메일이 아닙니다.");
+        }
+
+        String tokenCode = this.getTokenCode(email);
+        LocalDateTime tokenExpireDate = LocalDateTime.now().plusHours(1);
+
         AuthToken authToken = new AuthToken();
-        //토큰 코드 생성(호출)
-        authToken.setCode(getTokenCode(email));
-        //사용자 정보 등록(Member)
-        authToken.setMember(memberRepository.findByEmail(email));
-        //만료 시간 설정
-        authToken.setExpireDate(LocalDateTime.now().plusHours(1));
+        authToken.setMember(member);
+        authToken.setCode(tokenCode);
+        authToken.setExpireDate(tokenExpireDate);
 
         return authTokenRepository.save(authToken);
     }
 
     public void invalidateToken(String email) {
-        //해당 Email에 해당하는 Member에 할당된 토큰 사용여부 설정
-        AuthToken authToken = getToken(email);
+        AuthToken authToken = this.getTokenByEmail(email);
         authToken.setUseYn("Y");
+
+        authTokenRepository.save(authToken);
     }
 
     public boolean validateExpireToken(String email, String code) {
-        AuthToken authToken = getToken(email);
-        // AuthCode의 code와 매개변수의 code가 같은지 비교
-        if (!code.equals(authToken.getCode())) {
+        AuthToken authToken = this.getTokenByEmail(email);
+
+        if(!code.equals(authToken.getCode())
+        || authToken.getUseYn().equals("Y")
+        || authToken.getExpireDate().isBefore(LocalDateTime.now())) {
             return false;
         }
-        if (!authToken.getUseYn().equals("N")) {
-            return false;
-        }
-        // AuthCode의 expireDate가 현재 시간보다 작은지 비교
-        if (authToken.getExpireDate().isBefore(LocalDateTime.now())) {
-            return false;
-        }
+
         return true;
     }
 
-    public AuthToken getTokenByCode(String code){
-        AuthToken authToken = authTokenRepository.findFirstByCodeOrderByRegTimeDesc(code);
-
-        return authToken;
-    }
 }

@@ -26,21 +26,26 @@ import javax.servlet.http.HttpSession;
 public class EmailService {
 
     private final JavaMailSender javaMailSender;
+
     private final AuthTokenService authTokenService;
     private final ItemRepository itemRepository;
-    private final AuthTokenRepository authTokenRepository;
     private final OrderRepository orderRepository;
     private final EmailNoticeRepository emailNoticeRepository;
 
-    @Async
     public void sendEmail(String to, String subject, String text) {
+        this.sendEmail(to, subject, text, false);
+    }
+
+    @Async
+    public void sendEmail(String to, String subject, String text, boolean html) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MemberFormDto memberFormDto = new MemberFormDto();
+
         try {
             MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
-            mimeMessageHelper.setTo(to); // 메일 수신자
-            mimeMessageHelper.setSubject(subject); // 메일 제목
-            mimeMessageHelper.setText(text, false); // 메일 본문 내용, HTML 여부
+            mimeMessageHelper.setTo(to);
+            mimeMessageHelper.setSubject(subject);
+            mimeMessageHelper.setText(text, false);
+
             javaMailSender.send(mimeMessage);
         } catch (MessagingException e) {
             throw new RuntimeException(e);
@@ -48,38 +53,41 @@ public class EmailService {
     }
 
     public void sendEmailAuthCode(String email, HttpSession httpSession) {
-        String code = authTokenService.getTokenCode(email);
-
-        httpSession.setAttribute("authCode", code);
-
+        String code = authTokenService.getTokenCode(email).substring(0, 6);
         String subject = "[Bueg] 인증코드입니다.";
         String text = "이메일 인증코드는 " + code + "입니다.";
 
-        sendEmail(email, subject, text);
+        httpSession.setAttribute("emailConfirmCode", code);
+
+        this.sendEmail(email, subject, text);
     }
 
-    public void sendOrderEmail(String email, OrderDto orderDto){
+    public void sendOrderEmail(String email, OrderDto orderDto) {
+        Item item = itemRepository.findById(orderDto.getItemId()).orElseThrow(EntityNotFoundException::new);
+
         String subject = "주문 상품 내역입니다.";
-        Item item = itemRepository.findById(orderDto.getItemId()).
-                orElseThrow(EntityNotFoundException::new);
-        String text = "[Bueg] 주문 상품 내역입니다.\n" + "주문 상품 : " + item.getItemNm() + "\n주문 수량 : " + orderDto.getCount() +
-                "\n주문 금액 : " + item.getPrice() * orderDto.getCount() + "원 입니다.\n";
-        sendEmail(email, subject, text);
 
-        EmailNotice emailNotice = new EmailNotice();
-        emailNoticeRepository.save(emailNotice);
+        StringBuffer sb = new StringBuffer();
+        sb.append("[Bueg] 주문 상품 내역입니다.\n");
+        sb.append("주문 상품 : ");
+        sb.append(item.getItemNm());
+        sb.append("\n주문 수량 : ");
+        sb.append(orderDto.getCount());
+        sb.append("\n주문 금액 : ");
+        sb.append(item.getPrice() * orderDto.getCount());
+        sb.append("원 입니다.\n");
+
+        this.sendEmail(email, subject, sb.toString());
+        this.addEmailCount();
     }
-    //장바구니 주문 시 이메일 전송 메소드
-    public void sendCartOrderEmail(String email, Long orderId){
 
+    public void sendCartOrderEmail(String email, Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
 
         String subject = "주문 상품 내역입니다.";
-        String emailText = "[Bueg] 주문 상품 내역입니다.\n\n";  //String Buffer를 사용하기 위한 초기 text값
 
-        StringBuffer sb = new StringBuffer(emailText);
+        StringBuffer sb = new StringBuffer("[Bueg] 주문 상품 내역입니다.\n\n");
 
-        //장바구니 데이터 불러오기
         for(OrderItem orderItem : order.getOrderItems()) {
             sb.append(orderItem.getItem().getItemNm());
             sb.append("(");
@@ -92,29 +100,27 @@ public class EmailService {
         sb.append(order.getTotalPrice());
         sb.append("원\n");
 
-        String text = sb.toString();
-
-        sendEmail(email, subject, text);
-
-        EmailNotice emailNotice = new EmailNotice();
-        emailNoticeRepository.save(emailNotice);
+        this.sendEmail(email, subject, sb.toString());
+        this.addEmailCount();
     }
 
-    public void sendPasswordEmail(String email){
-        //url에 get방식으로 토큰을 붙인다
-        MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-        MemberFormDto memberFormDto = new MemberFormDto();
-        try {
-            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(mimeMessage, false, "UTF-8");
-            mimeMessageHelper.setTo(email); // 메일 수신자
-            mimeMessageHelper.setSubject("[Bueg] 비밀번호를 변경해주세요"); // 메일 제목
-            mimeMessageHelper.setText(
-                    "<a href='http://localhost:8080/members/updatePassword?code=" + authTokenService.createToken(email).getCode() +
-                            "&email="+email+"'>비밀번호 변경페이지</a>", true); // 메일 본문 내용, HTML 여부
-            javaMailSender.send(mimeMessage);
-        } catch (MessagingException e) {
-            throw new RuntimeException(e);
-        }
+    public void sendPasswordEmail(String email) {
+        String subject = "[Bueg] 비밀번호를 변경해주세요";
+
+        StringBuffer sb = new StringBuffer();
+        sb.append("<a href='http://localhost:8080/members/updatePassword?code=");
+        sb.append(authTokenService.createToken(email).getCode());
+        sb.append("&email=");
+        sb.append(email);
+        sb.append("'>비밀번호 변경페이지</a>");
+
+        this.sendEmail(email, subject, sb.toString(), true);
+    }
+
+    public void addEmailCount() {
+        EmailNotice emailNotice = new EmailNotice();
+
+        emailNoticeRepository.save(emailNotice);
     }
 
 }

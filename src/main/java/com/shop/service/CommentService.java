@@ -7,9 +7,9 @@ import com.shop.repository.CommentRepository;
 import com.shop.repository.InquiryRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,35 +21,34 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final InquiryRepository inquiryRepository;
 
-    public Comment saveComment(Long id, CommentFormDto commentFormDto) {
-        Inquiry inquiry = inquiryRepository.findById(id).orElseThrow(EntityNotFoundException::new);
+    public Comment saveComment(CommentFormDto commentFormDto, Long inquiryId) {
+        Inquiry inquiry = inquiryRepository.findById(inquiryId).orElseThrow(EntityNotFoundException::new);
 
-        List<Comment> CommentList = new ArrayList<>();
-        Comment comment = Comment.createComment(inquiry,commentFormDto);
-        CommentList.add(comment);
+        Comment comment = Comment.createComment(commentFormDto, inquiry);
 
         return commentRepository.save(comment);
     }
-    @Transactional
-    public List<CommentFormDto> getCommentList(Long id) {
-        List<Comment> commentList= commentRepository.findByInquiryId(id);
+
+    @Transactional(readOnly = true)
+    public List<CommentFormDto> getCommentList(Long inquiryId) {
+        List<Comment> commentList = commentRepository.findByInquiryId(inquiryId);
         List<CommentFormDto> commentDtoList = new ArrayList<>();
 
         for(Comment comment : commentList) {
-            CommentFormDto commentFormDto=CommentFormDto.builder()
-                    .id(comment.getId())
-                    .content(comment.getContent())
-                    .createdBy(comment.getCreatedBy())
-                    .regTime(comment.getRegTime())
-                    .build();
+            CommentFormDto commentFormDto = new CommentFormDto();
+            commentFormDto.setId(comment.getId());
+            commentFormDto.setContent(comment.getContent());
+            commentFormDto.setCreatedBy(comment.getCreatedBy());
+            commentFormDto.setRegTime(comment.getRegTime());
+
             commentDtoList.add(commentFormDto);
         }
 
         return commentDtoList;
     }
 
-    @Transactional
-    public void deleteComment(Long id){
-        commentRepository.deleteByInquiryId(id);
+    public void deleteComment(Long inquiryId){
+        commentRepository.deleteByInquiryId(inquiryId);
     }
+
 }

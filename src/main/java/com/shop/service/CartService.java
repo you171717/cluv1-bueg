@@ -34,9 +34,7 @@ public class CartService {
 
     public Long addCart(CartItemDto cartItemDto, String email) {
         Item item = itemRepository.findById(cartItemDto.getItemId()).orElseThrow(EntityNotFoundException::new);
-
         Member member = memberRepository.findByEmail(email);
-
         Cart cart = cartRepository.findByMemberId(member.getId());
 
         if(cart == null) {
@@ -78,10 +76,8 @@ public class CartService {
 
     @Transactional(readOnly = true)
     public boolean validateCartItem(Long cartItemId, String email) {
-        Member curMember = memberRepository.findByEmail(email);
-
         CartItem cartItem = cartItemRepository.findById(cartItemId).orElseThrow(EntityNotFoundException::new);
-
+        Member curMember = memberRepository.findByEmail(email);
         Member savedMember = cartItem.getCart().getMember();
 
         if(!StringUtils.equals(curMember.getEmail(), savedMember.getEmail())) {

@@ -126,8 +126,6 @@ public class ItemController {
 
     @GetMapping(value = "/item/{itemId}")
     public String itemDtl(Model model, Principal principal, @PathVariable("itemId") Long itemId) {
-        //현재 로그인된 회원 찾기
-        String email = principal.getName();
         ItemFormDto itemFormDto = itemService.getItemDtl(itemId);
         List<ReviewItemDto> orderItemDtoList = reviewService.getReviewItem(itemId);
         List<ReviewImgDto> reviewImgDtoList = reviewService.getReviewItemImg(itemId);
@@ -135,32 +133,9 @@ public class ItemController {
         model.addAttribute("item", itemFormDto);
         model.addAttribute("orderItemList", orderItemDtoList);
         model.addAttribute("reviewImgDtoList", reviewImgDtoList);
-        // 현재 로그인된 회원 포인트 불러오기
-        model.addAttribute("inputPoint", memberService.findpointByEmail(email));
 
         return "item/itemDtl";
-//      return "item/itemDtlAjax";
     }
-
-    @GetMapping(value = "/item/{itemId}/api")
-    public @ResponseBody ResponseEntity itemDtlAjax(@PathVariable("itemId") Long itemId) {
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        ItemFormDto itemFormDto = itemService.getItemDtl(itemId);
-        itemFormDto.setItemNm(itemFormDto.getItemNm() + " with AJAX");
-        itemFormDto.setItemDetail(itemFormDto.getItemDetail() + " with AJAX");
-
-        String json;
-
-        try {
-            json = objectMapper.writeValueAsString(itemFormDto);
-        } catch(Exception e) {
-            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-
-        return new ResponseEntity<String>(json, HttpStatus.OK);
-    }
-
 
     //상품 등록시 등록 상품 이름을 값으로 해당 상품의 네이버 쇼핑 API 값 리턴
     @ResponseBody
@@ -176,6 +151,5 @@ public class ItemController {
         return naverShopSearch.search2(query);
 
     }
-
 
 }

@@ -21,7 +21,7 @@ public class CommentController {
     */
     @PostMapping(value = "/admin/cscenter/voclist/{id}")
     public String saveComment(@PathVariable("id")Long inquiryid,@Valid CommentFormDto commentFormDto, BindingResult bindingResult, Model model){
-        commentService.saveComment(inquiryid,commentFormDto);
+        commentService.saveComment(commentFormDto, inquiryid);
         return "redirect:/admin/cscenter/voclist/{id}";
     }
 }

@@ -59,6 +59,7 @@ public class Item extends BaseEntity {
         item.itemNm = itemFormDto.getItemNm();
         item.price = itemFormDto.getPrice();
         item.stockNumber = itemFormDto.getStockNumber();
+        item.shippingFee = itemFormDto.getShippingFee();
         item.itemDetail = itemFormDto.getItemDetail();
         item.itemSellStatus = itemFormDto.getItemSellStatus();
 
