@@ -93,6 +93,7 @@ public class Order extends BaseEntity {
 
     public void cancelOrder() {
         this.orderStatus = OrderStatus.CANCEL;
+
         this.getMember().updatePoint(accPoint, usedPoint);
 
         for(OrderItem orderItem : orderItems) {
