@@ -3,6 +3,7 @@ package com.shop.entity;
 import com.shop.constant.GiftStatus;
 import com.shop.constant.OrderStatus;
 import com.shop.constant.ReturnStatus;
+import com.shop.exception.OutOfStockException;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -94,11 +95,13 @@ public class Order extends BaseEntity {
     }
 
     public void cancelOrder() {
-        this.orderStatus = OrderStatus.CANCEL;
+        this.getMember().updatePoint(accPoint, usedPoint);
 
         for(OrderItem orderItem : orderItems) {
             orderItem.cancel();
         }
     }
+
+
 
 }

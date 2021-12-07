@@ -64,4 +64,8 @@ public class Member extends BaseEntity {
         return member;
     }
 
+    public void updatePoint(int accPoint, int usedPoint) {
+        int restPoint = this.point - accPoint + usedPoint;
+        this.point = restPoint;
+    }
 }
