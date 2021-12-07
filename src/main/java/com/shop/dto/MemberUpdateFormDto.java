@@ -25,10 +25,16 @@ public class MemberUpdateFormDto {
     @NotEmpty(message = "주소는 필수 입력 값입니다.")
     private String address;
 
+    @NotEmpty(message = "상세 주소는 필수 입력 값입니다.")
+    private String addressDetail;
+
+    @NotEmpty(message = "휴대폰 번호는 필수 입력 값입니다.")
+    private String phone;
+
     @NotNull(message = "환불 은행은 필수 입력 값입니다.")
     private Bank refundBank;
 
-    @NotEmpty(message = "환불 계좌 번호는 입력 값입니다.")
+    @NotEmpty(message = "환불 계좌 번호는 필수 입력 값입니다.")
     private String refundAccount;
 
 }

@@ -106,7 +106,7 @@ public class MemberController {
     }
 
     @PostMapping(value = "/update")
-    public String updateMember(@Valid MemberUpdateFormDto memberUpdateFormDto, Principal principal, BindingResult bindingResult, Model model) {
+    public String updateMember(@Valid MemberUpdateFormDto memberUpdateFormDto,BindingResult bindingResult, Principal principal, Model model) {
         Member member = memberRepository.findByEmail(principal.getName());
         OAuth2Member oAuth2Member = oAuth2MemberRepository.findByMember(member);
 
@@ -130,6 +130,8 @@ public class MemberController {
         try {
             member.setName(memberUpdateFormDto.getName());
             member.setAddress(memberUpdateFormDto.getAddress());
+            member.setAddressDetail(memberUpdateFormDto.getAddressDetail());
+            member.setPhone(memberUpdateFormDto.getPhone());
             member.setRefundBank(memberUpdateFormDto.getRefundBank());
             member.setRefundAccount(memberUpdateFormDto.getRefundAccount());
 
