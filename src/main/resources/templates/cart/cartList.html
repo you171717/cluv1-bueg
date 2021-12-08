@@ -15,6 +15,10 @@
                 $("input[name=cartChkBox]").change(function() {
                     getOrderTotalPrice();
                 });
+
+                $("#input_point").on('change', function() {
+                    getOrderTotalPrice();
+                });
             });
 
             function getOrderTotalPrice() {
@@ -25,19 +29,16 @@
                     var cartItemId = $(this).val();
                     var price = $("#price_" + cartItemId).attr("data-price");
                     var count = $("#count_" + cartItemId).val();
-                    // 사용 포인트 불러오기
                     var inputPoint = $("#input_point").val();
                     var shippingFee = $("#shipping_" + cartItemId).attr("data-shipping");
 
                     orderTotalPrice += price * count + parseInt(shippingFee);
 
-                    // 최종 결제 금액 계산
                     amountPrice = orderTotalPrice - inputPoint;
                 });
 
                 $("#orderTotalPrice").html(numberFormat(orderTotalPrice));
-                // 원 단위 붙여서 호출
-                $("#amountPrice").html(amountPrice + '원');
+                $("#amountPrice").html(numberFormat(amountPrice));
             }
 
             function changeCount(obj) {

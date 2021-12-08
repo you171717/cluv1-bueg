@@ -42,7 +42,7 @@ dependencies {
 	// SMS
 	implementation group: 'net.nurigo', name: 'javaSDK', version: '2.2'
 
-	// TODO. Replace to jackson
+	// Json Object
 	implementation group: 'org.json', name: 'json', version: '20210307'
 
 	compileOnly 'org.projectlombok:lombok'

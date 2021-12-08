@@ -103,16 +103,6 @@ public class CartController {
 
         Long orderId = cartService.orderCartItem(cartOrderDtoList, principal.getName(), cartOrderDto.getUsedPoint());
 
-        /* TODO. 서비스 단으로 옮기기
-        String email = principal.getName();
-
-        if(notice.equals("email")){
-            emailService.sendCartOrderEmail(email, orderId);
-        } else if(notice.equals("sms")){
-            smsService.sendCartOrderSms(phone, orderId);
-        }
-        */
-
         return new ResponseEntity<Long>(orderId, HttpStatus.OK);
     }
 

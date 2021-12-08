@@ -35,9 +35,6 @@ import java.util.Optional;
 public class OrderController {
 
     private final OrderService orderService;
-    private final EmailService emailService;
-    private final SmsService smsService;
-    private final MemberRepository memberRepository;
 
     @PostMapping(value = "/order")
     public @ResponseBody ResponseEntity order(@RequestBody @Valid OrderDto orderDto, BindingResult bindingResult, Principal principal) {
@@ -64,27 +61,6 @@ public class OrderController {
 
             return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
-
-        /* TODO. 서비스 단으로 옮기기
-        String email = principal.getName();
-        String phone = memberRepository.findByEmail(email).getPhone();  //SMS 전송할 휴대폰 번호 갖고오기
-
-        Long orderId;
-
-        String notice = "email";  //알림 전송 방식 가져오기
-
-        try {
-            orderId = orderService.order(orderDto, email);
-
-            if(notice.equals("email")){
-                emailService.sendOrderEmail(email, orderDto);
-            } else if(notice.equals("sms")){
-                smsService.sendOrderSms(phone, orderDto);
-            }
-        } catch(Exception e) {
-            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-        */
 
         return new ResponseEntity<Long>(orderId, HttpStatus.OK);
     }

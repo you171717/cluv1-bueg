@@ -20,7 +20,9 @@ import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
+@Async
 @Service
 @RequiredArgsConstructor
 public class EmailService {
@@ -36,7 +38,6 @@ public class EmailService {
         this.sendEmail(to, subject, text, false);
     }
 
-    @Async
     public void sendEmail(String to, String subject, String text, boolean html) {
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
 
@@ -81,23 +82,23 @@ public class EmailService {
         this.addEmailCount();
     }
 
-    public void sendCartOrderEmail(String email, Long orderId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
-
+    public void sendCartOrderEmail(String email, List<OrderDto> orderDtoList, Integer totalPrice) {
         String subject = "주문 상품 내역입니다.";
 
         StringBuffer sb = new StringBuffer("[Bueg] 주문 상품 내역입니다.\n\n");
 
-        for(OrderItem orderItem : order.getOrderItems()) {
-            sb.append(orderItem.getItem().getItemNm());
+        for(OrderDto orderDto : orderDtoList) {
+            Item item = itemRepository.findById(orderDto.getItemId()).orElseThrow(EntityNotFoundException::new);
+
+            sb.append(item.getItemNm());
             sb.append("(");
-            sb.append(orderItem.getItem().getPrice());
+            sb.append(item.getPrice());
             sb.append(" 원) x ");
-            sb.append(orderItem.getCount() + "개\n");
+            sb.append(orderDto.getCount() + "개\n");
         }
 
         sb.append("\n주문 금액 : ");
-        sb.append(order.getTotalPrice());
+        sb.append(totalPrice);
         sb.append("원\n");
 
         this.sendEmail(email, subject, sb.toString());

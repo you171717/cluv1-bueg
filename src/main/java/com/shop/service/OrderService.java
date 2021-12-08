@@ -1,6 +1,7 @@
 package com.shop.service;
 
 import com.shop.constant.GiftStatus;
+import com.shop.constant.NoticeType;
 import com.shop.constant.OrderStatus;
 import com.shop.constant.ReturnStatus;
 import com.shop.dto.OrderDto;
@@ -32,6 +33,8 @@ public class OrderService {
     private final ItemTagRepository itemTagRepository;
     private final OrderRepository orderRepository;
     private final OrderItemRepository orderItemRepository;
+    private final EmailService emailService;
+    private final SmsService smsService;
 
     public void processPointUsage(Member member, Order order) {
         member.setPoint(member.getPoint() - order.getUsedPoint() + order.getAccPoint());
@@ -66,6 +69,14 @@ public class OrderService {
         this.processTagTotalSell(item);
         this.processPointUsage(member, order);
 
+        if(orderDto.getGiftStatus().equals(GiftStatus.BUY)) {
+            if(member.getNoticeType().equals(NoticeType.EMAIL)) {
+                emailService.sendOrderEmail(member.getEmail(), orderDto);
+            } else if(member.getNoticeType().equals(NoticeType.SMS)) {
+                smsService.sendOrderSms(member.getPhone(), orderDto);
+            }
+        }
+
         orderRepository.save(order);
 
         return order.getId();
@@ -96,13 +107,19 @@ public class OrderService {
 
         Order order = Order.createOrder(member, orderDto, orderItemList);
 
+        orderRepository.save(order);
+
         this.processPointUsage(member, order);
+
+        if(member.getNoticeType().equals(NoticeType.EMAIL)) {
+            emailService.sendCartOrderEmail(member.getEmail(), orderDtoList, order.getTotalPrice());
+        } else if(member.getNoticeType().equals(NoticeType.SMS)) {
+            smsService.sendCartOrderSms(member.getPhone(), orderDtoList, order.getTotalPrice());
+        }
 
         for(OrderItem orderItem : orderItemList) {
             this.processTagTotalSell(orderItem.getItem());
         }
-
-        orderRepository.save(order);
 
         return order.getId();
     }
@@ -211,6 +228,13 @@ public class OrderService {
         order.setReturnStatus(ReturnStatus.Y);
 
         orderRepository.save(order);
+
+        Member member = order.getMember();
+
+        // 반품 포인트 회수
+        member.setPoint(member.getPoint() + order.getUsedPoint() - order.getAccPoint());
+
+        memberRepository.save(member);
     }
 
 }

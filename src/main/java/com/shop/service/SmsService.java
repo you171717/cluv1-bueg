@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import java.util.HashMap;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -70,22 +71,22 @@ public class SmsService {
         this.addSmsCount();
     }
 
-    public void sendCartOrderSms(String phone, Long orderId) {
-        Order order = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
-
+    public void sendCartOrderSms(String phone, List<OrderDto> orderDtoList, Integer totalPrice) {
         StringBuffer sb = new StringBuffer("[Bueg]주문상품 내역\n");
 
-        for(OrderItem orderItem : order.getOrderItems()) {
-            sb.append(orderItem.getItem().getItemNm());
+        for(OrderDto orderDto : orderDtoList) {
+            Item item = itemRepository.findById(orderDto.getItemId()).orElseThrow(EntityNotFoundException::new);
+
+            sb.append(item.getItemNm());
             sb.append("(");
-            sb.append(orderItem.getItem().getPrice());
+            sb.append(item.getPrice());
             sb.append(" 원) x ");
-            sb.append(orderItem.getCount());
+            sb.append(orderDto.getCount());
             sb.append("개\n");
         }
 
         sb.append("\n주문 금액 : ");
-        sb.append(order.getTotalPrice());
+        sb.append(totalPrice);
         sb.append("원\n");
 
         this.sendSms(phone, sb.toString());
