@@ -15,16 +15,15 @@ public class BestItemService {
 
     private final BestItemMapper myBatisBestItemMapper;
 
-    public List<BestItemDto> getBestItemByDays() {
-        return myBatisBestItemMapper.getBestItemByDays();
-    }
-
-    public List<BestItemDto> getBestItemByWeek() {
-        return myBatisBestItemMapper.getBestItemByWeek();
-    }
-
-    public List<BestItemDto> getBestItemByMonth() {
-        return myBatisBestItemMapper.getBestItemByMonth();
-    }
-
+//    public List<BestItemDto> getBestItemByDays() {
+//        return myBatisBestItemMapper.getBestItemByDays();
+//    }
+//
+//    public List<BestItemDto> getBestItemByWeek() {
+//        return myBatisBestItemMapper.getBestItemByWeek();
+//    }
+//
+//    public List<BestItemDto> getBestItemByMonth() {
+//        return myBatisBestItemMapper.getBestItemByMonth();
+//    }
 }

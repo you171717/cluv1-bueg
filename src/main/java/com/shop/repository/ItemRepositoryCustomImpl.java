@@ -2,6 +2,7 @@ package com.shop.repository;
 
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.shop.constant.ItemSellStatus;
@@ -146,6 +147,32 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         long total = results.getTotal();
         return new PageImpl<>(content, pageable, total);
 
+    }
+
+    @Override
+    public List<BestItemDto> getBestItemList() {
+        QItem item = QItem.item;
+        QOrderItem orderItem = QOrderItem.orderItem;
+        QItemImg itemImg = QItemImg.itemImg;
+
+        QueryResults<BestItemDto> results = queryFactory
+                .select(
+                        new QBestItemDto(
+                                item.id,
+                                item.itemNm,
+                                item.itemDetail,
+                                itemImg.imgUrl,
+                                item.price)
+                )
+                .from(itemImg)
+                .join(itemImg.item, item)
+                .where(itemImg.repImgYn.eq("Y"))
+//                .orderBy(orderItem.id.desc())
+                .fetchResults();
+
+        List<BestItemDto> content = results.getResults();
+
+        return content;
     }
 
     public Page<MainItemDto> getDetailSearchPage(String[] filters, ItemSearchDto itemSearchDto, Pageable pageable) {

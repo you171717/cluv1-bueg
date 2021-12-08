@@ -35,8 +35,7 @@
 <th:block layout:fragment = "script">
     <script type="javascript">
         $(document).ready(function(){
-            var items = request.getParameter("items");
-            console.log(items[1].toString())
+
         });
     </script>
 </th:block>
@@ -52,7 +51,7 @@
     </div>
 
     <div class="row">
-        <th:block th:each="item, status: ${items}">
+        <th:block th:each="item : ${items}">
             <div class="col-md-4 margin">
                 <div class="card">
                     <a th:href="'/item/' +${item.itemId}" class="text-dark">
