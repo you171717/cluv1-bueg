@@ -62,7 +62,7 @@ public class TagSearchController {
 
         model.addAttribute("chartData", json);
 
-        return "tagSearch/showTagSell";
+        return "tagSearch/showSellDemo";
     }
 
 }

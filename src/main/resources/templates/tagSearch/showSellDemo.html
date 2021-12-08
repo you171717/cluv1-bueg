@@ -8,7 +8,9 @@
     <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
     <script type="text/javascript" th:inline="javascript">
         //차트 데이터 불러오기
-        var real_data = [[${chartData}]];
+        var real_data = JSON.parse([[${chartData}]]);
+
+        /*
         google.charts.load('current', {'packages': ['corechart', 'bar']});
         google.charts.setOnLoadCallback(drawVisualization);
 
@@ -33,10 +35,87 @@
             chart.draw(data, options);
 
         }
+         */
+        function hslToRgb(h, s, l){
+            var r, g, b;
+
+            if(s == 0){
+                r = g = b = l; // achromatic
+            }else{
+                var hue2rgb = function hue2rgb(p, q, t){
+                    if(t < 0) t += 1;
+                    if(t > 1) t -= 1;
+                    if(t < 1/6) return p + (q - p) * 6 * t;
+                    if(t < 1/2) return q;
+                    if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+                    return p;
+                }
+
+                var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+                var p = 2 * l - q;
+                r = hue2rgb(p, q, h + 1/3);
+                g = hue2rgb(p, q, h);
+                b = hue2rgb(p, q, h - 1/3);
+            }
+
+            return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)];
+        }
+
+        $(function () {
+            var dataset = [];
+
+            for(var i in real_data) {
+                var v = real_data[i];
+                var c = dataset.length / Object.keys(real_data).length * 359 / 360;
+                var rgb = hslToRgb(c, 1, 0.5);
+
+                console.log(rgb, 'rgba(' + rgb.join(', ') + ', 0.2)');
+
+                dataset.push({
+                    label: i,
+                    fill: false,
+                    data: [ v ],
+                    backgroundColor: [ 'rgba(' + rgb.join(', ') + ', 0.2)' ],
+                    borderColor: [ 'rgba(' + rgb.join(', ') + ', 1)' ],
+                    borderWidth: 1
+                });
+            }
+
+            new Chart(document.getElementById("canvas"), {
+                type: 'bar',
+                data: { // 차트에 들어갈 데이터
+                    labels: [
+                        '태그'
+                    ],
+                    datasets: dataset
+                },
+                options: {
+                    scales: {
+                        yAxes: [
+                            {
+                                ticks: {
+                                    beginAtZero: true
+                                },
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: '누적 판매량'
+                                }
+                            }
+                        ],
+                        xAxes: [
+                            {
+                                barPercentage: 0.5
+                            }
+                        ]
+                    }
+                }
+            })
+        });
     </script>
 </head>
 <div layout:fragment="content" style="align-content: center">
     <h1>태그 판매 확인 페이지</h1>
-    <div id="chart_div" style="width:900px; height: 500px; align-content: center "></div>
+    <canvas id="canvas" width="500" height="200"></canvas>
+<!--    <div id="chart_div" style="width:900px; height: 500px; align-content: center "></div>-->
 </div>
 </html>
