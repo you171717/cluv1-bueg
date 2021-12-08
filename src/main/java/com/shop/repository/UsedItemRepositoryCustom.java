@@ -7,6 +7,8 @@ import org.springframework.data.domain.Pageable;
 
 public interface UsedItemRepositoryCustom {
 
-    Page<UsedItemDto> getUsedItemPage(UsedItemSearchDto usedItemSearchDto, Pageable pageable);
+    Page<UsedItemDto> getAllUsedItemPage(UsedItemSearchDto usedItemSearchDto, Pageable pageable);
+
+    Page<UsedItemDto> getUserUsedItemPage(String email, UsedItemSearchDto usedItemSearchDto, Pageable pageable);
 
 }

@@ -23,7 +23,8 @@ public class NaverShopSearch{
     private String clientSecret;
 
 
-
+    // 상품 등록 할 때 최적화 불러오는 API
+    // 파라매터 = 상품명
     public List<NaverApiDto> search(String query) {
 
         RestTemplate rest = new RestTemplate();
@@ -54,6 +55,8 @@ public class NaverShopSearch{
     }
 
 
+    // 상품 상세 페이지 들어갔을 때 뜨는 게 만드는 API
+    // 파라메터 = 상품명
     public List<NaverApiDto> search2(String query) {
         RestTemplate rest = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();

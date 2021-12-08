@@ -1,5 +1,6 @@
 package com.shop.controller;
 
+import com.shop.dto.ItemFormDto;
 import com.shop.dto.UsedItemDto;
 import com.shop.dto.UsedItemFormDto;
 import com.shop.dto.UsedItemSearchDto;
@@ -13,11 +14,14 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,48 +34,106 @@ public class UsedItemController {
 
     private final UsedItemService usedItemService;
 
-    @GetMapping(value = "/uitem")
-    public String usedItem(UsedItemSearchDto usedItemSearchDto, Optional<Integer> page, Model model){
-        log.info("================/Useitem 로 들어왔음============");
+    @GetMapping(value = { "/uitems", "/uitems/{page}" })
+    public String usedItemList(UsedItemSearchDto usedItemSearchDto, Optional<Integer> page, Model model) {
         Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 6);
+        Page<UsedItemDto> usedItemList = usedItemService.getAllUsedItemPage(usedItemSearchDto, pageable);
 
-        log.info("usedItemSearchDto : " + usedItemSearchDto.toString());
-        Page<UsedItemDto> items = usedItemService.getUsedItemPage(usedItemSearchDto, pageable);
-
-        model.addAttribute("items", items);
+        model.addAttribute("usedItemList", usedItemList);
         model.addAttribute("usedItemSearchDto", usedItemSearchDto);
         model.addAttribute("maxPage", 5);
 
-        return "usedItem";
+        return "usedItem/usedItemList";
     }
 
-    @GetMapping(value = "/admin/uitem/new")
-    public String itemForm(Model model) {
+    @GetMapping(value = "/uitem/new")
+    public String usedItemForm(Model model) {
         model.addAttribute("usedItemFormDto", new UsedItemFormDto());
 
-        return "/item/usedItemForm";
+        return "usedItem/usedItemForm";
     }
 
-    @PostMapping(value = "/admin/uitem/new")
-    public String itemNew(@Valid UsedItemFormDto usedItemFormDto, BindingResult bindingResult, Model model, @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList) {
+    @PostMapping(value = "/uitem/new")
+    public String usedItemNew(@Valid UsedItemFormDto usedItemFormDto, BindingResult bindingResult, @RequestParam("usedItemImgFile") List<MultipartFile> usedItemImgFileList, Principal principal, Model model) {
         if(bindingResult.hasErrors()) {
-            return "item/usedItemForm";
+            return "usedItem/usedItemForm";
         }
 
-        if(itemImgFileList.get(0).isEmpty() && usedItemFormDto.getId() == null) {
+        if(usedItemImgFileList.get(0).isEmpty() && usedItemFormDto.getId() == null) {
             model.addAttribute("errorMessage", "첫번째 상품 이미지는 필수 입력 값 입니다.");
-            return "item/usedItemForm";
+
+            return "usedItem/usedItemForm";
         }
+
+        String email = principal.getName();
 
         try {
-            log.info(usedItemFormDto.toString());
-            usedItemService.saveUsedItem(usedItemFormDto, itemImgFileList);
+            usedItemService.saveUsedItem(usedItemFormDto, usedItemImgFileList, email);
         } catch(Exception e) {
             model.addAttribute("errorMessage", "상품 등록 중 에러가 발생하였습니다.");
 
-            return "item/usedItemForm";
+            return "usedItem/usedItemForm";
         }
 
-        return "redirect:/";
+        return "redirect:/uitems";
     }
+
+    @GetMapping(value = "/uitem/update/{usedItemId}")
+    public String usedItemUpdateForm(@PathVariable("usedItemId") Long usedItemId, Principal principal, Model model) {
+        if(!usedItemService.validateUsedItem(usedItemId, principal.getName())) {
+            model.addAttribute("message", "수정할 권한이 없습니다.");
+            model.addAttribute("location", "/");
+
+            return "redirect";
+        }
+
+        try {
+            UsedItemFormDto usedItemFormDto = usedItemService.getUsedItemDtl(usedItemId);
+
+            model.addAttribute("usedItemFormDto", usedItemFormDto);
+        } catch(EntityNotFoundException e) {
+            model.addAttribute("errorMessage", "존재하지 않는 중고 상품 입니다.");
+            model.addAttribute("usedItemFormDto", new UsedItemFormDto());
+
+            return "usedItem/usedItemForm";
+        }
+
+        return "usedItem/usedItemForm";
+    }
+
+    @PostMapping(value = "/uitem/update/{usedItemId}")
+    public String usedItemUpdate(@Valid UsedItemFormDto usedItemFormDto, BindingResult bindingResult, @RequestParam("usedItemImgFile") List<MultipartFile> usedItemImgFileList, Principal principal, Model model) {
+        if(!usedItemService.validateUsedItem(usedItemFormDto.getId(), principal.getName())) {
+            model.addAttribute("message", "수정할 권한이 없습니다.");
+            model.addAttribute("location", "/");
+
+            return "redirect";
+        }
+
+        if(usedItemImgFileList.get(0).isEmpty() && usedItemFormDto.getId() == null) {
+            model.addAttribute("errorMessage", "첫번째 상품 이미지는 필수 입력 값 입니다.");
+
+            return "usedItem/usedItemForm";
+        }
+
+        try {
+            usedItemService.updateUsedItem(usedItemFormDto, usedItemImgFileList);
+        } catch(Exception e) {
+            model.addAttribute("errorMessage", "상품 수정 중 에러가 발생하였습니다.");
+
+            return "usedItem/usedItemForm";
+        }
+
+        return "redirect:/uitem";
+    }
+
+    @GetMapping(value = "/uitem/{usedItemId}")
+    public String usedItemDtl(@PathVariable("usedItemId") Long usedItemId, Model model) {
+        UsedItemFormDto usedItemFormDto = usedItemService.getUsedItemDtl(usedItemId);
+
+        model.addAttribute("item", usedItemFormDto);
+
+        return "usedItem/usedItemDtl";
+    }
+
 }

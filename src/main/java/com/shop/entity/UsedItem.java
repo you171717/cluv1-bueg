@@ -17,34 +17,35 @@ import java.time.LocalDateTime;
 public class UsedItem extends BaseEntity{
 
     @Id
-    @Column(name = "id")
+    @Column(name = "used_item_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;        // 상품 코드
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "owner_id", nullable = false)
+    private Member owner;
 
     @Column(nullable = false, length = 50)
-    private String itemName; // 상품 이름
+    private String name;
 
-    @Column(name = "price", nullable = false)
-    private int price;      // 가격
+    @Column(nullable = false)
+    private int price;
 
     @Lob
     @Column(nullable = false)
-    private String detail;  // 중고상품 상세설명
+    private String detail;
 
-    @Enumerated(EnumType.STRING) // SELL(판매중) , SOLD_OUT(거래완료) , REZ(예약중)
-    private UsedItemSellStatus usedItemSellStatus; // 중고상품판매상태
+    @Enumerated(EnumType.STRING)
+    private UsedItemSellStatus usedItemSellStatus;
 
-    private LocalDateTime startDay;         // 게시글 게시일 컬럼
-
-    private LocalDateTime endDay;           // 게시글 마감일 컬럼
+    private LocalDateTime endTime;
 
     public void updateItem(UsedItemFormDto usedItemFormDto) {
-        this.itemName = usedItemFormDto.getItemNm();
+        this.name = usedItemFormDto.getName();
         this.price = usedItemFormDto.getPrice();
-        this.detail = usedItemFormDto.getItemDetail();
+        this.detail = usedItemFormDto.getDetail();
         this.usedItemSellStatus = usedItemFormDto.getUsedItemSellStatus();
-        this.startDay = usedItemFormDto.getStartDay();
-        this.endDay = usedItemFormDto.getEndDay();
+        this.endTime = usedItemFormDto.getEndTime();
     }
 
 }

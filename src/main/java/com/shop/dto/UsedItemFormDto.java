@@ -1,69 +1,58 @@
 package com.shop.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.shop.constant.UsedItemSellStatus;
+import com.shop.entity.Member;
 import com.shop.entity.UsedItem;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 import org.modelmapper.ModelMapper;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-@Getter @Setter
+@Getter
+@Setter
+@ToString
 public class UsedItemFormDto {
     private Long id;
 
     @NotBlank(message = "상품명은 필수 입력 값입니다.")
-    private String itemNm;
+    private String name;
 
     @NotNull(message = "가격은 필수 입력 값입니다.")
     private Integer price;
 
     @NotBlank(message = "이름은 필수 입력 값입니다.")
-    private String itemDetail;
+    private String detail;
 
-    @NotNull(message = "재고는 필수 입력 값입니다.")
-    private Integer stockNumber;
-
-    private int shippingFee;
-
+    @NotNull(message = "판매 상태는 필수 입력 값입니다.")
     private UsedItemSellStatus usedItemSellStatus;
 
-    private LocalDateTime startDay;                         // 게시글 작성 날
-
-    private LocalDateTime endDay;                         // 게시글 끝 날
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime endTime; // 종료일
 
     private List<UsedItemImgDto> usedItemImgDtoList = new ArrayList<>();
 
-    private List<Long> itemImgIds = new ArrayList<>();
+    private List<Long> usedItemImgIds = new ArrayList<>();
 
     private static ModelMapper modelMapper = new ModelMapper();
 
-    public UsedItem createItem() {
-        return modelMapper.map(this, UsedItem.class);
+    public UsedItem createItem(Member member) {
+        UsedItem usedItem = modelMapper.map(this, UsedItem.class);
+        usedItem.setOwner(member);
+
+        return usedItem;
     }
 
     public static UsedItemFormDto of(UsedItem usedItem){
         return modelMapper.map(usedItem,UsedItemFormDto.class);
     }
 
-    @Override
-    public String toString() {
-        return "UsedItemFormDto{" +
-                "id=" + id +
-                ", itemNm='" + itemNm + '\'' +
-                ", price=" + price +
-                ", itemDetail='" + itemDetail + '\'' +
-                ", stockNumber=" + stockNumber +
-                ", shippingFee=" + shippingFee +
-                ", usedItemSellStatus=" + usedItemSellStatus +
-                ", startDay=" + startDay +
-                ", endDay=" + endDay +
-                ", usedItemImgDtoList=" + usedItemImgDtoList +
-                ", itemImgIds=" + itemImgIds +
-                '}';
-    }
 }

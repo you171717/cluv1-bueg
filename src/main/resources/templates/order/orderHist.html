@@ -142,7 +142,6 @@
                 </th:block>
                 <div class="ml-3">
                     <th:block th:if="${order.orderStatus == T(com.shop.constant.OrderStatus).ORDER}">
-
                         <button type="button" class="btn btn-outline-secondary" th:value="${order.orderId}" onclick="cancelOrder(this.value)">주문취소</button>
                         <button type="button" class="btn btn-outline-secondary" th:value="${order.orderId}" onclick="reqReturnOrder(this.value)">반품신청</button>
                     </th:block>
@@ -170,6 +169,13 @@
                             <span th:text="${orderItem.count} +'개'"></span>
                             <small class="text-danger">(배송비 : <th:block th:text="${#numbers.formatCurrency(orderItem.orderShippingFee)}"></th:block>)</small>
                         </div>
+                    </div>
+                    <div th:if="${order.orderStatus == T(com.shop.constant.OrderStatus).ORDER and orderItem.reviewYn  == 'N'}">
+                        <button type="button" class="btn btn-outline-secondary" th:onclick="'location.href=\''+@{/reviews/new/}+@{${orderItem.orderItemId}}+'\''">리뷰 작성</button>
+                    </div>
+                    <div th:if="${order.orderStatus == T(com.shop.constant.OrderStatus).ORDER and orderItem.reviewYn == 'Y'}">
+                        <button type="button" class="btn btn-outline-secondary" th:onclick="'location.href=\''+@{/reviews/update/}+@{${orderItem.orderItemId}}+'\''">리뷰 수정</button>
+                        <button type="button" class="btn btn-outline-secondary" th:onclick="'location.href=\''+@{/reviews/delete/}+@{${orderItem.orderItemId}}+'\''">리뷰 삭제</button>
                     </div>
                 </div>
                 <br>

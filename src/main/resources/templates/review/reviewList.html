@@ -84,7 +84,6 @@
                         <div th:unless="${orderItem.reviewYn} == 'N'">
                             <button type="button" class="btn btn-outline-secondary" th:onclick="'location.href=\''+@{reviews/update/}+@{${orderItem.orderItemId}}+'\''">수정</button>
                             <button type="button" class="btn btn-outline-secondary" th:onclick="'location.href=\''+@{reviews/delete/}+@{${orderItem.orderItemId}}+'\''">삭제</button>
-
                         </div>
                     </div>
                 </div>

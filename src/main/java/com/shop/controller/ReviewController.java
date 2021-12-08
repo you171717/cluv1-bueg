@@ -85,7 +85,7 @@ public class ReviewController {
             return "review/reviewForm";
         }
 
-        return "redirect:/reviews";
+        return "redirect:/orders";
     }
 
     @GetMapping("/reviews/update/{itemId}")
@@ -131,7 +131,7 @@ public class ReviewController {
             return "review/reviewForm";
         }
 
-        return "redirect:/reviews";
+        return "redirect:/orders";
     }
 
     @GetMapping("/reviews/delete/{itemId}")
@@ -139,7 +139,7 @@ public class ReviewController {
         reviewService.deleteReview(orderItemId, reviewFormDto);
         reviewImgService.deleteReviewImg(orderItemId);
 
-        return "redirect:/reviews";
+        return "redirect:/orders";
     }
 
 }

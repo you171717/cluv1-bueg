@@ -1,41 +1,41 @@
 package com.shop.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
-import com.shop.constant.ItemSellStatus;
+import com.shop.constant.UsedItemSellStatus;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
 
-import javax.validation.constraints.NotBlank;
 import java.time.LocalDateTime;
 
+@Getter
+@Setter
+@ToString
 public class UsedItemDto {
 
-    private  Long id; // 상품 코드
+    private Long id;
 
-    @NotBlank(message = "상품명은 필수 입력하셔야 합니다.")
-    private String itemName; // 상품명
+    private String name;
 
-    @NotBlank(message = "가격은 필수 입력 값입니다.")
-    private int price; // 가격
+    private int price;
 
-    private String detail; // 상세설명
+    private String detail;
 
-    private ItemSellStatus itemSellStatus; // 판매 상태
+    private UsedItemSellStatus usedItemSellStatus;
 
-    private String imgUrl; // 이미지 조회 경로
+    private String imgUrl;
 
-    private LocalDateTime startDay; // 등록일
-
-    private LocalDateTime endDay; // 마감일
+    private LocalDateTime endTime;
 
     @QueryProjection
-    public UsedItemDto(Long id, String itemName, String itemDetail, String imgUrl, Integer price
-                                ,LocalDateTime startDay, LocalDateTime endDay){
+    public UsedItemDto(Long id, String name, String detail, UsedItemSellStatus usedItemSellStatus, String imgUrl, Integer price, LocalDateTime endTime) {
         this.id = id;
-        this.itemName = itemName;
-        this.detail = itemDetail;
+        this.name = name;
+        this.detail = detail;
+        this.usedItemSellStatus = usedItemSellStatus;
         this.imgUrl = imgUrl;
         this.price = price;
-        this.startDay = startDay;
-        this.endDay = endDay;
+        this.endTime = endTime;
     }
 
 }

@@ -11,16 +11,12 @@ import javax.validation.constraints.NotBlank;
 @ToString
 public class AddressDto {
 
-    @NotBlank
     private String name;
 
-    @NotBlank
     private String phone;
 
-    @NotBlank
     private String address;
 
-    @NotBlank
-    private String address_detail;
+    private String addressDetail;
 
 }

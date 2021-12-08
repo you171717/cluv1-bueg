@@ -22,7 +22,8 @@ public class UsedItemImgDto {
     private static ModelMapper modelMapper = new ModelMapper();
 
     public static UsedItemImgDto of(UsedItemImg usedItemImg){
-        return modelMapper.map(usedItemImg,UsedItemImgDto.class);
+        return modelMapper.map(usedItemImg, UsedItemImgDto.class);
     }
+
 }
 

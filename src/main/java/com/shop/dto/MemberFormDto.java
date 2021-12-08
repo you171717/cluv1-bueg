@@ -25,26 +25,26 @@ public class MemberFormDto {
     @Email(message = "이메일 형식으로 입력해주세요.")
     private String email;
 
-    @NotEmpty(message = "비밀번호는 필수 입력 값입니다.")
-    @Length(min=8, max=16, message = "비밀번호는 8자 이상, 16자 이하로 입력해주세요.")
+    @NotBlank(message = "비밀번호는 필수 입력 값입니다.")
+    @Length(min = 8, max = 16, message = "비밀번호는 8자 이상, 16자 이하로 입력해주세요.")
     private String password;
 
-    @NotEmpty(message = "주소는 필수 입력 값입니다.")
+    @NotBlank(message = "주소는 필수 입력 값입니다.")
     private String address;
 
-    @NotEmpty(message = "상세 주소는 필수 입력 값입니다.")
+    @NotBlank(message = "상세 주소는 필수 입력 값입니다.")
     private String addressDetail;
 
     @NotNull(message = "환불 은행은 필수 입력 값입니다.")
     private Bank refundBank;
 
-    @NotEmpty(message = "환불 계좌 번호는 입력 값입니다.")
+    @NotBlank(message = "환불 계좌 번호는 입력 값입니다.")
     private String refundAccount;
     
-    @NotEmpty(message = "휴대폰 번호는 필수 입력 값입니다.")
+    @NotBlank(message = "휴대폰 번호는 필수 입력 값입니다.")
     private String phone;
 
-    @NotEmpty(message = "이메일 인증 코드는 필수 입력 값입니다.")
+    @NotBlank(message = "이메일 인증 코드는 필수 입력 값입니다.")
     private String code;
 
     @NotNull(message = "알림 서비스 종류는 필수 입력 값입니다.")

@@ -3,21 +3,21 @@ package com.shop.repository;
 import com.querydsl.core.QueryResults;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.shop.constant.UsedItemSellStatus;
 import com.shop.dto.QUsedItemDto;
 import com.shop.dto.UsedItemDto;
 import com.shop.dto.UsedItemSearchDto;
 import com.shop.entity.QUsedItem;
 import com.shop.entity.QUsedItemImg;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.thymeleaf.util.StringUtils;
 
 import javax.persistence.EntityManager;
+import java.time.LocalDateTime;
 import java.util.List;
 
-@Slf4j
 public class UsedItemRepositoryCustomImpl implements UsedItemRepositoryCustom {
 
     private JPAQueryFactory queryFactory;
@@ -26,8 +26,12 @@ public class UsedItemRepositoryCustomImpl implements UsedItemRepositoryCustom {
         this.queryFactory = new JPAQueryFactory(em);
     }
 
+    private BooleanExpression usedItemNameLike(String searchQuery){
+        return StringUtils.isEmpty(searchQuery) ? null : QUsedItem.usedItem.name.like("%" + searchQuery + "%");
+    }
+
     @Override
-    public Page<UsedItemDto> getUsedItemPage(UsedItemSearchDto usedItemSearchDto, Pageable pageable) {
+    public Page<UsedItemDto> getAllUsedItemPage(UsedItemSearchDto usedItemSearchDto, Pageable pageable) {
         QUsedItem usedItem = QUsedItem.usedItem;
         QUsedItemImg usedItemImg = QUsedItemImg.usedItemImg;
 
@@ -35,35 +39,63 @@ public class UsedItemRepositoryCustomImpl implements UsedItemRepositoryCustom {
                 .select(
                         new QUsedItemDto(
                                 usedItem.id,
-                                usedItem.itemName,
+                                usedItem.name,
                                 usedItem.detail,
+                                usedItem.usedItemSellStatus,
                                 usedItemImg.imgUrl,
                                 usedItem.price,
-                                usedItem.startDay,
-                                usedItem.endDay
+                                usedItem.endTime
                         )
                 )
                 .from(usedItemImg)
                 .join(usedItemImg.usedItem, usedItem)
                 .where(usedItemImg.repimgYn.eq("Y"))
-                // now() 에서 Date() 로 변경 / 이유: 시연을 위해서라면 DB에서 가져온 시간의 값이 아닌  로컬에서 가져온 시간의 값이 필요하기 때문이다.
-                // now() : DB의 시간 조회 / Date() : 현재 로컬의 시간을 조회
-//                .where(usedItem.startDay.loe((Expression<LocalDateTime>) new Date()))
-//                .where(usedItem.endDay.goe((Expression<LocalDateTime>) new Date()))
-                .where(itemNameLike(usedItemSearchDto.getSearchQuery()))
+                .where(usedItemNameLike(usedItemSearchDto.getSearchQuery()))
+                .where(usedItem.endTime.goe(LocalDateTime.now()))
+                .where(usedItem.usedItemSellStatus.eq(UsedItemSellStatus.SELL))
                 .orderBy(usedItem.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchResults();
 
         List<UsedItemDto> content = results.getResults();
-        log.info("content : " + content);
 
         long total = results.getTotal();
+
         return new PageImpl<>(content, pageable, total);
     }
 
-    private BooleanExpression itemNameLike(String searchQuery){
-        return StringUtils.isEmpty(searchQuery) ? null : QUsedItem.usedItem.itemName.like("%" + searchQuery + "%");
+    public Page<UsedItemDto> getUserUsedItemPage(String email, UsedItemSearchDto usedItemSearchDto, Pageable pageable) {
+        QUsedItem usedItem = QUsedItem.usedItem;
+        QUsedItemImg usedItemImg = QUsedItemImg.usedItemImg;
+
+        QueryResults<UsedItemDto> results = queryFactory
+                .select(
+                        new QUsedItemDto(
+                                usedItem.id,
+                                usedItem.name,
+                                usedItem.detail,
+                                usedItem.usedItemSellStatus,
+                                usedItemImg.imgUrl,
+                                usedItem.price,
+                                usedItem.endTime
+                        )
+                )
+                .from(usedItemImg)
+                .join(usedItemImg.usedItem, usedItem)
+                .where(usedItemImg.repimgYn.eq("Y"))
+                .where(usedItem.owner.email.eq(email))
+                .where(usedItemNameLike(usedItemSearchDto.getSearchQuery()))
+                .orderBy(usedItem.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+
+        List<UsedItemDto> content = results.getResults();
+
+        long total = results.getTotal();
+
+        return new PageImpl<>(content, pageable, total);
     }
+
 }

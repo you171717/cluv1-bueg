@@ -16,7 +16,7 @@ public class AddressService {
     private final AddressRepository addressRepository;
     private final MemberRepository memberRepository;
 
-    public Long address(AddressDto addressDto, String email) {
+    public Long saveAddress(AddressDto addressDto, String email) {
         Member member = memberRepository.findByEmail(email);
         Address address = Address.createAddress(member, addressDto);
 

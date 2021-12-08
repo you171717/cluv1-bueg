@@ -34,7 +34,7 @@ public class Address {
         address.setName(addressDto.getName());
         address.setPhone(addressDto.getPhone());
         address.setAddress(addressDto.getAddress());
-        address.setAddressDetail(addressDto.getAddress_detail());
+        address.setAddressDetail(addressDto.getAddressDetail());
 
         return address;
     }
