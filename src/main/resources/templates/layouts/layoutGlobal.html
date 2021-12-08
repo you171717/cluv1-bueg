@@ -104,32 +104,25 @@
         </div>
         <div class="header">
             <div class="header-inner">
-                <a th:href="@{/}" class="header-logo"><img th:src="@{/img/logo_white.svg}" alt="GS ITM"> Keyboard</a>
+                <a th:href="@{/}" class="header-logo"><img th:src="@{/img/logo_white.svg}" alt="GS ITM"> Bueg</a>
                 <ul class="header-menu">
+                    <li><a th:href="@{/items}">상품 목록</a></li>
                     <li><a th:href="@{/rauctions}">역경매</a></li>
-                    <li sec:authorize="isAuthenticated()"><a th:href="@{/giftMain/1}">선물하기</a></li>
                     <li sec:authorize="isAuthenticated()"><a th:href="@{/bids}">역경매 참여 내역</a></li>
                     <li sec:authorize="isAuthenticated()"><a th:href="@{/uitems}">중고 장터</a></li>
                     <li sec:authorize="isAuthenticated()"><a th:href="@{/cart}">장바구니</a></li>
                     <li sec:authorize="isAuthenticated()"><a th:href="@{/orders}">구매/선물 이력</a></li>
-                    <!--<li sec:authorize="isAuthenticated()"><a th:href="@{/reviews}">리뷰 관리</a></li>-->
                     <li sec:authorize="hasAnyAuthority('ROLE_USER')"><a th:href="@{/cscenter}">고객센터</a></li>
                     <li sec:authorize="hasAnyAuthority('ROLE_ADMIN')"><a href="#admin">관리자</a></li>
                 </ul>
-                <form th:action="@{/}" class="header-search">
-                    <input name="searchQuery" type="text" placeholder=" 검색어 입력...">
+                <form th:action="@{/items}" class="header-search">
+                    <input name="searchQuery" type="text" placeholder="상품 검색...">
                     <button>검색</button>
                 </form>
-                <div class="header-search">
-                    <button onclick="location.href='/detailSearch'">태그검색</button>
-                </div>
             </div>
             <div class="header-submenu" sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
                 <div class="header-submenu-inner">
-<!--                    회원 포인트 및 정보 조회 페이지-->
                     <a th:href="@{/members/admin/memberMng}">회원 관리</a>
-                    <a th:href="@{/admin/item/new}">상품 등록</a>
-                    <a th:href="@{/admin/uitem/new}">중고 상품 등록</a>
                     <a th:href="@{/admin/items}">상품 관리</a>
                     <a th:href="@{/returns}">반품 관리</a>
                     <a th:href="@{/admin/rauctions}">역경매 관리</a>

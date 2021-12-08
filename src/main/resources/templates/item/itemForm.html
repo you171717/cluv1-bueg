@@ -180,17 +180,6 @@
                 <input id ="sellPrice" type="number" th:field="*{price}" class="form-control" placeholder="상품의 가격을 입력해주세요">
             </div>
             <p th:if="${#fields.hasErrors('price')}" th:errors="*{price}" class="fieldError">Incorrect data</p>
-
-            <!--최저가 검색 버튼-->
-            <!--
-            <div class="input-group">
-                <div style="text-align: left">
-                    <button id="lprice" type="button" class="btn btn-primary" onclick="getTitle()">최저가 검색</button>
-                </div>
-                <input type="number"  class="form-control">
-            </div>
-            -->
-
             <!-- 상품의 재고 필드 -->
             <div class="input-group">
                 <div class="input-group-prepend">
@@ -198,6 +187,7 @@
                 </div>
                 <input type="number" th:field="*{stockNumber}" class="form-control" placeholder="상품의 재고를 입력해주세요">
             </div>
+            <p th:if="${#fields.hasErrors('stockNumber')}" th:errors="*{stockNumber}" class="fieldError">Incorrect data</p>
             <div class="input-group">
                 <div class="input-group-prepend">
                     <span class="input-group-text">배송비</span>

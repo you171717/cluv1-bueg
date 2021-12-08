@@ -1,9 +1,10 @@
 package com.shop.controller;
 
-import com.shop.dto.ItemFormDto;
+import com.shop.dto.NaverShopItemDto;
 import com.shop.dto.UsedItemDto;
 import com.shop.dto.UsedItemFormDto;
 import com.shop.dto.UsedItemSearchDto;
+import com.shop.service.NaverShopService;
 import com.shop.service.UsedItemService;
 import groovy.util.logging.Slf4j;
 import lombok.RequiredArgsConstructor;
@@ -13,10 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
@@ -25,14 +23,13 @@ import java.security.Principal;
 import java.util.List;
 import java.util.Optional;
 
-import static org.reflections.Reflections.log;
-
 @Slf4j
 @Controller
 @RequiredArgsConstructor
 public class UsedItemController {
 
     private final UsedItemService usedItemService;
+    private final NaverShopService naverShopService;
 
     @GetMapping(value = { "/uitems", "/uitems/{page}" })
     public String usedItemList(UsedItemSearchDto usedItemSearchDto, Optional<Integer> page, Model model) {
@@ -44,6 +41,18 @@ public class UsedItemController {
         model.addAttribute("maxPage", 5);
 
         return "usedItem/usedItemList";
+    }
+
+    @GetMapping(value = { "/uitem/manage", "/uitem/manage/{page}" })
+    public String usedItemMng(UsedItemSearchDto usedItemSearchDto, Optional<Integer> page, Principal principal, Model model) {
+        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 6);
+        Page<UsedItemDto> usedItemList = usedItemService.getUserUsedItemPage(principal.getName(), usedItemSearchDto, pageable);
+
+        model.addAttribute("usedItemList", usedItemList);
+        model.addAttribute("usedItemSearchDto", usedItemSearchDto);
+        model.addAttribute("maxPage", 5);
+
+        return "usedItem/usedItemMng";
     }
 
     @GetMapping(value = "/uitem/new")
@@ -124,16 +133,21 @@ public class UsedItemController {
             return "usedItem/usedItemForm";
         }
 
-        return "redirect:/uitem";
+        return "redirect:/uitem/manage";
     }
 
     @GetMapping(value = "/uitem/{usedItemId}")
     public String usedItemDtl(@PathVariable("usedItemId") Long usedItemId, Model model) {
         UsedItemFormDto usedItemFormDto = usedItemService.getUsedItemDtl(usedItemId);
 
-        model.addAttribute("item", usedItemFormDto);
+        model.addAttribute("usedItem", usedItemFormDto);
 
         return "usedItem/usedItemDtl";
+    }
+
+    @GetMapping(value = "/uitem/naverShopItems")
+    public @ResponseBody List<NaverShopItemDto> getMarketItems(@RequestParam("name") String name) {
+        return naverShopService.search(name);
     }
 
 }

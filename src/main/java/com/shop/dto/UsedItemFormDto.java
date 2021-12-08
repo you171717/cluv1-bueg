@@ -35,7 +35,7 @@ public class UsedItemFormDto {
     @NotNull(message = "판매 상태는 필수 입력 값입니다.")
     private UsedItemSellStatus usedItemSellStatus;
 
-    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     private LocalDateTime endTime; // 종료일
 
     private List<UsedItemImgDto> usedItemImgDtoList = new ArrayList<>();

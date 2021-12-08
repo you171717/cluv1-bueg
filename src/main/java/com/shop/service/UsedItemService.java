@@ -58,7 +58,7 @@ public class UsedItemService {
 
     @Transactional(readOnly = true)
     public UsedItemFormDto getUsedItemDtl(Long usedItemId) {
-        List<UsedItemImg> usedItemImgList = usedItemImgRepository.findByIdOrderByIdAsc(usedItemId);
+        List<UsedItemImg> usedItemImgList = usedItemImgRepository.findByUsedItemIdOrderByIdAsc(usedItemId);
         List<UsedItemImgDto> usedItemImgDtoList = new ArrayList<>();
 
         for (UsedItemImg usedItemImg : usedItemImgList) {

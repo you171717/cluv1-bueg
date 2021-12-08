@@ -9,6 +9,44 @@
     <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
 </head>
 
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        $(document).ready(function () {
+            getPrice();
+        });
+
+        function getPrice() {
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+
+            var url = "/uitem/naverShopItems" + "?name=" + encodeURI($("#title").text());
+
+            $.ajax({
+                url      : url,
+                type     : "GET",
+                beforeSend : function(xhr){
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
+                cache   : false,
+                success  : function(result){
+                    var item = result.pop();
+
+                    if(item) {
+                        $("#navertitle").text($('<div />').html(item.title).text());
+                        $("#naverprice").text(numberFormat(item.lprice));
+                    } else {
+                        $("#naverprice").text("알 수 없음");
+                    }
+                },
+                error : function(error){
+                    console.log(error);
+                }
+            });
+        }
+    </script>
+</th:block>
+
 <!-- 사용자 CSS 추가 -->
 <th:block layout:fragment="css">
     <style>
@@ -86,15 +124,12 @@
                 <div class="h4 text-danger text-left">
                     <span th:text="${#numbers.formatCurrency(usedItem.price)}"></span>
                 </div>
-                <!--
                 <hr class="my-2">
-                <div class="text-right" mgt-20>
-                    <h5>네이버 쇼핑 최저가</h5>
-                    <h3><span id="naverprice" class="font-weight-bold"></span>원</h3>
-                    <button id ="naverlink" type="button" class="btn primary btn-primary" > 네이버 쇼핑몰로 사러가기 </button>
-
+                <div class="text-right">
+                    <h5>네이버 쇼핑 시세가</h5>
+                    <span id="navertitle"></span>
+                    <span id="naverprice" class="font-weight-bold"></span>
                 </div>
-                -->
             </div>
         </div>
     </div>

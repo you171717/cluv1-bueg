@@ -52,7 +52,7 @@ public class UsedItemRepositoryCustomImpl implements UsedItemRepositoryCustom {
                 .where(usedItemImg.repimgYn.eq("Y"))
                 .where(usedItemNameLike(usedItemSearchDto.getSearchQuery()))
                 .where(usedItem.endTime.goe(LocalDateTime.now()))
-                .where(usedItem.usedItemSellStatus.eq(UsedItemSellStatus.SELL))
+                .where(usedItem.usedItemSellStatus.ne(UsedItemSellStatus.SOLD_OUT))
                 .orderBy(usedItem.id.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())

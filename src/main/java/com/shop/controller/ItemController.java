@@ -2,8 +2,6 @@ package com.shop.controller;
 
 import com.shop.dto.*;
 import com.shop.entity.Item;
-import com.shop.entity.Tag;
-import com.shop.naverapi.NaverShopSearch;
 import com.shop.service.CategoryService;
 import com.shop.service.ItemService;
 import com.shop.service.ReviewService;
@@ -20,8 +18,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
-import java.security.Principal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -33,7 +29,6 @@ public class ItemController {
     private final CategoryService categoryService;
     private final ItemService itemService;
     private final ReviewService reviewService;
-    private final NaverShopSearch naverShopSearch;
 
     @GetMapping(value = "/admin/item/new")
     public String itemForm(Model model) {
@@ -67,7 +62,7 @@ public class ItemController {
             return "item/itemForm";
         }
 
-        return "redirect:/";
+        return "redirect:/admin/items";
     }
 
     @GetMapping(value = "/admin/item/{itemId}")
@@ -112,7 +107,7 @@ public class ItemController {
             return "item/itemForm";
         }
 
-        return "redirect:/";
+        return "redirect:/admin/items";
     }
 
     @GetMapping(value = {"/admin/items", "/admin/items/{page}"})
@@ -140,16 +135,18 @@ public class ItemController {
         return "item/itemDtl";
     }
 
-    @ResponseBody
-    @GetMapping(value = "/admin/item/newSearch")
-    public List<NaverApiDto> getItems(@RequestParam("title") String query) {
-        return naverShopSearch.search(query);
-    }
+    @GetMapping(value = { "/items", "/items/{page}" })
+    public String itemList(ItemComplexSearchDto itemComplexSearchDto, Optional<Integer> page, Model model) {
+        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 10);
+        Page<MainItemDto> items = itemService.getComplexSearchPage(itemComplexSearchDto, pageable);
 
-    @ResponseBody
-    @GetMapping(value = "/item/{itemId}/price")
-    public List<NaverApiDto> getPrice(@RequestParam("itemNm") String query) {
-        return naverShopSearch.search2(query);
+        model.addAttribute("categoryList", categoryService.getCategoryList());
+        model.addAttribute("tagList", tagService.getTagList());
+        model.addAttribute("itemComplexSearchDto", itemComplexSearchDto);
+        model.addAttribute("items", items);
+        model.addAttribute("maxPage", 5);
+
+        return "item/itemList";
     }
 
 }

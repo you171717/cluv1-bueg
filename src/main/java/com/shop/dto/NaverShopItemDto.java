@@ -8,19 +8,13 @@ import org.json.JSONObject;
 @Getter
 @Setter
 @ToString
-public class NaverApiDto {
+public class NaverShopItemDto {
 
     private String title;
 
     private int lprice;
 
     private String slink;
-
-    public NaverApiDto(JSONObject itemJson) {
-        this.title = itemJson.getString("title");
-        this.lprice = itemJson.getInt("lprice");
-        this.slink = itemJson.getString("link");
-    }
 
 }
 

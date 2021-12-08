@@ -7,8 +7,6 @@ import java.util.List;
 
 public interface UsedItemImgRepository extends JpaRepository<UsedItemImg, Long> {
 
-    List<UsedItemImg> findByIdOrderByIdAsc(Long itemId);
-
-//    UsedItemImg findByItemIdAndRepimgYn(Long itemId, String repimgYn);
+    List<UsedItemImg> findByUsedItemIdOrderByIdAsc(Long usedItemId);
 
 }

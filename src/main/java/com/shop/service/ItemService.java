@@ -141,4 +141,9 @@ public class ItemService {
         return itemRepository.getDetailSearchPage(filters, itemSearchDto, pageable);
     }
 
+    @Transactional(readOnly = true)
+    public Page<MainItemDto> getComplexSearchPage(ItemComplexSearchDto itemComplexSearchDto, Pageable pageable) {
+        return itemRepository.getComplexSearchPage(itemComplexSearchDto, pageable);
+    }
+
 }

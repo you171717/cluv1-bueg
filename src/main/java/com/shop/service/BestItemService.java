@@ -1,7 +1,7 @@
 package com.shop.service;
 
 import com.shop.dto.BestItemDto;
-import com.shop.mapper.BestItemMapper;
+import com.shop.repository.ItemRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,17 +13,18 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BestItemService {
 
-    private final BestItemMapper myBatisBestItemMapper;
+    private final ItemRepository itemRepository;
 
-//    public List<BestItemDto> getBestItemByDays() {
-//        return myBatisBestItemMapper.getBestItemByDays();
-//    }
-//
-//    public List<BestItemDto> getBestItemByWeek() {
-//        return myBatisBestItemMapper.getBestItemByWeek();
-//    }
-//
-//    public List<BestItemDto> getBestItemByMonth() {
-//        return myBatisBestItemMapper.getBestItemByMonth();
-//    }
+    public List<BestItemDto> getBestOfDayItem() {
+        return itemRepository.getBestOfDayItem();
+    }
+
+    public List<BestItemDto> getBestOfWeekItem() {
+        return itemRepository.getBestOfWeekItem();
+    }
+
+    public List<BestItemDto> getBestOfMonthItem() {
+        return itemRepository.getBestOfMonthItem();
+    }
+
 }

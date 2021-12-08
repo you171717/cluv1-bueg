@@ -1,16 +1,21 @@
 package com.shop.repository;
 
 import com.querydsl.core.QueryResults;
+import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.Expressions;
+import com.querydsl.core.types.dsl.StringPath;
 import com.querydsl.jpa.JPAExpressions;
 import com.querydsl.jpa.JPQLQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.shop.constant.ItemComplexSearchSortColumn;
 import com.shop.constant.ItemSellStatus;
 import com.shop.dto.*;
 import com.shop.entity.*;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.thymeleaf.util.StringUtils;
 
 import javax.persistence.EntityManager;
@@ -57,6 +62,47 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
         }
 
         return null;
+    }
+
+    private OrderSpecifier searchOrderBy(ItemComplexSearchDto itemComplexSearchDto) {
+        ItemComplexSearchSortColumn sortColumn = itemComplexSearchDto.getSortColumn();
+        Sort.Direction sortDirection = itemComplexSearchDto.getSortDirection();
+
+        OrderSpecifier orderSpecifier = null;
+
+        if(sortColumn.equals(ItemComplexSearchSortColumn.REG_TIME)) {
+            if(sortDirection.isAscending()) {
+                orderSpecifier = QItem.item.regTime.asc();
+            } else {
+                orderSpecifier = QItem.item.regTime.desc();
+            }
+        } else if(sortColumn.equals(ItemComplexSearchSortColumn.NAME)) {
+            if(sortDirection.isAscending()) {
+                orderSpecifier = QItem.item.itemNm.asc();
+            } else {
+                orderSpecifier = QItem.item.itemNm.desc();
+            }
+        } else if(sortColumn.equals(ItemComplexSearchSortColumn.PRICE)) {
+            if(sortDirection.isAscending()) {
+                orderSpecifier = QItem.item.price.asc();
+            } else {
+                orderSpecifier = QItem.item.price.desc();
+            }
+        }
+
+        return orderSpecifier;
+    }
+
+    private BooleanExpression searchCategory(ItemComplexSearchDto itemComplexSearchDto) {
+        Long cateCode = itemComplexSearchDto.getSearchCategory();
+
+        return cateCode == null ? null : QItem.item.category.cateCode.eq(cateCode);
+    }
+
+    private BooleanExpression searchTag(ItemComplexSearchDto itemComplexSearchDto) {
+        List<Long> tagIds = itemComplexSearchDto.getSearchTagIds();
+
+        return tagIds == null || tagIds.isEmpty() ? null : QItemTag.itemTag.tag.id.in(tagIds);
     }
 
     private BooleanExpression itemNmLike(String searchQuery) {
@@ -115,8 +161,7 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
     }
 
     @Override
-    public Page<GiftMainItemDto> getGiftItemPage(ItemSearchDto itemSearchDto,
-                                                 Pageable pageable, Long cateCode) {
+    public Page<GiftMainItemDto> getGiftItemPage(ItemSearchDto itemSearchDto, Pageable pageable, Long cateCode) {
         QItem item = QItem.item;
         QItemImg itemImg = QItemImg.itemImg;
         QCategory category = QCategory.category;
@@ -146,33 +191,6 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
 
         long total = results.getTotal();
         return new PageImpl<>(content, pageable, total);
-
-    }
-
-    @Override
-    public List<BestItemDto> getBestItemList() {
-        QItem item = QItem.item;
-        QOrderItem orderItem = QOrderItem.orderItem;
-        QItemImg itemImg = QItemImg.itemImg;
-
-        QueryResults<BestItemDto> results = queryFactory
-                .select(
-                        new QBestItemDto(
-                                item.id,
-                                item.itemNm,
-                                item.itemDetail,
-                                itemImg.imgUrl,
-                                item.price)
-                )
-                .from(itemImg)
-                .join(itemImg.item, item)
-                .where(itemImg.repImgYn.eq("Y"))
-//                .orderBy(orderItem.id.desc())
-                .fetchResults();
-
-        List<BestItemDto> content = results.getResults();
-
-        return content;
     }
 
     public Page<MainItemDto> getDetailSearchPage(String[] filters, ItemSearchDto itemSearchDto, Pageable pageable) {
@@ -214,6 +232,93 @@ public class ItemRepositoryCustomImpl implements ItemRepositoryCustom {
 
         List<MainItemDto> content = results.getResults();
         long total = results.getTotal();
+        return new PageImpl<>(content, pageable, total);
+    }
+
+    private List<BestItemDto> getBestItem(Integer d) {
+        QItem item = QItem.item;
+        QOrderItem orderItem = QOrderItem.orderItem;
+        QItemImg itemImg = QItemImg.itemImg;
+
+        QueryResults<BestItemDto> results = queryFactory
+                .select(
+                        new QBestItemDto(
+                                item.id,
+                                item.itemNm,
+                                item.itemDetail,
+                                itemImg.imgUrl,
+                                item.price
+                        )
+                )
+                .from(itemImg)
+                .join(itemImg.item, item)
+                .leftJoin(orderItem).on(
+                        orderItem.item.eq(itemImg.item)
+                                .and(orderItem.regTime.goe(LocalDateTime.now().minusDays(d)))
+                )
+                .where(itemImg.repImgYn.eq("Y"))
+                .groupBy(item.id)
+                .orderBy(orderItem.count().desc())
+                .orderBy(item.id.desc())
+                .fetchResults();
+
+        List<BestItemDto> content = results.getResults();
+
+        return content;
+    }
+
+    @Override
+    public List<BestItemDto> getBestOfDayItem() {
+        return this.getBestItem(1);
+    }
+
+    @Override
+    public List<BestItemDto> getBestOfWeekItem() {
+        return this.getBestItem(7);
+    }
+
+    @Override
+    public List<BestItemDto> getBestOfMonthItem() {
+        return this.getBestItem(30);
+    }
+
+    @Override
+    public Page<MainItemDto> getComplexSearchPage(ItemComplexSearchDto itemComplexSearchDto, Pageable pageable) {
+        QItem item = QItem.item;
+        QItemImg itemImg = QItemImg.itemImg;
+        QItemTag itemTag = QItemTag.itemTag;
+        QTag tag = QTag.tag;
+
+        QueryResults<MainItemDto> results = queryFactory
+                .select(
+                        new QMainItemDto(
+                                item.id,
+                                item.itemNm,
+                                item.itemDetail,
+                                itemImg.imgUrl,
+                                item.price,
+                                item.shippingFee
+                        )
+                )
+                .from(itemImg)
+                .join(itemImg.item, item)
+                .leftJoin(itemTag).on(itemTag.item.eq(itemImg.item))
+                .leftJoin(itemTag.tag, tag)
+                .where(itemImg.repImgYn.eq("Y"))
+                .where(itemNmLike(itemComplexSearchDto.getSearchQuery()))
+                .where(searchCategory(itemComplexSearchDto))
+                .where(searchTag(itemComplexSearchDto))
+                .groupBy(itemImg.item)
+                .orderBy(searchOrderBy(itemComplexSearchDto))
+                .orderBy(item.id.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetchResults();
+
+        List<MainItemDto> content = results.getResults();
+
+        long total = results.getTotal();
+
         return new PageImpl<>(content, pageable, total);
     }
     

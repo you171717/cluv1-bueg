@@ -17,7 +17,7 @@ public class UsedItemImg extends BaseEntity{
     private Long id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "used_item_id")
     private UsedItem usedItem;
 
     private String imgName;

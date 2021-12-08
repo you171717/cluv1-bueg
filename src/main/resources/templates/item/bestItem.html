@@ -41,15 +41,6 @@
 </th:block>
 
 <div layout:fragment="content">
-
-    <div id="carouselControls" class="carousel slide margin" data-ride="carousel">
-        <div class="carousel-inner">
-            <div class="carousel-item active item">
-                <img class="d-block banner center" src="https://github.com/hiatus1225/spring_boot_pactice/blob/master/top10.jpg?raw=true" alt="오해 금지 일간 베스트 상품">
-            </div>
-        </div>
-    </div>
-
     <div class="row">
         <th:block th:each="item : ${items}">
             <div class="col-md-4 margin">
