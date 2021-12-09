@@ -1,11 +1,9 @@
 package com.shop.controller;
 
 import com.shop.dto.*;
+import com.shop.entity.Category;
 import com.shop.entity.UsedItem;
-import com.shop.service.BestItemService;
-import com.shop.service.ItemService;
-import com.shop.service.ReverseAuctionService;
-import com.shop.service.UsedItemService;
+import com.shop.service.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,6 +18,8 @@ import java.util.Optional;
 @Controller
 @RequiredArgsConstructor
 public class MainController {
+
+    private final CategoryService categoryService;
 
     private final BestItemService bestItemService;
 
@@ -39,6 +39,9 @@ public class MainController {
         Page<UsedItemDto> usedItemPages = usedItemService.getAllUsedItemPage(new UsedItemSearchDto(), pageable);
         List<UsedItemDto> usedItemList = usedItemPages.getContent();
 
+        List<Category> categoryList = categoryService.getCategoryList();
+
+        model.addAttribute("categoryList", categoryList);
         model.addAttribute("bestItemList", bestItemList);
         model.addAttribute("reverseAuctionList", reverseAuctionList);
         model.addAttribute("usedItemList", usedItemList);

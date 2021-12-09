@@ -97,6 +97,9 @@
                 </button>
             </div>
         </div>
+        <th:block th:each="category : ${categoryList}">
+            <a th:href="'/items/0?&searchCategory=' + ${category.getCateCode()}" th:text="${category.getCateName()}"></a>
+        </th:block>
         <h2>베스트 상품</h2>
         <th:block th:each="item : ${bestItemList}">
             <div class="col-md-4 margin">
