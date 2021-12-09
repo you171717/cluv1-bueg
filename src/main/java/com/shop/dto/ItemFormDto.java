@@ -6,6 +6,7 @@ import com.shop.mapstruct.ItemFormMapper;
 import com.shop.mapstruct.ItemFormMapperImpl;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -14,9 +15,13 @@ import java.util.List;
 
 @Getter
 @Setter
+@ToString
 public class ItemFormDto {
 
     private Long id;
+
+    @NotNull(message = "카태고리는 필수 입력 값입니다.")
+    private Long cateCode;
 
     @NotBlank(message = "상품명은 필수 입력 값입니다.")
     private String itemNm;
@@ -39,26 +44,14 @@ public class ItemFormDto {
 
     private List<Long> itemImgIds = new ArrayList<>();
 
-    /*
-    private static ModelMapper modelMapper = new ModelMapper();
+    private List<Long> tagIds = new ArrayList<>();
 
     public Item createItem() {
-        return modelMapper.map(this, Item.class);
+        return ItemFormMapper.INSTANCE.toEntity(this);
     }
 
     public static ItemFormDto of(Item item) {
-        return modelMapper.map(item, ItemFormDto.class);
-    }
-    */
-
-    private static ItemFormMapper itemFormMapper = new ItemFormMapperImpl();
-
-    public Item createItem() {
-        return itemFormMapper.toEntity(this);
-    }
-
-    public static ItemFormDto of(Item item) {
-        return itemFormMapper.toDto(item);
+        return ItemFormMapper.INSTANCE.toDto(item);
     }
 
 }

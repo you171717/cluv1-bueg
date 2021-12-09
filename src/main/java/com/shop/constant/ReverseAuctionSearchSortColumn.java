@@ -15,4 +15,5 @@ public enum ReverseAuctionSearchSortColumn {
     public String toString() {
         return columnName;
     }
+
 }

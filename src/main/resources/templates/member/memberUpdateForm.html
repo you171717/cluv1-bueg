@@ -13,12 +13,48 @@
 
     <th:block layout:fragment="script">
         <script th:inline="javascript">
+            // 카카오 주소 API 추가
+            window.onload = function(){
+                document.getElementById("address_kakao").addEventListener("click", function(){ //주소입력칸을 클릭하면
+                    //카카오 지도 발생
+                    new daum.Postcode({
+                        oncomplete: function(data) { //선택시 입력값 세팅
+                            document.getElementById("address_kakao").value = data.address; // 주소 넣기
+                            document.querySelector("input[name='addressDetail']").focus(); //상세입력 포커싱
+                        }
+                    }).open();
+                });
+            }
+
             $(document).ready(function() {
-               var errorMessage = [[${errorMessage}]];
-               if(errorMessage != null) {
-                   alert(errorMessage);
-               }
+                var errorMessage = [[${errorMessage}]];
+                if(errorMessage != null) {
+                    alert(errorMessage);
+                }
+
+                var $submitButton = $('.content button[type="submit"]');
+                var $password = $('#password');
+                var $passwordCheck = $('#passwordCheck');
+
+                $password.on('keyup keydown', passwordConfirmation);
+                $passwordCheck.on('keyup keydown', passwordConfirmation);
+
+                function passwordConfirmation() {
+                    $submitButton.removeAttr('disabled');
+
+                    if($password.val() == $passwordCheck.val()) {
+                        $password.css('background-color', 'azure');
+                        $passwordCheck.css('background-color', 'azure');
+                    } else {
+                        $password.css('background-color', 'lavenderblush');
+                        $passwordCheck.css('background-color', 'lavenderblush');
+
+                        $submitButton.attr('disabled', 'disabled');
+                    }
+                }
             });
+
+
         </script>
     </th:block>
 
@@ -39,10 +75,28 @@
                 <input type="password" th:field="*{password}" class="form-control" placeholder="비밀번호 입력" th:readonly="${oAuth2Member != null}">
                 <p th:if="${#fields.hasErrors('password')}" th:errors="*{password}" class="fieldError">Incorrect data</p>
             </div>
+            <!--  비밀번호 확인  -->
             <div class="form-group">
-                <label th:for="address">주소</label>
-                <input type="text" th:field="*{address}" class="form-control" placeholder="주소를 입력해주세요">
-                <p th:if="${#fields.hasErrors('address')}" th:errors="*{address}" class="fieldError">Incorrect data</p>
+                <input type="password" id="passwordCheck" class="form-control" placeholder="비밀번호 확인" th:readonly="${oAuth2Member != null}">
+            </div>
+            <!-- 카카오 주소 API 추가-->
+            <div class="form-group">
+                <label >주소</label>
+                <input th:field="*{address}" id="address_kakao" name="address" readonly type="text" class="form-control" placeholder="주소를 입력해주세요" >
+                <p th:if="${#fields.hasErrors('address')}"
+                   th:errors="*{address}" class="fieldError">Incorrect data</p>
+            </div>
+            <div class="form-group">
+                <label >상세 주소</label>
+                <input th:field="*{addressDetail}" id="address_detail" name="address_detail"  type="text" class="form-control" placeholder="상세 주소를 입력해주세요" >
+                <p th:if="${#fields.hasErrors('addressDetail')}"
+                   th:errors="*{addressDetail}" class="fieldError">Incorrect data</p>
+            </div>
+            <!--휴대폰 번호 추가-->
+            <div class="form-group">
+                <label th:for="phone">휴대폰 번호</label>
+                <input type="text" th:field="*{phone}" class="form-control" placeholder="휴대폰 번호를 입력해주세요">
+                <p th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}" class="fieldError">Incorrect data</p>
             </div>
             <div class="form-group">
                 <label th:for="refundBank">환불 은행</label>
@@ -57,6 +111,18 @@
                 <label th:for="refundAccount">환불 계좌</label>
                 <input type="text" th:field="*{refundAccount}" class="form-control" placeholder="환불 계좌를 입력해주세요">
                 <p th:if="${#fields.hasErrors('refundAccount')}" th:errors="*{refundAccount}" class="fieldError">Incorrect data</p>
+            </div>
+            <div class="form-group">
+                <label th:for="refundAccount">알림 서비스 종류</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" th:field="*{noticeType}" value="EMAIL">
+                    <label class="form-check-label" th:for="${#ids.prev('noticeType')}">이메일</label>
+                </div>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" th:field="*{noticeType}" value="SMS">
+                    <label class="form-check-label" th:for="${#ids.prev('noticeType')}">SMS</label>
+                </div>
+                <p th:if="${#fields.hasErrors('noticeType')}" th:errors="*{noticeType}" class="fieldError">Incorrect data</p>
             </div>
             <div style="text-align: center">
                 <button type="submit" class="btn btn-lg btn-primary">회원정보 수정</button>

@@ -3,7 +3,11 @@ package com.shop.controller;
 import com.shop.dto.CartDetailDto;
 import com.shop.dto.CartItemDto;
 import com.shop.dto.CartOrderDto;
+import com.shop.repository.MemberRepository;
 import com.shop.service.CartService;
+import com.shop.service.EmailService;
+import com.shop.service.MemberService;
+import com.shop.service.SmsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -97,7 +101,7 @@ public class CartController {
             }
         }
 
-        Long orderId = cartService.orderCartItem(cartOrderDtoList, principal.getName());
+        Long orderId = cartService.orderCartItem(cartOrderDtoList, principal.getName(), cartOrderDto.getUsedPoint());
 
         return new ResponseEntity<Long>(orderId, HttpStatus.OK);
     }

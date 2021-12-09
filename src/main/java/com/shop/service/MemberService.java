@@ -1,14 +1,18 @@
 package com.shop.service;
 
+import com.shop.dto.MemberSearchDto;
 import com.shop.entity.Member;
 import com.shop.entity.OAuth2Member;
 import com.shop.repository.MemberRepository;
 import com.shop.repository.OAuth2MemberRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
-
     private final OAuth2MemberRepository oAuth2MemberRepository;
 
     public Member saveMember(Member member) {
@@ -54,6 +57,31 @@ public class MemberService implements UserDetailsService {
                 .password(member.getPassword())
                 .roles(member.getRole().toString())
                 .build();
+    }
+
+    public int getPointByEmail(String email) {
+        Member member = memberRepository.findByEmail(email);
+
+        return member.getPoint();
+    }
+
+    public void updatePassword(Long memberId, String password) {
+        memberRepository.updatePassword(memberId, new BCryptPasswordEncoder().encode(password));
+    }
+
+    public boolean checkEmailAndName(String email, String name) {
+        Member member = memberRepository.findByEmail(email);
+
+        if(member == null || !member.getName().equals(name)) {
+            throw new IllegalStateException("이메일과 이름이 일치하지 않습니다.");
+        }
+
+        return true;
+    }
+
+    @Transactional(readOnly = true)
+    public Page<Member> getAdminMemberPage(MemberSearchDto memberSearchDto, Pageable pageable){
+        return memberRepository.getAdminMemberPage(memberSearchDto, pageable);
     }
 
 }

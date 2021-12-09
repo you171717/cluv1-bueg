@@ -1,0 +1,21 @@
+package com.shop.entity;
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
+import javax.persistence.*;
+
+@Entity
+@Table(name = "sms_notice")
+@Getter
+@Setter
+@ToString
+public class SmsNotice extends BaseEntity {
+
+    @Id
+    @Column(name = "sms_notice_id")
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+
+}

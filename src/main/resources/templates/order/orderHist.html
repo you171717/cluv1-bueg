@@ -11,6 +11,36 @@
     <!-- 사용자 스크립트 추가 -->
     <th:block layout:fragment="script">
         <script th:inline="javascript">
+
+            function getStatus() {
+                var token = $("meta[name='_csrf']").attr("content");
+                var header = $("meta[name='_csrf_header']").attr("content");
+
+                var url = "/orders";
+                var paramData = {
+                    giftStatus: $("#statSelect").val()
+                };
+
+                $.ajax({
+                    url: url,
+                    type: "GET",
+                    contentType: "application/json",
+                    data: paramData,
+                    beforeSend: function (xhr) {
+                        /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                        xhr.setRequestHeader(header, token);
+                    },
+                    cache: false,
+                    success: function (result, status) {
+                        location.href="/ordersStatus/"+$("#statSelect").val();
+                        alert("상태 갱신 완료");
+                    },
+                    error: function () {
+                        alert("상태 갱신 오류")
+                    }
+                });
+            }
+
             function cancelOrder(orderId) {
                 var token = $("meta[name='_csrf']").attr("content");
                 var header = $("meta[name='_csrf_header']").attr("content");
@@ -34,17 +64,21 @@
                     cache: false,
                     success: function(result, status) {
                         alert("주문이 취소 되었습니다.");
-
                         location.href = "/orders/" + [[${page}]];
                     },
                     error: function(jqXHR, status, error) {
                         if(jqXHR.status == "401") {
                             alert("로그인 후 이용해주세요");
+                            location.href = '/members/login';
                         } else {
                             alert(jqXHR.responseText);
                         }
                     }
-                })
+                });
+            }
+
+            function reqReturnOrder(orderId) {
+                location.href = "/order/" + orderId + "/return";
             }
         </script>
     </th:block>
@@ -86,18 +120,39 @@
     </th:block>
 
     <div layout:fragment="content" class="content-mg">
+
+        <div class="right-box">
+            <select id="statSelect" class="custom-select" onchange="getStatus();">
+                <option value="">전체</option>
+                <option value="BUY">구매</option>
+                <option value="GIFT">선물</option>
+            </select>
+        </div>
+
         <h2 class="mb-4">
-            구매 이력
+            구매/선물 이력
         </h2>
         <div class="d-flex flex-column align-items-center" th:each="order : ${orders.getContent()}">
             <div class="d-flex mb-3 align-self-center card-title">
+                <th:block th:if="${order.giftStatus == T(com.shop.constant.GiftStatus).BUY}">
                 <h4 th:text="${order.orderDate} + ' 주문'"></h4>
+                </th:block>
+                <th:block th:unless="${order.giftStatus == T(com.shop.constant.GiftStatus).BUY}">
+                <h4 th:text="${order.orderDate} + ' 선물'"></h4>
+                </th:block>
                 <div class="ml-3">
                     <th:block th:if="${order.orderStatus == T(com.shop.constant.OrderStatus).ORDER}">
                         <button type="button" class="btn btn-outline-secondary" th:value="${order.orderId}" onclick="cancelOrder(this.value)">주문취소</button>
+                        <button type="button" class="btn btn-outline-secondary" th:value="${order.orderId}" onclick="reqReturnOrder(this.value)">반품신청</button>
                     </th:block>
-                    <th:block th:unless="${order.orderStatus == T(com.shop.constant.OrderStatus).ORDER}">
+                    <th:block th:if="${order.orderStatus == T(com.shop.constant.OrderStatus).CANCEL}">
                         <h4>(취소 완료)</h4>
+                    </th:block>
+                    <th:block th:if="${(order.orderStatus == T(com.shop.constant.OrderStatus).RETURN) and (order.returnStatus == T(com.shop.constant.ReturnStatus).N )}">
+                        <h4>(반품 신청)</h4>
+                    </th:block>
+                    <th:block th:if="${(order.orderStatus == T(com.shop.constant.OrderStatus).RETURN) and (order.returnStatus == T(com.shop.constant.ReturnStatus).Y )}">
+                        <h4>(반품 완료)</h4>
                     </th:block>
                 </div>
             </div>
@@ -109,12 +164,26 @@
                     <div class="align-self-center w-75">
                         <span th:text="${orderItem.itemNm}" class="fs24 font-weight-bold"></span>
                         <div class="fs18 font-weight-light" style="margin-top: 10px;">
+                            <br><span th:text="'배송지 : '+${order.orderAddress}"></span></br>
                             <span th:text="${#numbers.formatCurrency(orderItem.orderPrice)}"></span>
                             <span th:text="${orderItem.count} +'개'"></span>
                             <small class="text-danger">(배송비 : <th:block th:text="${#numbers.formatCurrency(orderItem.orderShippingFee)}"></th:block>)</small>
                         </div>
                     </div>
+                    <div th:if="${order.orderStatus == T(com.shop.constant.OrderStatus).ORDER and orderItem.reviewYn  == 'N'}">
+                        <button type="button" class="btn btn-outline-secondary" th:onclick="'location.href=\''+@{/reviews/new/}+@{${orderItem.orderItemId}}+'\''">리뷰 작성</button>
+                    </div>
+                    <div th:if="${order.orderStatus == T(com.shop.constant.OrderStatus).ORDER and orderItem.reviewYn == 'Y'}">
+                        <button type="button" class="btn btn-outline-secondary" th:onclick="'location.href=\''+@{/reviews/update/}+@{${orderItem.orderItemId}}+'\''">리뷰 수정</button>
+                        <button type="button" class="btn btn-outline-secondary" th:onclick="'location.href=\''+@{/reviews/delete/}+@{${orderItem.orderItemId}}+'\''">리뷰 삭제</button>
+                    </div>
                 </div>
+                <br>
+                <span th:text="'사용 포인트 : ' + ${order.usedPoint} + '포인트'"></span>
+                <br>
+                <span th:text="'적립 포인트 : ' + ${order.accPoint} + '포인트'"></span>
+                <br>
+                <span th:text="'최종 결제금액 : ' + ${order.totalPrice - order.usedPoint} + '원'"></span>
             </div>
         </div>
         <div th:with="start=${(orders.number/maxPage)*maxPage + 1}, end=(${(orders.totalPages == 0) ? 1 : (start + (maxPage - 1) < orders.totalPages ? start + (maxPage - 1) : orders.totalPages)})" >

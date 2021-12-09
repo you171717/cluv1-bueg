@@ -12,18 +12,40 @@
             <a class="navbar-brand" href="/">Shop</a>
             <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
                 <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+
+                <!-- best item dropdown menu -->
+                    <li>
+                        <a class="nav-link active dropbtn" aria-current="page" href="/item/best/Day">베스트</a>
+                        <div class="subMenu">
+                            <ul class="dropdown">
+                                <li class="dropdown-content">
+                                    <a href="/item/best/Day">일별베스트</a>
+                                </li>
+                                <li class="dropdown-content">
+                                    <a href="/item/best/Week">주별베스트</a>
+                                </li>
+                                <li class="dropdown-content">
+                                    <a href="/item/best/Month">월별베스트</a>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
+
                     <li class="nav-item" sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
                         <a class="nav-link" href="/admin/item/new">상품 등록</a>
                     </li>
                     <li class="nav-item" sec:authorize="hasAnyAuthority('ROLE_ADMIN')">
                         <a class="nav-link" href="/admin/items">상품 관리</a>
                     </li>
+
                     <li class="nav-item" sec:authorize="isAuthenticated()">
                         <a class="nav-link" href="/cart">장바구니</a>
                     </li>
+<!--                    구매/선물 이력 메뉴 버튼 추가-->
                     <li class="nav-item" sec:authorize="isAuthenticated()">
-                        <a class="nav-link" href="/orders">구매이력</a>
+                        <a class="nav-link" href="/orders">구매/선물 이력</a>
                     </li>
+
                     <li class="nav-item" sec:authorize="isAnonymous()">
                         <a class="nav-link" href="/members/login">로그인</a>
                     </li>

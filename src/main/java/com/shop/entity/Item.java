@@ -19,7 +19,11 @@ public class Item extends BaseEntity {
     @Id
     @Column(name = "item_id")
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id; // 상품 코드
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "cateCode", nullable = false)
+    private Category category; // 카테고리 코드 조인
 
     @Column(nullable = false, length = 50)
     private String itemNm; // 상품명
@@ -35,27 +39,33 @@ public class Item extends BaseEntity {
     private String itemDetail; // 상품 상세 설명
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private ItemSellStatus itemSellStatus; // 상품 판매 상태
-    
+
+    @Column(nullable = false)
     private Integer shippingFee; // 배송비
 
-    /*
-    @ManyToMany
-    @JoinTable(
-        name = "member_item",
-        joinColumns = @JoinColumn(name = "member_id"),
-        inverseJoinColumns = @JoinColumn(name = "item_id")
-    )
-    private List<Member> member;
-    */
+    public static Item createItem(ItemFormDto itemFormDto, Category category) {
+        Item item = new Item();
+        item.setItemNm(itemFormDto.getItemNm());
+        item.setCategory(category);
+        item.setPrice(itemFormDto.getPrice());
+        item.setStockNumber(itemFormDto.getStockNumber());
+        item.setItemDetail(itemFormDto.getItemDetail());
+        item.setItemSellStatus(itemFormDto.getItemSellStatus());
+        item.setShippingFee(itemFormDto.getShippingFee());
 
-    public void updateItem(ItemFormDto itemFormDto) {
+        return item;
+    }
+
+    public void updateItem(ItemFormDto itemFormDto, Category category) {
         this.itemNm = itemFormDto.getItemNm();
+        this.category = category;
         this.price = itemFormDto.getPrice();
         this.stockNumber = itemFormDto.getStockNumber();
-        this.shippingFee = itemFormDto.getShippingFee();
         this.itemDetail = itemFormDto.getItemDetail();
         this.itemSellStatus = itemFormDto.getItemSellStatus();
+        this.shippingFee = itemFormDto.getShippingFee();
     }
 
     public void removeStock(int stockNumber) {

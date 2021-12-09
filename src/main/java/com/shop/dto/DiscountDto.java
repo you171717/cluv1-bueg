@@ -2,12 +2,14 @@ package com.shop.dto;
 
 import lombok.Getter;
 import lombok.Setter;
+import lombok.ToString;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 
 @Getter
 @Setter
+@ToString
 public class DiscountDto {
 
     private Integer currentPrice;

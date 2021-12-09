@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layouts/layoutGlobal}">
+
+<!-- 나중에 AJAX를 쓰게 되면 같이 전송할 CSRF 토큰을 포함하여 응답 -->
+<head>
+    <meta name="_csrf" th:content="${_csrf.token}"/>
+    <meta name="_csrf_header" th:content="${_csrf.headerName}"/>
+</head>
+
+<th:block layout:fragment="script">
+    <script th:inline="javascript">
+        $(document).ready(function () {
+            getPrice();
+        });
+
+        function getPrice() {
+            var token = $("meta[name='_csrf']").attr("content");
+            var header = $("meta[name='_csrf_header']").attr("content");
+
+            var url = "/uitem/naverShopItems" + "?name=" + encodeURI($("#title").text());
+
+            $.ajax({
+                url      : url,
+                type     : "GET",
+                beforeSend : function(xhr){
+                    /* 데이터를 전송하기 전에 헤더에 csrf값을 설정 */
+                    xhr.setRequestHeader(header, token);
+                },
+                cache   : false,
+                success  : function(result){
+                    var item = result.pop();
+
+                    if(item) {
+                        $("#navertitle").text($('<div />').html(item.title).text());
+                        $("#naverprice").text(numberFormat(item.lprice));
+                    } else {
+                        $("#naverprice").text("알 수 없음");
+                    }
+                },
+                error : function(error){
+                    console.log(error);
+                }
+            });
+        }
+    </script>
+</th:block>
+
+<!-- 사용자 CSS 추가 -->
+<th:block layout:fragment="css">
+    <style>
+            .mgb-15{
+                margin-bottom: 15px;
+            }
+            .mgt-30{
+                margin-top: 30px;
+            }
+            .mgt-50{
+                margin-top: 50px;
+            }
+            .repImgDiv{
+                text-align: center;
+                margin-right: 15px;
+                height: auto;
+                width: 50%;
+            }
+            .repImg{
+                max-width: 100%;
+                max-height: 400px;
+            }
+            .reviewImgDiv{
+                margin-right:20px;
+                width:20%;
+            }
+            .reviewImg{
+                width:150px;
+                height:150px;
+            }
+            .wd50{
+                height: auto;
+                width: 50%;
+            }
+            .content-mg{
+                margin-left:30%;
+                margin-right:30%;
+                margin-top:2%;
+                margin-bottom:100px;
+            }
+            .card{
+                width:750px;
+                height:100%;
+                padding:30px;
+                margin-bottom:20px;
+            }
+            .fs18{
+                font-size:18px
+            }
+            .fs24{
+                font-size:24px
+            }
+    </style>
+</th:block>
+
+<div layout:fragment="content">
+    <input type="hidden" id="itemId" th:value="${usedItem.id}">
+    <div class="d-flex">
+        <div class="repImgDiv">
+            <img th:src="${usedItem.usedItemImgDtoList[0].imgUrl}" class="rounded repImg" th:alt="${usedItem.name}">
+        </div>
+        <div class="wd50">
+            <span th:if="${usedItem.usedItemSellStatus == T(com.shop.constant.UsedItemSellStatus).SELL}" class="badge badge-primary mgb-15">
+                판매중
+            </span>
+            <span th:if="${usedItem.usedItemSellStatus == T(com.shop.constant.UsedItemSellStatus).REZ}" class="badge btn-warning mgb-15">
+                예약중
+            </span>
+            <span th:if="${usedItem.usedItemSellStatus == T(com.shop.constant.UsedItemSellStatus).SOLD_OUT}" class="badge btn-danger mgb-15">
+                품절
+            </span>
+            <div class="h4" id="title" th:text="${usedItem.name}"></div>
+            <hr class="my-4">
+            <div class="text-right">
+                <div class="h4 text-danger text-left">
+                    <span th:text="${#numbers.formatCurrency(usedItem.price)}"></span>
+                </div>
+                <hr class="my-2">
+                <div class="text-right">
+                    <h5>네이버 쇼핑 시세가</h5>
+                    <span id="navertitle"></span>
+                    <span id="naverprice" class="font-weight-bold"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="jumbotron jumbotron-fluid mgt-30">
+        <div class="container">
+            <h4 class="display-5">상품 상세 설명</h4>
+            <hr class="my-4">
+            <p class="lead" th:text="${usedItem.detail}"></p>
+        </div>
+    </div>
+    <div th:each="itemImg : ${usedItem.usedItemImgDtoList}" class="text-center">
+        <img th:if="${not #strings.isEmpty(itemImg.imgUrl)}" th:src="${itemImg.imgUrl}" class="rounded mgb-15" width="800">
+    </div>
+</div>
+
+</html>

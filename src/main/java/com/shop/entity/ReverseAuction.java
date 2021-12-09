@@ -19,6 +19,13 @@ public class ReverseAuction extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id; // 역경매 코드
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "item_id", nullable = false)
+    private Item item;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "reverseAuction")
+    private List<Bid> bids = new ArrayList<>(); // 입찰 목록
+
     @Column(nullable = false)
     private Integer timeUnit; // 자동 할인 시간
 
@@ -30,12 +37,5 @@ public class ReverseAuction extends BaseEntity {
 
     @Column(nullable = false)
     private LocalDateTime startTime; // 시작 시간
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "item_id", nullable = false)
-    private Item item;
-
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, mappedBy = "reverseAuction")
-    private List<Bid> bids = new ArrayList<>(); // 입찰 목록
 
 }

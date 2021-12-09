@@ -1,16 +1,15 @@
 package com.shop.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.shop.dto.ItemFormDto;
-import com.shop.dto.ItemSearchDto;
+import com.shop.dto.*;
 import com.shop.entity.Item;
+import com.shop.service.CategoryService;
 import com.shop.service.ItemService;
+import com.shop.service.ReviewService;
+import com.shop.service.TagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -26,17 +25,25 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ItemController {
 
+    private final TagService tagService;
+    private final CategoryService categoryService;
     private final ItemService itemService;
+    private final ReviewService reviewService;
 
     @GetMapping(value = "/admin/item/new")
     public String itemForm(Model model) {
+        model.addAttribute("categoryList", categoryService.getCategoryList());
+        model.addAttribute("tagList", tagService.getTagList());
         model.addAttribute("itemFormDto", new ItemFormDto());
 
         return "/item/itemForm";
     }
 
     @PostMapping(value = "/admin/item/new")
-    public String itemNew(@Valid ItemFormDto itemFormDto, BindingResult bindingResult, Model model, @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList) {
+    public String itemNew(@Valid ItemFormDto itemFormDto, BindingResult bindingResult, @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList, Model model) {
+        model.addAttribute("categoryList", categoryService.getCategoryList());
+        model.addAttribute("tagList", tagService.getTagList());
+
         if(bindingResult.hasErrors()) {
             return "item/itemForm";
         }
@@ -55,11 +62,14 @@ public class ItemController {
             return "item/itemForm";
         }
 
-        return "redirect:/";
+        return "redirect:/admin/items";
     }
 
     @GetMapping(value = "/admin/item/{itemId}")
     public String itemFormUpdate(@PathVariable("itemId") Long itemId, Model model) {
+        model.addAttribute("categoryList", categoryService.getCategoryList());
+        model.addAttribute("tagList", tagService.getTagList());
+
         try {
             ItemFormDto itemFormDto = itemService.getItemDtl(itemId);
 
@@ -76,6 +86,9 @@ public class ItemController {
 
     @PostMapping(value = "/admin/item/{itemId}")
     public String itemUpdate(@Valid ItemFormDto itemFormDto, BindingResult bindingResult, @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList, Model model) {
+        model.addAttribute("categoryList", categoryService.getCategoryList());
+        model.addAttribute("tagList", tagService.getTagList());
+
         if(bindingResult.hasErrors()) {
             return "item/itemForm";
         }
@@ -94,7 +107,7 @@ public class ItemController {
             return "item/itemForm";
         }
 
-        return "redirect:/";
+        return "redirect:/admin/items";
     }
 
     @GetMapping(value = {"/admin/items", "/admin/items/{page}"})
@@ -110,32 +123,30 @@ public class ItemController {
     }
 
     @GetMapping(value = "/item/{itemId}")
-    public String itemDtl(Model model, @PathVariable("itemId") Long itemId) {
+    public String itemDtl(@PathVariable("itemId") Long itemId, Model model) {
         ItemFormDto itemFormDto = itemService.getItemDtl(itemId);
+        List<ReviewItemDto> orderItemDtoList = reviewService.getReviewItem(itemId);
+        List<ReviewImgDto> reviewImgDtoList = reviewService.getReviewItemImg(itemId);
 
         model.addAttribute("item", itemFormDto);
+        model.addAttribute("orderItemList", orderItemDtoList);
+        model.addAttribute("reviewImgDtoList", reviewImgDtoList);
 
         return "item/itemDtl";
-//      return "item/itemDtlAjax";
     }
 
-    @GetMapping(value = "/item/{itemId}/api")
-    public @ResponseBody ResponseEntity itemDtlAjax(@PathVariable("itemId") Long itemId) {
-        ObjectMapper objectMapper = new ObjectMapper();
+    @GetMapping(value = { "/items", "/items/{page}" })
+    public String itemList(ItemComplexSearchDto itemComplexSearchDto, Optional<Integer> page, Model model) {
+        Pageable pageable = PageRequest.of(page.isPresent() ? page.get() : 0, 10);
+        Page<MainItemDto> items = itemService.getComplexSearchPage(itemComplexSearchDto, pageable);
 
-        ItemFormDto itemFormDto = itemService.getItemDtl(itemId);
-        itemFormDto.setItemNm(itemFormDto.getItemNm() + " with AJAX");
-        itemFormDto.setItemDetail(itemFormDto.getItemDetail() + " with AJAX");
+        model.addAttribute("categoryList", categoryService.getCategoryList());
+        model.addAttribute("tagList", tagService.getTagList());
+        model.addAttribute("itemComplexSearchDto", itemComplexSearchDto);
+        model.addAttribute("items", items);
+        model.addAttribute("maxPage", 5);
 
-        String json;
-
-        try {
-            json = objectMapper.writeValueAsString(itemFormDto);
-        } catch(Exception e) {
-            return new ResponseEntity<String>(e.getMessage(), HttpStatus.BAD_REQUEST);
-        }
-
-        return new ResponseEntity<String>(json, HttpStatus.OK);
+        return "item/itemList";
     }
 
 }

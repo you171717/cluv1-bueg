@@ -18,6 +18,14 @@ public class Bid extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id; // 역경매 구매 코드
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "rauction_id", nullable = false)
+    private ReverseAuction reverseAuction;
+
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
     private BidDepositType depositType; // 입금 방법
@@ -32,13 +40,5 @@ public class Bid extends BaseEntity {
     private String approvedYn = "N"; // 확인(낙찰) 여부
 
     private LocalDateTime approvedTime; // 확인(낙찰) 시간
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "rauction_id", nullable = false)
-    private ReverseAuction reverseAuction;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
 
 }

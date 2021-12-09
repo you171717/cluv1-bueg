@@ -19,7 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityNotFoundException;
-import java.security.MessageDigest;
 import java.time.LocalDateTime;
 
 @Service
@@ -27,30 +26,23 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class BidService {
 
-    private static Logger logger = LoggerFactory.getLogger(BidService.class);
+    private static final Logger logger = LoggerFactory.getLogger(BidService.class);
 
     private final BidRepository bidRepository;
-
     private final MemberRepository memberRepository;
-
     private final ReverseAuctionRepository reverseAuctionRepository;
-
     private final KakaoPaymentService kakaoPaymentService;
+    private final EncryptionService encryptionService;
 
     public String getUniqueDepositName(Member member) {
         try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            md.update((member.getName() + member.getEmail()).getBytes());
+            String uniqueKey = member.getName() + member.getEmail();
+            String uniqueSequence = encryptionService.encrypt(uniqueKey, "SHA-256").substring(0, 5);
 
-            StringBuilder builder = new StringBuilder();
-
-            for (byte b : md.digest()) {
-                builder.append(String.format("%02x", b));
-            }
-
-            return member.getName() + builder.toString().substring(0, 5);
+            return member.getName() + uniqueSequence;
         } catch(Exception e) {
-            logger.error(e.getMessage());
+            logger.error(e.getMessage(), e);
+
             return null;
         }
     }
